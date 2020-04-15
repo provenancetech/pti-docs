@@ -1,0 +1,232 @@
+# PTI API v0: Developer Guide (Apr 16, 2020)
+
+## Introduction
+
+Welcome to the PTI API! The PTI API provides its users with Compliance-as-a-service, fiat and cryptocurrency custody as well as payments services.
+
+## JWT, JWE, JWS
+
+The PTI API makes extensive use of the [JWT](https://tools.ietf.org/html/rfc7519), [JWE](https://datatracker.ietf.org/doc/rfc7516) and [JWS](https://tools.ietf.org/html/rfc7515) standards. Please make sure you are familiar with them before continuing.
+
+`TODO: primer`
+
+## Authentication for Clients
+
+### PTI Clients: Signature
+
+The PTI API uses asymmetric cryptography, encapsulated in a Signature, to authenticate you. As such, PTI only ever has access to your public key(s), never to your private key. It's your responsability to keep your private key secure at all times. Having access to your private key means having access to your PTI API account. Do not share your private key  in publicly accessible areas such as GitHub, client-side code, and so forth.
+
+All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail.
+
+
+#### Generating a private/public key pair
+
+The PTI API currently only support **RSA public/private** keypairs in the **JWK** format. To generate such a key, you can run:
+
+```docker
+docker run -it --rm docker.pkg.github.com/starcard-org/pti-tools/jwk-generator:latest "$(uuidgen)" > my_pti_private_key.jwk
+```
+
+The source code for `docker.pkg.github.com/starcard-org/pti-tools/jwk-generator:latest` is available [here](https://github.com/starcard-org/pti-tools/blob/master/jwk-generator/keygen.py).
+
+?> You might need to `docker login docker.pkg.github.com` before you can run the above command.
+
+?> It's always a good idea to make sure you have the current version of a tagged container before executing it, eg, `docker pull docker.pkg.github.com/starcard-org/pti-tools/jwk-generator:latest`. The next major version of Docker after 19.03 will include a `--pull=always` option on the `docker run` command.
+
+In this snippet, `uuidgen` is used to generate a random Key ID (which is a mandatory parameter) and the generated JWK is sent to a file called `my_pti_private_key.jwk`. Keep the content of this file secure: it's your private key.
+
+The generated file contains JSON with the following structure:
+
+```json
+{
+  "kty": "RSA",
+  "kid": "00000000-3cf5-44e3-b045-2c834b30228b",
+  "d": "QSlwN0RJqvJp92fegtEJSHM3gd...",
+  "dp": "qmed8bYyHPo8FxqvpckIwnJW4nRugLT...",
+  "dq": "xfuAHO9V01d-PQREGwnLvkZzbxH5Qe_6-pTT...",
+  "e": "AQAB",
+  "n": "xoItG8q_aSjKmoE7CwB9NBFHKWpAZPsag1tK...",
+  "p": "9ILu708spPGw41_ThZeJxxf2hVlQgShFFmMuLxP...",
+  "q": "z9XnWVmCx2SDEsyXZBpvhR9X_...",
+  "qi": "sQIpHBKnhV-BMd2tjv4N3q..."
+}
+```
+
+To extract the corresponding public key, do:
+
+```docker
+docker run -it --rm -v /path_to_my_pti_private_key.jwk:/data/key.jwk docker.pkg.github.com/starcard-org/pti-tools/jwk-generator:latest "/data/key.jwk" > my_pti_public_key.jwk
+```
+
+The public key (`my_pti_public_key.jwk`) is what you'll send to PTI. You will use your private key to sign all requests that you make to the PTI API, and to decrypt messages coming in through your Webhook.
+
+#### Initial setup of your public key
+
+When first setting up your PTI account, you'll have to provide your public key to your account representative by email. Once your account is setup, you'll be able to manage your public key(s) directly using the API.
+
+#### Updating your public key
+
+TODO. `POST|DELETE /v0/clients/{clientId}/publicKeys`.
+
+#### Making signed requests
+
+Once your account is setup with your public key and you have your private key handy, you can make requests to the PTI API.
+
+Whenever you want to make a request to the PTI API, you must include your PTI Client ID in the `x-pti-client-id` header, and you must calculate a Signature and include it as the `x-pti-signature` header to your request.
+
+The Signature is calculated as such:
+
+```
+Payload = HTTP-Verb + "\n" + Content-MD5 + "\n" + Content-Type + "\n" + Date + "\n" + sorted_PtiHeaders + "\n" + Path)
+Signature = JWS(private_key, Payload)
+```
+
+Your private key is used to sign the Payload; the result of this is a JWS structure. The compact form of this structure is used as the `x-pti-signature` header content.
+
+For example, for a POST request to `/v0/users` with a body of `{"name": "Jane Doe", "id": "my_internal_id-12345678"}`, the content of Payload would be:
+
+```
+POST
+63E6F62C55553EA2AEC0DE86662A22A7
+content-type:application/json
+date:Wed, 15 Apr 2020 16:35:50 GMT
+x-pti-client-id:00000000-0000-0000-0000-000000000000
+/v0/users
+```
+
+Once signed using JWS (compact form), you get:
+
+```
+eyJhbGciOiJFZERTQSIsImNpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMCIsImNydiI6IkVkMjU1MTkiLCJraWQiOiJLWHk0SU1idEhpaXJQN2tBQXdFOXFydVQwejlNUEx3MUlCUER5dmNja3VrIn0.UE9TVAo2M0U2RjYyQzU1NTUzRUEyQUVDMERFODY2NjJBMjJBNwpjb250ZW50LXR5cGU6YXBwbGljYXRpb24vanNvbgpkYXRlOldlZCwgMTUgQXByIDIwMjAgMTY6MzU6NTAgR01UCngtcHRpLWNsaWVudC1pZDowMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDAKL3YwL3VzZXJz.CDfqOdRglnxdjBjPAow7dpX6um6bSXvJGEBeICl3VVQi1ERfstMgRlWP67YiAyLy04pqNnkMjO_DNNefKpGnBQ
+```
+
+You would then include the JWS as your Signature in the `x-pti-signature` http header of your request. You also need to include a `x-pti-client-id` http header containing your PTI Client ID.
+
+The payload for a GET request to `/v0/users/00000000-0000-0000-0000-000000000000` would look like:
+
+```
+GET
+
+
+date:Wed, 15 Apr 2020 16:35:50 GMT
+x-pti-client-id:00000000-0000-0000-0000-000000000000
+/v0/users/00000000-0000-0000-0000-000000000000
+```
+
+Note that for a GET request, `Content-MD5` and `Content-Type` are empty (but the `\n` following them are still included).
+
+?> `x-pti-signature` is never included in the Signature calculation, for obvious reasons. Any other PTI headers (currently, only `x-pti-client-id` can be used along a request using a Signature) would be included, after having sorted those headers by lexical order.
+
+
+#### Helper tool to make signed requests
+
+You can use the `docker.pkg.github.com/starcard-org/pti-tools/signed-request-maker:latest` container to make signed requests to the PTI API. It's useful as a testing and learning tool for signed requests.
+
+For example:
+
+```docker
+docker run -it --rm -v $(pwd)/my_private_key.jwk:/data/key.jwk \
+  docker.pkg.github.com/starcard-org/pti-tools/signed-request-maker:latest \
+    --clientId "00000000-0000-0000-0000-000000000000" \
+    --data '{"name": "Jane Doe", "id": "my_internal_id-12345678"}' \
+    -k /data/key.jwk --debug https://api.ptidev.xyz/v0/users
+```
+
+The source code for `docker.pkg.github.com/starcard-org/pti-tools/signed-request-maker:latest` is available [here](https://github.com/starcard-org/pti-tools/blob/master/signed-request-maker/signed_request_maker.py).
+
+#### Examples of signing a payload using JWS
+
+`TODO`
+
+## Authentication for End Users: JWT
+
+If you need your users or third parties to be able to call the PTI API on your behalf, for example for uploading a PII, you can generate a single-use JWT (JSON Web Token) restricted to that specific operation. You can then hand the token to your user/third-party. Remember, it's your responsibility to keep the token secure, as it provides (restricted) access to your PTI account.
+
+#### Generating a single-use JWT with permissions for a specific URL
+
+To generate a single-use token that can be used by one of your Users for a single request, you need to make a `POST` request to `/v0/auth/generateUserToken`. The details are explained in the [API Reference](https://starcard-org.github.io/pti-docs/api/v0/#/paths/~1auth~1userToken/post), but you need to specify the URL on which the token is to grant permission, eg, `{"url": "/v0/users/{userId}/wallets/fiat/{walletId}/funding"}`. You'll then get a JSON response containing `{"accessToken": "..."}`; the content of the `accessToken` field has to be included in the `x-pti-token` HTTP Header in the request made by your User.
+
+## Webhooks
+
+A lot of operations on the PTI API may result in asynchronous responses; for example, maybe we gathered, behind the scene, some new information about one of your Users that allowed us to have a better level of KYC on that user. When this happens, we send you that information by posting the information to your Webhook.
+
+Your webhook is a URL that you provide to PTI which accepts POST requests. The data that is posted is encrypted using your public key, and signed using PTI's private key. You can then decrypt the message using your private key, and verify that the message originated from PTI by validating the signature using PTI's public key.
+
+This mechanism insures that nobody but you can ever have access to the content of those messages, even if your Webhook was hijacked, and you can always be sure that the message originated from PTI by validating the signature of the message.
+
+### Example webhook
+
+!> This might not work as-is, still WIP.
+
+```python
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import json
+import requests
+from jwcrypto import jws, jwk
+
+class PTIWebhookRequestHandler(BaseHTTPRequestHandler):
+    def decrypt_and_verify(content):
+      # decrypt
+      jwetoken = jwe.JWE()
+      jwetoken.deserialize(content, key=private_key)
+
+      # verify
+      jwstoken.deserialize(jwetoken.payload)
+      jwstoken = jws.JWS()
+      jwstoken.deserialize(content)
+      jku = json.loads(jwstoken.objects['protected'])['jku']
+      kid = json.loads(jwstoken.objects['protected'])['kid']
+
+      #NOTE: to be certain to use a valid public key, one would have to check the
+      #      domain name and SSL certificate's Common Name against a whitelisted list
+      keys = requests.get(jku).content
+      keyset = jwk.JWKSet()
+      keyset.import_keyset(keys)
+      verification_key = keyset.get_key(kid)
+
+      jwstoken.verify(verification_key) # if there's no exception, the signature is valid
+      return jwstoken.payload
+
+    def do_POST(self):
+      content_length = int(self.headers['Content-Length'])
+      post_data = self.rfile.read(content_length)
+      decrypted_and_verified = decrypt_and_verify(post_data)
+
+      print(decrypted_and_verified) # TODO: do something useful with the decrypted payload
+
+      self.send_response(200)
+      self.send_header('Content-type', 'application/json')
+      self.end_headers()
+      self.wfile.write('{"status": "OK"}'.encode('utf-8'))
+
+with open(sys.argv[1], "rb") as private_key_file:
+    private_key = jwk.JWK.from_json(private_key_file.read())
+
+httpd = HTTPServer(('0.0.0.0', 8000), SimpleHTTPRequestHandler)
+httpd.serve_forever()
+```
+
+## Status codes and Errors
+
+PTI uses conventional HTTP response codes to indicate the success or failure of an API request. In general: Codes in the 2xx range indicate success. Codes in the 4xx range indicate an error that failed given the information provided (e.g., a required parameter was omitted, a charge failed, etc.). Codes in the 5xx range indicate an error with PTI servers (these are rare).
+
+Some 4xx errors that could be handled programmatically (e.g., the User provided is invalid) include an error code that briefly explains the error reported.
+
+| Code | Short        | Description                                                              |
+|------|--------------|--------------------------------------------------------------------------|
+| 200  | OK           | Everything worked as expected.                                           |
+| 201  | Created      | The request has been fulfilled and has resulted in one or more new resources being created.                       |
+| 202  | Accepted     |  The request has been accepted for processing, but the processing has not been completed. You *might* get a response back on your Webhook eventually.                        |
+| 400  | Bad Request  | The request was unacceptable, often due to missing a required parameter. |
+| 401  | Unauthorized | No valid Signature or Token provided.                                    |
+| 402  | Request Failed | The parameters were valid but the request failed.                                    |
+| 403  | Forbidden | The Client or the Token doesn't have permissions to perform the request.                                    |
+| 404  | Not Found | The requested resource doesn't exist.                                  |
+| 409  | Conflict | The request conflicts with another request (perhaps due to using the same idempotent key).                                    |
+| 429  | Too Many Requests | Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.                                  |
+| 5xx  | Server Errors | 	Something went wrong on PTI's end. (These are rare.)                              |
+
+
+## PTI API v0 Reference
+
+You can find the PTI API v0 Reference here: https://starcard-org.github.io/pti-docs/api/v0/
