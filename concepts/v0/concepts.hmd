@@ -142,9 +142,28 @@ The source code for `docker.pkg.github.com/starcard-org/pti-tools/signed-request
 
 If you need your users or third parties to be able to call the PTI API on your behalf, for example for uploading a PII, you can generate a single-use JWT (JSON Web Token) restricted to that specific operation. You can then hand the token to your user/third-party. Remember, it's your responsibility to keep the token secure, as it provides (restricted) access to your PTI account.
 
-#### Generating a single-use JWT with permissions for a specific URL
+### Generating a single-use JWT with permissions for a specific URL
 
 To generate a single-use token that can be used by one of your Users for a single request, you need to make a `POST` request to `/v0/auth/generateUserToken`. The details are explained in the [API Reference](https://starcard-org.github.io/pti-docs/api/v0/#/paths/~1auth~1userToken/post), but you need to specify the URL on which the token is to grant permission, eg, `{"url": "/v0/users/{userId}/wallets/fiat/{walletId}/funding"}`. You'll then get a JSON response containing `{"accessToken": "..."}`; the content of the `accessToken` field has to be included in the `x-pti-token` HTTP Header in the request made by your User.
+
+### Example flow for a Funding transaction using a User JWT
+
+
+```mermaid
+sequenceDiagram
+    Game->>+ForteBackend: GetPaymentIFrame (userId)
+    ForteBackend->>+PTI: GetUserToken (userId, url)
+    PTI->>-ForteBackend: JWT Token
+    ForteBackend->>-Game: IFrame+JWT Token
+    Game->>+PTI: POST (url, PaymentDetails, JWT Token)
+    PTI->>PTI: TransactionMonitoring
+    PTI->>Game: Ack (HTTP 201)
+    Game->>Game: Update UI?
+    PTI-X-ForteBackend: Async PaymentResult
+    ForteBackend->>Game: PaymentResult
+    Game->>Game: Update UI?
+    PTI-XForteBackend: Async KYC
+```
 
 ## Webhooks
 
@@ -225,6 +244,7 @@ Some 4xx errors that could be handled programmatically (e.g., the User provided 
 | 409  | Conflict | The request conflicts with another request (perhaps due to using the same idempotent key).                                    |
 | 429  | Too Many Requests | Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.                                  |
 | 5xx  | Server Errors | 	Something went wrong on PTI's end. (These are rare.)                              |
+
 
 
 ## PTI API v0 Reference
