@@ -175,33 +175,42 @@ This mechanism insures that nobody but you can ever have access to the content o
 
 ### Example webhook
 
-!> This might not work as-is, still WIP.
+  !> You can find the source code for the example webhook server, along with a tool to make mock requests to your webhook server, [here](https://github.com/starcard-org/pti-docs/blob/master/examples/python/webhook_server).
 
 ```python
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
 import requests
-from jwcrypto import jws, jwk
+import sys
+from jwcrypto import jws, jwk, jwe
 
 class PTIWebhookRequestHandler(BaseHTTPRequestHandler):
-    def decrypt_and_verify(content):
+    def decrypt_and_verify(self, content):
       # decrypt
       jwetoken = jwe.JWE()
-      jwetoken.deserialize(content, key=private_key)
+      jwetoken.deserialize(content, key=encryption_private_key)
+      if json.loads(jwetoken.objects['protected'])['alg'] != 'RSA-OAEP-256' or json.loads(jwetoken.objects['protected'])['enc'] != 'A256CBC-HS512':
+        raise Exception('Unsupported encryption') # we have to check those, otherwise other encryptions can be used as an attack vector
 
       # verify
-      jwstoken.deserialize(jwetoken.payload)
       jwstoken = jws.JWS()
-      jwstoken.deserialize(content)
-      jku = json.loads(jwstoken.objects['protected'])['jku']
-      kid = json.loads(jwstoken.objects['protected'])['kid']
+      jwstoken.deserialize(jwetoken.payload)
 
-      #NOTE: to be certain to use a valid public key, one would have to check the
-      #      domain name and SSL certificate's Common Name against a whitelisted list
-      keys = requests.get(jku).content
-      keyset = jwk.JWKSet()
-      keyset.import_keyset(keys)
-      verification_key = keyset.get_key(kid)
+      if signature_public_key is None:
+        jku = json.loads(jwstoken.objects['protected'])['jku']
+        kid = json.loads(jwstoken.objects['protected'])['kid']
+
+        #NOTE: to be certain to use a valid public key, one would have to check the
+        #      domain name and SSL certificate's Common Name against a whitelisted list
+        keys = requests.get(jku).content
+        keyset = jwk.JWKSet()
+        keyset.import_keyset(keys)
+        verification_key = keyset.get_key(kid)
+      else:
+        verification_key = signature_public_key
+
+      if json.loads(jwstoken.objects['protected'])['alg'] != 'RS512':
+        raise Exception('Unsupported signature algorithm') # we have to check, otherwise other algorithms can be used as an attack vector
 
       jwstoken.verify(verification_key) # if there's no exception, the signature is valid
       return jwstoken.payload
@@ -209,7 +218,7 @@ class PTIWebhookRequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
       content_length = int(self.headers['Content-Length'])
       post_data = self.rfile.read(content_length)
-      decrypted_and_verified = decrypt_and_verify(post_data)
+      decrypted_and_verified = self.decrypt_and_verify(post_data)
 
       print(decrypted_and_verified) # TODO: do something useful with the decrypted payload
 
@@ -219,9 +228,13 @@ class PTIWebhookRequestHandler(BaseHTTPRequestHandler):
       self.wfile.write('{"status": "OK"}'.encode('utf-8'))
 
 with open(sys.argv[1], "rb") as private_key_file:
-    private_key = jwk.JWK.from_json(private_key_file.read())
+    encryption_private_key = jwk.JWK.from_json(private_key_file.read())
 
-httpd = HTTPServer(('0.0.0.0', 8000), SimpleHTTPRequestHandler)
+if len(sys.argv) > 2:
+  with open(sys.argv[2], "rb") as public_key_file:
+      signature_public_key = jwk.JWK.from_json(public_key_file.read())
+
+httpd = HTTPServer(('0.0.0.0', 8000), PTIWebhookRequestHandler)
 httpd.serve_forever()
 ```
 
