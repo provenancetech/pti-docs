@@ -1,6 +1,7 @@
+import datetime
+
 from flask import Flask, render_template, send_from_directory, request, redirect, url_for
-import requests
-import os
+from datetime import datetime, timezone
 import json
 import argparse
 import logging
@@ -34,14 +35,15 @@ def create_user():
 @app.route('/token/<userId>')
 def get_token(userId):
     #we would probably verify the user's credentials here, check for time since last request, etc
-    response = make_signed_request(args.client_id, args.private_key, f'{args.pti_api_base_url}/auth/userToken', method="POST", data='{"url":"/users/' + userId + '/transactionLogs","method": "POST"}')
+    response = make_signed_request(args.client_id, args.private_key, f'{args.pti_api_base_url}/auth/userToken', method="POST", data='{"url":"/users/' + userId + '/transactions/fiat/funding","method": "POST"}')
     return response.json()['accessToken']
 
 @app.route('/transactions', defaults={'userId': ''})
 @app.route('/transactions/<userId>')
 def prepare_transaction(userId):
+    dt_string = datetime.now(timezone.utc).isoformat()
     return render_template('make_transaction.html', userId=userId, clientId=args.client_id,
-                           serverUrl=args.pti_api_base_url)
+                           serverUrl=args.pti_api_base_url, currentDate=dt_string)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():

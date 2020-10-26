@@ -126,6 +126,14 @@
               </div>
             </div>
 
+             <div class="mb-3">
+              <label for="city">City</label>
+              <input type="text" class="form-control" id="city" placeholder="San Diego" required>
+              <div class="invalid-feedback">
+                Please enter your shipping city.
+              </div>
+            </div>
+
             <div class="mb-3">
               <label for="address2">Address 2 <span class="text-muted">(Optional)</span></label>
               <input type="text" class="form-control" id="address2" placeholder="Apartment or suite">
@@ -136,7 +144,7 @@
                 <label for="country">Country</label>
                 <select class="custom-select d-block w-100" id="country" required>
                   <option value="">Choose...</option>
-                  <option selected>United States</option>
+                  <option selected>US</option>
                 </select>
                 <div class="invalid-feedback">
                   Please select a valid country.
@@ -146,7 +154,7 @@
                 <label for="state">State</label>
                 <select class="custom-select d-block w-100" id="state" required>
                   <option value="">Choose...</option>
-                  <option selected>California</option>
+                  <option selected>US-CA</option>
                 </select>
                 <div class="invalid-feedback">
                   Please provide a valid state.
@@ -169,15 +177,22 @@
               </div>
 
               <div class="col-md-3 mb-3">
-                <label for="cc-expiration">Expiration</label>
-                <input type="text" class="form-control" id="cc-expiration" placeholder="" required>
+                <label for="expirationMonth">Expiration Month</label>
+                <input type="text" class="form-control" id="expirationMonth" placeholder="" required>
                 <div class="invalid-feedback">
-                  Expiration date required
+                  Expiration month required
+                </div>
+              </div>
+             <div class="col-md-3 mb-3">
+                <label for="expirationYear">Expiration Year</label>
+                <input type="text" class="form-control" id="expirationYear" placeholder="" required>
+                <div class="invalid-feedback">
+                  Expiration year required
                 </div>
               </div>
               <div class="col-md-3 mb-3">
-                <label for="cc-expiration">CVV</label>
-                <input type="text" class="form-control" id="cc-cvv" placeholder="" required>
+                <label for="cvc">CVC</label>
+                <input type="text" class="form-control" id="cvc" placeholder="" required>
                 <div class="invalid-feedback">
                   Security code required
                 </div>
@@ -251,7 +266,21 @@
             "paymentInformation" : {
               "type": "CREDIT_CARD",
               "creditCardNumber": document.getElementById('cc-number').value,
-              "creditCardType": "visa"
+              "creditCardType": "visa",
+              "statementMessage": "pti",
+              "transactionDescription": "test 123",
+              "expirationYear": document.getElementById('expirationYear').value,
+              "expirationMonth": document.getElementById('expirationMonth').value,
+              "cvc" : document.getElementById('cvc').value,
+              "cardHolderFirstName": document.getElementById('firstName').value,
+              "cardHolderLastName": document.getElementById('lastName').value,
+              "creditCardAddress": {
+                "streetAddress": document.getElementById('address').value,
+                "city": document.getElementById('city').value,
+                "stateCode": document.getElementById('state').value,
+                "country": document.getElementById('country').value,
+                "postalCode": document.getElementById('zip').value
+              }
             },
             "paymentMethodType": "FIAT"
         },
@@ -265,14 +294,14 @@
         },
         "amount": 20,
         "type": "FUNDING",
-        "date": "2020-04-03T09:22:20.45-04:00[America/Toronto]"
+        "date": "{{currentDate}}"
         };
 
         var headers = {};
         headers["content-type"] = 'application/json';
         headers["x-pti-client-id"] = "{{clientId}}";
         headers["x-pti-token"] = token;
-        fetch('{{ serverUrl }}' + '/users/' + document.getElementById('username').value + '/transactionLogs', {
+        fetch('{{ serverUrl }}' + '/users/' + document.getElementById('username').value + '/transactions/fiat/funding', {
           method:"POST",
           headers:headers,
           body: JSON.stringify(transaction)

@@ -54,5 +54,5 @@ if len(sys.argv) > 2:
   with open(sys.argv[2], "rb") as public_key_file:
       signature_public_key = jwk.JWK.from_json(public_key_file.read())
 
-httpd = HTTPServer(('0.0.0.0', 8000), PTIWebhookRequestHandler)
+httpd = HTTPServer(('0.0.0.0', 8005), PTIWebhookRequestHandler)
 httpd.serve_forever()
