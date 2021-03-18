@@ -19,7 +19,6 @@ app = Flask('example_passthrough', static_url_path='')
 def generate_token():
     payload = request.get_json()
     logging.info(payload)
-    logging.info(payload['x-pti-token-payload'])
     response = make_signed_request(args.client_id, args.private_key, f'{args.pti_api_base_url}/auth/userToken', method="POST", data=str(payload['x-pti-token-payload']))
     logging.info(response)
     return response.json()['accessToken']
