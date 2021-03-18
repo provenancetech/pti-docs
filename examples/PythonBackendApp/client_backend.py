@@ -13,7 +13,7 @@ p.add_argument('-u', '--pti-api-base-url', help='PTI API base URL', **environ_or
 args = p.parse_args()
 set_logging_level(args.log_level)
 
-app = Flask('example_passthrough', static_url_path='', static_folder='web/static', template_folder='web/templates')
+app = Flask('example_passthrough', static_url_path='')
 
 @app.route('/generateToken', methods=['POST'])
 def generate_token():
