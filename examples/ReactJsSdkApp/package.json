@@ -14,6 +14,7 @@
     "react": "latest",
     "react-dom": "latest",
     "react-scripts": "latest",
+    "socket.io-client": "^4.0.0",
     "uuid": "^8.3.2"
   },
   "browserslist": {
@@ -28,5 +29,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:8000"
+  "proxy": "http://localhost:5000"
 }
