@@ -40,7 +40,7 @@ def webhook():
     json_payload = json.loads(payload)
     if type(json_payload) is str:
         json_payload = json.loads(json_payload)
-    logging.warning(f'Payload:\n{json_payload})
+    logging.warning(f'Payload:\n{json_payload}')
     logging.warning('Successfully decrypted and verified payload')
     socketio.emit(json_payload['requestId'], {'data': 'OK'})
     return '', 204
