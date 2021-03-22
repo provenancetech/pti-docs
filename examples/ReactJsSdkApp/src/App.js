@@ -10,6 +10,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import {v4 as uuidv4} from 'uuid';
 import io from "socket.io-client";
+import {DialogActions} from "@material-ui/core";
 
 function Copyright() {
     return (
@@ -72,6 +73,8 @@ export default function App() {
     const [userId, setUserId] = React.useState("9db9738d-1b41-4fd8-8536-319be308d9f2");
     const [requestId, setRequestId] = React.useState(uuidv4());
     const [amount, setAmount] = React.useState('' + Math.round(Math.random() * 100) + '.' + Math.round(Math.random() * 100));
+    const [okDialog, setOkDialog] = React.useState(false);
+    const [errorDialog, setErrorDialog] = React.useState(false);
 
     let socket = io.connect("http://localhost:5000");
 
@@ -80,24 +83,29 @@ export default function App() {
             console.log(msg);
             setKycOpen(false);
             setPaymentOpen(false);
+            switch (msg.resourceType) {
+                case 'TRANSACTION_MONITORING':
+                    if (msg.status !== 'ACCEPT') {
+                        setOkDialog(false);
+                        setErrorDialog(true);
+                    }
+                    break;
+                case 'PAYMENT_PROCESSOR':
+                    if (msg.status !== 'AUTHORIZED') {
+                        setOkDialog(false);
+                        setErrorDialog(true);
+                    } else {
+                        setErrorDialog(false);
+                        setOkDialog(true);
+                    }
+                    break;
+            }
         });
     }, [requestId])
 
-    const handlePayment = () => {
-        setPaymentOpen(true);
-    };
+    const closeOkDialog = () => setOkDialog(false);
 
-    const handleKyc = () => {
-        setKycOpen(true);
-    };
-
-    const handlePaymentCallback = () => {
-        setPaymentOpen(false);
-    };
-
-    const handleKycCallback = () => {
-        setKycOpen(false);
-    };
+    const closeErrorDialog = () => setErrorDialog(false);
 
     return (
         <Container>
@@ -112,14 +120,38 @@ export default function App() {
                 <TextField id={"amount"} value={amount} onChange={(e) => setAmount(e.target.value)} label={'Amount'}
                            fullWidth={true}/>
                 <br/><br/>
-                <Button variant="contained" onClick={handlePayment} fullWidth={true}>Open Payment
+                <Button variant="contained" onClick={() => setPaymentOpen(true)} fullWidth={true}>Open Payment
                     Form</Button><br/><br/>
-                <Button variant="contained" onClick={handleKyc} fullWidth={true}>Open KYC Form</Button>
+                <Button variant="contained" onClick={() => setKycOpen(true)} fullWidth={true}>Open KYC Form</Button>
                 <br/>
                 <Copyright/>
             </Box>
-            <SimpleDialog open={paymentOpen} callback={handlePaymentCallback} type="FIAT_FUNDING" userId={userId} amount={amount} requestId={requestId} />
-            <SimpleDialog open={kycOpen} callback={handleKycCallback} type="KYC" userId={userId} requestId={requestId} />
+            <SimpleDialog open={paymentOpen} callback={() => setPaymentOpen(false)} type="FIAT_FUNDING" userId={userId}
+                          amount={amount} requestId={requestId}/>
+            <SimpleDialog open={kycOpen} callback={() => setKycOpen(false)} type="KYC" userId={userId}
+                          requestId={requestId}/>
+            <Dialog open={okDialog} onClose={closeOkDialog}>
+                <DialogTitle onClose={closeOkDialog}>All Good !</DialogTitle>
+                <DialogContent>
+                    <img src={"https://media.giphy.com/media/cOiXP74b6IDkpzb3Q7/giphy.gif"} alt={"All Good !"}/>
+                </DialogContent>
+                <DialogActions>
+                    <Button autoFocus onClick={closeOkDialog} color="primary">
+                        Ok
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog open={errorDialog} onClose={closeErrorDialog}>
+                <DialogTitle onClose={closeErrorDialog}>Nope</DialogTitle>
+                <DialogContent>
+                    <img src={"https://media.giphy.com/media/FEikw3bXVHdMk/giphy.gif"} alt={"Nope"}/>
+                </DialogContent>
+                <DialogActions>
+                    <Button autoFocus onClick={closeErrorDialog} color="primary">
+                        Ok
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 }

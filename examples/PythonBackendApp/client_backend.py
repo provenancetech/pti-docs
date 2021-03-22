@@ -42,7 +42,7 @@ def webhook():
         json_payload = json.loads(json_payload)
     logging.warning(f'Payload:\n{json_payload}')
     logging.warning('Successfully decrypted and verified payload')
-    socketio.emit(json_payload['requestId'], {'data': 'OK'})
+    socketio.emit(json_payload['requestId'], json_payload)
     return '', 204
 
 def run_server():
