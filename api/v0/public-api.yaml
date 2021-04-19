@@ -46,64 +46,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
-  '/clients/{clientId}':
-    parameters:
-      - name: clientId
-        schema:
-          type: string
-          format: uuid
-          pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
-          maxLength: 40
-        in: path
-        required: true
-    get:
-      summary: Get a specific Client
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/client'
-        '404':
-          description: Client not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-    put:
-      summary: Modify client information
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/client'
-      responses:
-        '200':
-          description: Successfully updated the client
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/client'
-        '400':
-          description: Client missing required fields
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
   /users:
     get:
       summary: Get a list of users
@@ -218,55 +160,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
-    delete:
-      summary: Deactivate a specific user (soft delete)
-      responses:
-        '204':
-          description: OK
-        '404':
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-  '/users/{userId}/kycs':
-    parameters:
-      - name: userId
-        schema:
-          type: string
-          pattern: '^[a-z0-9_-]{3,255}$'
-          maxLength: 255
-        in: path
-        required: true
-    get:
-      summary: Get a list of KYCs for a specific user
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/objectReference'
-        '404':
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
   '/users/{userId}/kyc':
     parameters:
       - name: userId
@@ -338,43 +231,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
-  '/users/{userId}/kycs/{requestId}':
-    parameters:
-      - name: userId
-        schema:
-          type: string
-          pattern: '^[a-z0-9_-]{3,255}$'
-          maxLength: 255
-        in: path
-        required: true
-      - name: requestId
-        schema:
-          type: string
-          pattern: '^[a-z0-9_-]{3,40}$'
-          maxLength: 40
-        in: path
-        required: true
-    get:
-      summary: Get a specific KYC for a specific User
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/kyc'
-        '404':
-          description: User or KYC not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
   '/users/{userId}/transactionLogs':
     parameters:
       - name: userId
@@ -384,29 +240,6 @@ paths:
           maxLength: 255
         in: path
         required: true
-    get:
-      summary: Get a list of Transaction Log for a specific User
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/objectReference'
-        '404':
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
     post:
       summary: Log a transaction
       parameters:
@@ -493,181 +326,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
-  '/users/{userId}/wallets':
-    parameters:
-      - name: userId
-        schema:
-          type: string
-          pattern: '^[a-z0-9_-]{3,255}$'
-          maxLength: 255
-        in: path
-        required: true
-    post:
-      summary: Create a user wallet
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/oneOfWalletSubTypes'
-      responses:
-        '201':
-          description: Successfully added wallet
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/objectReference'
-        '400':
-          description: Missing required fields on Wallet
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '409':
-          description: Wallet already exist
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-    get:
-      summary: Get a list of wallets for a specific user
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/objectReference'
-        '404':
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-  '/users/{userId}/wallets/{walletId}':
-    parameters:
-      - name: userId
-        schema:
-          type: string
-          pattern: '^[a-z0-9_-]{3,255}$'
-          maxLength: 255
-        in: path
-        required: true
-      - name: walletId
-        schema:
-          type: string
-          format: uuid
-          pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
-          maxLength: 40
-        in: path
-        required: true
-    get:
-      summary: Get information about wallet
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/oneOfWalletSubTypes'
-        '404':
-          description: User or wallet not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-  '/users/{userId}/wallets/fiat/{walletId}/funding':
-    parameters:
-      - name: userId
-        schema:
-          type: string
-          pattern: '^[a-z0-9_-]{3,255}$'
-          maxLength: 255
-        in: path
-        required: true
-      - name: walletId
-        schema:
-          type: string
-          format: uuid
-          pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
-          maxLength: 40
-        in: path
-        required: true
-    post:
-      summary: Execute a fiat deposit
-      parameters:
-        - name: x-pti-request-id
-          schema:
-            type: string
-            pattern: '^[a-z0-9_-]{3,255}$'
-            maxLength: 255
-          in: header
-          required: true
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/fiatFundingTransaction'
-      responses:
-        '201':
-          description: Successfully performed the transaction
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/objectReference'
-        '400':
-          description: 'Missing required fields on Transaction, invalid operation'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '404':
-          description: User or wallet not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '406':
-          description: >-
-            More information about the User is needed in order to approve the
-            transaction.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/inputRequest'
-        '501':
-          description: operation not implemented
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
+
   '/users/{userId}/transactions/fiat/funding':
     parameters:
       - name: userId
@@ -917,8 +576,12 @@ components:
         - $ref: '#/components/schemas/paymentInformation'
       properties:
         cseInformations:
+          type: object
+          additionalProperties:
+            type: string
+        creditCardLast4:
           type: string
-          pattern: '.*'
+          pattern: '\d{4}'
         creditCardNumberHash:
           type: string
           pattern: '.*'
