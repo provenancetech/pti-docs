@@ -28,6 +28,9 @@ def generate_token():
     json_data = json.dumps(payload['x-pti-token-payload'])
     response = make_signed_request(args.client_id, args.private_key, f'{args.pti_api_base_url}/auth/userToken',
                                    method="POST", data=json_data)
+    if response.status_code != 200:
+        return '', response.status_code
+
     return response.json()
 
 @app.route('/webhook', methods=['POST'])
