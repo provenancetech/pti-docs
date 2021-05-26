@@ -1,16 +1,30 @@
-Install all the dependencies of this REACT application with `yarn install` 
+# React JS SDK App
 
-Start the client with `yarn start`
+## Dependencies
 
-Then you need a backend to generate the tokens.
+### Backend App
 
-Use the project `PythonBackendApp`, start it like that :
+This is a frontend client that uses the [Python Backend App](../PythonBackendApp) as its backend. Make sure the [Python Backend App](../PythonBackendApp) is running before running the React JS SDK App.
+
+### Node modules
+
+Before starting this client, install its dependencies:
 
 ```
-python3 client_backend.py -sk <path to private key> -pk <PTI public key> -c <client id i.e. be623155-18f7-40fc-99ed-27660c14e513>
+yarn
 ```
 
-Then you can trigger the popup closure with a curl request on the backend, like this :
+## Start
+
+Start the client with:
+
+```
+yarn start
+```
+
+## Usage
+
+You can trigger the popup closure with a `curl` request on the backend, like this:
 
 ```
 curl -X POST -d '{"requestId":"<id of the request>"}' http://localhost:5000/webhook
