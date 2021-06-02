@@ -1,9 +1,14 @@
 import './App.css';
 
-import {useEffect, useState} from "react";
-import {API, graphqlOperation} from 'aws-amplify';
+import {useState} from "react";
 import {Amplify} from "aws-amplify";
 import {AmplifyAuthenticator, AmplifySignOut} from "@aws-amplify/ui-react";
+import Clients from "./Clients";
+import Users from "./Users";
+import Kyc from "./Kyc";
+import Payment from "./Payment";
+import KycClient from "./KycClient";
+import PaymentClient from "./PaymentClient";
 
 const myAppConfig = {
     'aws_appsync_graphqlEndpoint': 'https://vnqiw6etffbejgojqldvmenalu.appsync-api.us-west-2.amazonaws.com/graphql',
@@ -20,117 +25,45 @@ const myAppConfig = {
 
 Amplify.configure(myAppConfig);
 
-const listClients = `
-  query getClient { 
-    getClients { 
-      country_code id name state_code
-    }
-  }
-`
-
-const listUsers = `
-query ($client_id: ID!, $offset: Int!, $limit: Int!) {
-  getPagedUsersByClient(limit: $limit, offset: $offset, client_id: $client_id) {
-    client_id
-    external_id
-    id
-    name {
-      first_name
-      last_name
-      middle_name
-    }
-    default_address {
-      postal_code
-      city
-      country
-      street_address
-      state_code
-    }
-    default_phone_number
-    default_email_address
-  }
-} 
-`
-
 function App() {
-    const [clients, setClients] = useState([])
-    const [users, setUsers] = useState([])
-    const [offset, setOffset] = useState(0)
-    const [currentClientId, setCurrentClientId] = useState("")
-    const pageSize = 5
+    const [client, setClient] = useState(null)
+    const [user, setUser] = useState(null)
+    const [showKyc, setShowKyc] = useState(false)
+    const [showUsers, setShowUsers] = useState(false)
+    const [showKycClient, setShowKycClient] = useState(false)
+    const [showTransaction, setShowTransaction] = useState(false)
+    const [showPaymentClient, setShowPaymentClient] = useState(false)
 
-    useEffect(() => {
-        const refreshCurrentClientUsers = () => {
-            if (currentClientId === "") {
-                return;
-            }
-            console.log("refreshCurrentClientUsers", currentClientId, offset, pageSize);
-            API.graphql(graphqlOperation(listUsers, {
-                client_id: currentClientId,
-                offset: offset,
-                limit: pageSize
-            })).then((obj) => {
-                setUsers(obj.data.getPagedUsersByClient);
-            }).catch(e => {
-                console.log(e);
-            });
+    const clientAction = (action) => {
+        setClient(action.client);
+        if (action.type === 'user') {
+            setShowUsers(true);
+        } else if (action.type === 'kyc') {
+            setShowKycClient(true);
+        } else if (action.type === 'payment') {
+            setShowPaymentClient(true);
         }
-
-        refreshCurrentClientUsers();
-    }, [currentClientId, offset])
-
-    const refresh = () => {
-        API.graphql(graphqlOperation(listClients)).then((obj) => {
-            setClients(obj.data.getClients);
-        }).catch(e => {
-            console.log(e);
-        });
     }
 
-    const refreshUsers = (clientId) => {
-        console.log("Setting clientId to ", clientId);
-        setCurrentClientId(clientId);
-        setOffset(0);
-    }
-
-    const previousUsers = () => {
-        setOffset(offset - pageSize);
-    }
-
-    const nextUsers = () => {
-        setOffset(offset + pageSize);
+    const userAction = (action) => {
+        setUser(action.user);
+        if (action.type === 'kyc') {
+            setShowKyc(true);
+        } else if (action.type === 'payment') {
+            setShowTransaction(true);
+        }
     }
 
     return (
         <AmplifyAuthenticator>
-            <div className="App">
-                <AmplifySignOut/>
-                <h1>Clients</h1>
-                <button onClick={refresh}>Refresh Client List</button>
-                {
-                    clients.map(client =>
-                        <div key={client.id}>
-                            <p>{client.id}</p>
-                            <p>{client.name}</p>
-                            <button onClick={() => refreshUsers(client.id)}>Refresh User List</button>
-                            <hr/>
-                        </div>
-                    )
-                }
-                <h1>Users</h1>
-                {
-                    users.map(user =>
-                        <div key={user.id}>
-                            <p>{user.id} / {user.name.first_name} / {user.name.last_name}</p>
-                        </div>
-                    )
-                }
-                {users.length > 0 &&
-                <div>
-                    <button onClick={previousUsers}>Previous</button>
-                    <button onClick={nextUsers}>Next</button>
-                </div>
-                }
+            <AmplifySignOut />
+            <div className={'container'} style={{width: '90%'}}>
+                {!client && <Clients callback={clientAction}/>}
+                {showUsers && <Users client={client} callback={userAction}/>}
+                {showKyc && <Kyc user={user}/>}
+                {showKycClient && <KycClient client={client}/>}
+                {showTransaction && <Payment user={user}/>}
+                {showPaymentClient && <PaymentClient client={client}/>}
             </div>
         </AmplifyAuthenticator>
     );
