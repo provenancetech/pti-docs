@@ -57,7 +57,7 @@ function App() {
     return (
         <AmplifyAuthenticator>
             <AmplifySignOut />
-            <div className={'container'} style={{width: '90%'}}>
+            <div className={'container'} style={{width: '95%'}}>
                 {!client && <Clients callback={clientAction}/>}
                 {showUsers && <Users client={client} callback={userAction}/>}
                 {showKyc && <Kyc user={user}/>}
