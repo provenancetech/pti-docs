@@ -3,12 +3,19 @@ import './App.css';
 import {useEffect, useState} from "react";
 import {API, graphqlOperation} from 'aws-amplify';
 import {Amplify} from "aws-amplify";
+import {AmplifyAuthenticator, AmplifySignOut} from "@aws-amplify/ui-react";
 
 const myAppConfig = {
     'aws_appsync_graphqlEndpoint': 'https://vnqiw6etffbejgojqldvmenalu.appsync-api.us-west-2.amazonaws.com/graphql',
     'aws_appsync_region': 'us-west-2',
-    'aws_appsync_authenticationType': 'API_KEY',
-    'aws_appsync_apiKey': 'da2-vc7fmj25jndzbowqg4tb7qrfki'
+    'aws_appsync_authenticationType': 'AMAZON_COGNITO_USER_POOLS',
+    // 'aws_appsync_authenticationType': 'API_KEY',
+    // 'aws_appsync_apiKey': 'da2-vc7fmj25jndzbowqg4tb7qrfki',
+    Auth:{
+        userPoolId: 'us-west-2_xXTCPUN7r',
+        region: 'us-west-2',
+        userPoolWebClientId: '23f0kr69tmkg3jp0ikpu6ths79'
+    }
 }
 
 Amplify.configure(myAppConfig);
@@ -53,6 +60,22 @@ function App() {
     const pageSize = 5
 
     useEffect(() => {
+        const refreshCurrentClientUsers = () => {
+            if (currentClientId === "") {
+                return;
+            }
+            console.log("refreshCurrentClientUsers", currentClientId, offset, pageSize);
+            API.graphql(graphqlOperation(listUsers, {
+                client_id: currentClientId,
+                offset: offset,
+                limit: pageSize
+            })).then((obj) => {
+                setUsers(obj.data.getPagedUsersByClient);
+            }).catch(e => {
+                console.log(e);
+            });
+        }
+
         refreshCurrentClientUsers();
     }, [currentClientId, offset])
 
@@ -65,21 +88,9 @@ function App() {
     }
 
     const refreshUsers = (clientId) => {
-        console.log("Setting clientId to ",clientId);
+        console.log("Setting clientId to ", clientId);
         setCurrentClientId(clientId);
         setOffset(0);
-    }
-
-    const refreshCurrentClientUsers = () => {
-        if (currentClientId === "") {
-            return;
-        }
-        console.log("refreshCurrentClientUsers", currentClientId, offset, pageSize);
-        API.graphql(graphqlOperation(listUsers, {client_id: currentClientId, offset: offset, limit: pageSize})).then((obj) => {
-            setUsers(obj.data.getPagedUsersByClient);
-        }).catch(e => {
-            console.log(e);
-        });
     }
 
     const previousUsers = () => {
@@ -91,34 +102,37 @@ function App() {
     }
 
     return (
-        <div className="App">
-            <h1>Clients</h1>
-            <button onClick={refresh}>Refresh Client List</button>
-            {
-                clients.map(client =>
-                    <div key={client.id}>
-                        <p>{client.id}</p>
-                        <p>{client.name}</p>
-                        <button onClick={() => refreshUsers(client.id)}>Refresh User List</button>
-                        <hr/>
-                    </div>
-                )
-            }
-            <h1>Users</h1>
-            {
-                users.map(user =>
-                    <div key={user.id}>
-                        <p>{user.id} / {user.name.first_name} / {user.name.last_name}</p>
-                    </div>
-                )
-            }
-            {users.length > 0 &&
+        <AmplifyAuthenticator>
+            <div className="App">
+                <AmplifySignOut/>
+                <h1>Clients</h1>
+                <button onClick={refresh}>Refresh Client List</button>
+                {
+                    clients.map(client =>
+                        <div key={client.id}>
+                            <p>{client.id}</p>
+                            <p>{client.name}</p>
+                            <button onClick={() => refreshUsers(client.id)}>Refresh User List</button>
+                            <hr/>
+                        </div>
+                    )
+                }
+                <h1>Users</h1>
+                {
+                    users.map(user =>
+                        <div key={user.id}>
+                            <p>{user.id} / {user.name.first_name} / {user.name.last_name}</p>
+                        </div>
+                    )
+                }
+                {users.length > 0 &&
                 <div>
                     <button onClick={previousUsers}>Previous</button>
                     <button onClick={nextUsers}>Next</button>
                 </div>
-            }
-        </div>
+                }
+            </div>
+        </AmplifyAuthenticator>
     );
 }
 
