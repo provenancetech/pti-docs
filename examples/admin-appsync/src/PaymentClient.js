@@ -64,7 +64,6 @@ const PaymentClient = (props) => {
                                 <tr onClick={() => setPayment(payment)} key={payment.request_id}>
                                     <td>{payment.transactionType}</td>
                                     <td>{DateTime.fromSeconds(payment.date).toISO()}</td>
-                                    {/*<td>{DateTime.fromISO(new Date(payment.date * 1000).toString())}</td>*/}
                                     <td>{payment.amount}</td>
                                     <td>{payment.status}</td>
                                 </tr>
