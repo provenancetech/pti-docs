@@ -91,7 +91,9 @@ const KycClient = (props) => {
                             </div>
                             <div className={'row'}>
                                 <div className={'col s3'} style={{fontWeight: 'bold'}}>LogData:</div>
-                                <div className={'col s9'}>{kyc && JSON.stringify(JSON.parse(kyc.log_data), null, 2)}</div>
+                            </div>
+                            <div className={'row'}>
+                                <div className={'col s12'}><pre>{kyc && JSON.stringify(JSON.parse(kyc.log_data), null, 2)}</pre></div>
                             </div>
                         </div>
                     </div>
