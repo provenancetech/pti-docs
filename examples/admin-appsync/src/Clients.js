@@ -49,6 +49,7 @@ const Clients = (props) => {
                                 <button className={'waves-effect waves-light btn'} onClick={() => props.callback({type:'user',client:client})}>Show Users</button>&nbsp;
                                 <button className={'waves-effect waves-light btn'} onClick={() => props.callback({type:'kyc',client:client})}>Show Kyc's</button>&nbsp;
                                 <button className={'waves-effect waves-light btn'} onClick={() => props.callback({type:'payment',client:client})}>Show Payments</button>&nbsp;
+                                <button className={'waves-effect waves-light btn'} onClick={() => props.callback({type:'monitoring',client:client})}>Show Transaction Monitoring</button>&nbsp;
                             </div>
                         </div>
                     </div>

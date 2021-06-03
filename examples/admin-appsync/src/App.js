@@ -9,6 +9,7 @@ import Kyc from "./Kyc";
 import Payment from "./Payment";
 import KycClient from "./KycClient";
 import PaymentClient from "./PaymentClient";
+import MonitoringClient from "./MonitoringClient";
 
 const myAppConfig = {
     'aws_appsync_graphqlEndpoint': 'https://vnqiw6etffbejgojqldvmenalu.appsync-api.us-west-2.amazonaws.com/graphql',
@@ -33,6 +34,7 @@ function App() {
     const [showKycClient, setShowKycClient] = useState(false)
     const [showTransaction, setShowTransaction] = useState(false)
     const [showPaymentClient, setShowPaymentClient] = useState(false)
+    const [showMonitoringClient, setShowMonitoringClient] = useState(false)
 
     const clientAction = (action) => {
         setClient(action.client);
@@ -42,6 +44,8 @@ function App() {
             setShowKycClient(true);
         } else if (action.type === 'payment') {
             setShowPaymentClient(true);
+        } else if (action.type === 'monitoring') {
+            setShowMonitoringClient(true);
         }
     }
 
@@ -64,6 +68,7 @@ function App() {
                 {showKycClient && <KycClient client={client}/>}
                 {showTransaction && <Payment user={user}/>}
                 {showPaymentClient && <PaymentClient client={client}/>}
+                {showMonitoringClient && <MonitoringClient client={client}/>}
             </div>
         </AmplifyAuthenticator>
     );
