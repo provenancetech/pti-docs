@@ -1,6 +1,19 @@
 import {useEffect, useState} from "react";
 import {API, graphqlOperation} from "aws-amplify";
 import {DateTime} from "luxon";
+import {
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer, TableFooter,
+    TableHead,
+    TablePagination,
+    TableRow
+} from "@material-ui/core";
+import UserSummary from "./UserSummary";
+import RefreshIcon from '@material-ui/icons/Refresh';
+import ToggleButton from '@material-ui/lab/ToggleButton';
 
 const listPayments = `
 query ($client_id: ID!, $offset: Int!, $limit: Int!) {
@@ -28,105 +41,102 @@ query ($client_id: ID!, $offset: Int!, $limit: Int!) {
 
 const PaymentClient = (props) => {
     const [payments, setPayments] = useState([]);
-    const [payment, setPayment] = useState(null);
+    const [userId, setUserId] = useState(null);
     const [offset, setOffset] = useState(0);
-    const pageSize = 12;
+    const [requestId, setRequestId] = useState('');
+    const [pageSize, setPageSize] = useState(25);
+    const [autoRefresh, setAutoRefresh] = useState(false);
+    const [timer, setTimer] = useState(null);
+    const [lastUpdate, setLastUpdate] = useState(DateTime.now());
 
     useEffect(() => {
+        console.log("Getting payments !");
         API.graphql(graphqlOperation(listPayments, {
             client_id: props.client.id,
-            offset: offset,
+            offset: offset * pageSize,
             limit: pageSize
         })).then((obj) => {
             setPayments(obj.data.getPagedPaymentsByClient);
         }).catch(e => {
             console.log(e);
         });
-    }, [props.client, offset])
+    }, [props.client, offset, pageSize, lastUpdate])
+
+    const setTimerFunc = () => {
+        setLastUpdate(DateTime.now());
+        setTimer(setTimeout(setTimerFunc, 10000));
+    }
+
+    const toggleAutoRefresh = () => {
+        setAutoRefresh(!autoRefresh);
+        if (timer == null) {
+            setTimerFunc();
+        } else {
+            clearTimeout(timer);
+            setTimer(null);
+        }
+    }
 
     return (
         <div>
-            <h1>Payments for client {props.client.name}</h1>
-            <div className={'row'}>
-                <div className={'col s6'}>
-                    <table className={'highlight'}>
-                        <thead>
-                        <tr>
-                            <th>TransactionType</th>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {
-                            payments.map(payment =>
-                                <tr onClick={() => setPayment(payment)} key={payment.request_id}>
-                                    <td>{payment.transactionType}</td>
-                                    <td>{DateTime.fromSeconds(payment.date).toISO()}</td>
-                                    <td>{payment.amount}</td>
-                                    <td>{payment.status}</td>
-                                </tr>
-                            )
-                        }
-                        </tbody>
-                    </table>
-                    <div style={{textAlign: 'center', padding: '10px'}}>
-                        <button className={'waves-effect waves-light btn'}
-                                onClick={() => setOffset(offset - pageSize)}>Previous
-                        </button>
-                        &nbsp;
-                        <button className={'waves-effect waves-light btn'}
-                                onClick={() => setOffset(offset + pageSize)}>Next
-                        </button>
-                    </div>
-                </div>
-                <div className={'col s6'}>
-                    <div className={'card'}>
-                        <div className={'card-content'}>
-                            <span className={'card-title'}>Payment Details</span>
-                            <div className={'row'}>
-                                <div className={'col s3'} style={{fontWeight: 'bold'}}>UserId:</div>
-                                <div className={'col s9'}>{payment && payment.user_id}</div>
-                            </div>
-                            <div className={'row'}>
-                                <div className={'col s3'} style={{fontWeight: 'bold'}}>RequestId:</div>
-                                <div className={'col s9'}>{payment && payment.request_id}</div>
-                            </div>
-                            <div className={'row'}>
-                                <div className={'col s3'} style={{fontWeight: 'bold'}}>TransactionType:</div>
-                                <div className={'col s9'}>{payment && payment.transactionType}</div>
-                            </div>
-                            <div className={'row'}>
-                                <div className={'col s3'} style={{fontWeight: 'bold'}}>Date:</div>
-                                <div className={'col s9'}>{payment && DateTime.fromSeconds(payment.date).toISO()}</div>
-                            </div>
-                            <div className={'row'}>
-                                <div className={'col s3'} style={{fontWeight: 'bold'}}>Amount:</div>
-                                <div className={'col s9'}>{payment && payment.amount}</div>
-                            </div>
-                            <div className={'row'}>
-                                <div className={'col s3'} style={{fontWeight: 'bold'}}>Fees:</div>
-                                <div className={'col s9'}>{payment && payment.fees}</div>
-                            </div>
-                            <div className={'row'}>
-                                <div className={'col s3'} style={{fontWeight: 'bold'}}>TotalAmount:</div>
-                                <div className={'col s9'}>{payment && payment.totalAmount}</div>
-                            </div>
-                            <div className={'row'}>
-                                <div className={'col s3'} style={{fontWeight: 'bold'}}>Status:</div>
-                                <div className={'col s9'}>{payment && payment.status}</div>
-                            </div>
-                            <div className={'row'}>
-                                <div className={'col s3'} style={{fontWeight: 'bold'}}>LogData:</div>
-                            </div>
-                            <div className={'row'}>
-                                <div className={'col s12'} style={{overflow:'scroll'}}><pre>{payment && JSON.stringify(JSON.parse(payment.transaction_log_data), null, 2)}</pre></div>
-                            </div>
-                        </div>
-                    </div>
+            <div style={{display: 'flex', alignItems:'center', marginLeft: '10px'}}>
+                <h1>Payments for client {props.client.name}</h1>
+                <span style={{flexGrow: 1}}/>
+                <div style={{verticalAlign: 'middle', marginRight: '10px'}}>Last Update: {lastUpdate.toISO()}</div>
+                <div style={{marginRight: '10px'}}>
+                    <ToggleButton selected={autoRefresh} onClick={toggleAutoRefresh}
+                                  value={'autoRefresh'}><RefreshIcon/></ToggleButton>
                 </div>
             </div>
+            <TableContainer component={Paper}>
+                <Table size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>FullName</TableCell>
+                            <TableCell>Emails</TableCell>
+                            <TableCell>TransactionType</TableCell>
+                            <TableCell>Date</TableCell>
+                            <TableCell>Amount</TableCell>
+                            <TableCell>CreditCard</TableCell>
+                            <TableCell>Status</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {
+                            payments.map(payment => {
+                                const initiator = JSON.parse(payment.transaction_log_data).initiator;
+
+                                return (
+                                    <TableRow key={payment.request_id} onClick={() => setRequestId(payment.request_id)}
+                                              selected={requestId === payment.request_id}
+                                              onDoubleClick={() => setUserId(payment.user_id)}
+                                    >
+                                        <TableCell>{initiator.name.firstName} {initiator.name.lastName}</TableCell>
+                                        <TableCell>{initiator.emails.map(emailObj => emailObj.emailAddress).join('<br/>')}</TableCell>
+                                        <TableCell>{payment.transactionType}</TableCell>
+                                        <TableCell>{DateTime.fromSeconds(payment.date).toISO()}</TableCell>
+                                        <TableCell>{payment.amount}</TableCell>
+                                        <TableCell>{payment['sourceMethod']['creditCard'].first_6 + '...' + payment.sourceMethod.creditCard.last_4}</TableCell>
+                                        <TableCell>{payment.status}</TableCell>
+                                    </TableRow>
+                                )
+                                }
+                            )
+                        }
+                    </TableBody>
+                    <TableFooter>
+                        <TableRow>
+                            <TablePagination count={-1} onChangePage={(e, p) => setOffset(p)} page={offset}
+                                             rowsPerPage={pageSize} rowsPerPageOptions={[10, 25, 50]}
+                                             onChangeRowsPerPage={(e) => {
+                                                 setPageSize(parseInt(e.target.value));
+                                                 setOffset(0);
+                                             }}/>
+                        </TableRow>
+                    </TableFooter>
+                </Table>
+            </TableContainer>
+            <UserSummary userId={userId} onClose={() => setUserId(null)}/>
         </div>
     )
 }

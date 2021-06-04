@@ -4,12 +4,10 @@ import {useState} from "react";
 import {Amplify} from "aws-amplify";
 import {AmplifyAuthenticator, AmplifySignOut} from "@aws-amplify/ui-react";
 import Clients from "./Clients";
-import Users from "./Users";
-import Kyc from "./Kyc";
-import Payment from "./Payment";
-import KycClient from "./KycClient";
 import PaymentClient from "./PaymentClient";
-import MonitoringClient from "./MonitoringClient";
+import UserSearch from "./UserSearch";
+import {Breadcrumbs, Chip} from "@material-ui/core";
+import HomeIcon from '@material-ui/icons/Home';
 
 const myAppConfig = {
     'aws_appsync_graphqlEndpoint': 'https://vnqiw6etffbejgojqldvmenalu.appsync-api.us-west-2.amazonaws.com/graphql',
@@ -28,47 +26,34 @@ Amplify.configure(myAppConfig);
 
 function App() {
     const [client, setClient] = useState(null)
-    const [user, setUser] = useState(null)
-    const [showKyc, setShowKyc] = useState(false)
-    const [showUsers, setShowUsers] = useState(false)
-    const [showKycClient, setShowKycClient] = useState(false)
-    const [showTransaction, setShowTransaction] = useState(false)
     const [showPaymentClient, setShowPaymentClient] = useState(false)
-    const [showMonitoringClient, setShowMonitoringClient] = useState(false)
+    const [showUserSearch, setShowUserSearch] = useState(false)
 
     const clientAction = (action) => {
         setClient(action.client);
-        if (action.type === 'user') {
-            setShowUsers(true);
-        } else if (action.type === 'kyc') {
-            setShowKycClient(true);
-        } else if (action.type === 'payment') {
+        if (action.type === 'payment') {
             setShowPaymentClient(true);
-        } else if (action.type === 'monitoring') {
-            setShowMonitoringClient(true);
+        } else if (action.type === 'search') {
+            setShowUserSearch(true);
         }
     }
 
-    const userAction = (action) => {
-        setUser(action.user);
-        if (action.type === 'kyc') {
-            setShowKyc(true);
-        } else if (action.type === 'payment') {
-            setShowTransaction(true);
-        }
+    const showHome = () => {
+        setClient(null);
+        setShowPaymentClient(false);
+        setShowUserSearch(false);
     }
 
     return (
         <AmplifyAuthenticator>
             <AmplifySignOut />
-            <div className={'container'} style={{width: '95%'}}>
+            <Breadcrumbs>
+                <Chip onClick={showHome} icon={<HomeIcon fontSize="small" />} label={'Home'} style={{margin:'5px'}}/>
+            </Breadcrumbs>
+            <div>
                 {!client && <Clients callback={clientAction}/>}
-                {showUsers && <Users client={client} callback={userAction}/>}
-                {showKyc && <Kyc user={user}/>}
-                {showKycClient && <KycClient client={client}/>}
-                {showTransaction && <Payment user={user}/>}
                 {showPaymentClient && <PaymentClient client={client}/>}
-                {showMonitoringClient && <MonitoringClient client={client}/>}
+                {showUserSearch && <UserSearch client={client}/>}
             </div>
         </AmplifyAuthenticator>
     );
