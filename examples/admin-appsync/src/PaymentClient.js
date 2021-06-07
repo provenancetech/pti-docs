@@ -35,6 +35,25 @@ query ($client_id: ID!, $offset: Int!, $limit: Int!) {
     }
     transaction_log_data
     status    
+    initiator {
+      client_id
+      external_id
+      emails {
+        email_address
+        default_email
+      }
+      user_id
+      phones {
+        phone_type
+        phone_number
+        default_phone
+      }
+      name {
+        middle_name
+        last_name
+        first_name
+      }
+    }
   }
 } 
 `
@@ -50,7 +69,6 @@ const PaymentClient = (props) => {
     const [lastUpdate, setLastUpdate] = useState(DateTime.now());
 
     useEffect(() => {
-        console.log("Getting payments !");
         API.graphql(graphqlOperation(listPayments, {
             client_id: props.client.id,
             offset: offset * pageSize,
@@ -94,6 +112,10 @@ const PaymentClient = (props) => {
                         <TableRow>
                             <TableCell>FullName</TableCell>
                             <TableCell>Emails</TableCell>
+                            <TableCell>PostalCode</TableCell>
+                            <TableCell>CountryCode</TableCell>
+                            <TableCell>UserId</TableCell>
+                            <TableCell>ExternalId</TableCell>
                             <TableCell>TransactionType</TableCell>
                             <TableCell>Date</TableCell>
                             <TableCell>Amount</TableCell>
@@ -104,19 +126,24 @@ const PaymentClient = (props) => {
                     <TableBody>
                         {
                             payments.map(payment => {
-                                const initiator = JSON.parse(payment.transaction_log_data).initiator;
+                                const logData = JSON.parse(payment.transaction_log_data);
+                                const ccAddress = logData.sourceMethod.paymentInformation.creditCardAddress;
 
                                 return (
                                     <TableRow key={payment.request_id} onClick={() => setRequestId(payment.request_id)}
                                               selected={requestId === payment.request_id}
                                               onDoubleClick={() => setUserId(payment.user_id)}
                                     >
-                                        <TableCell>{initiator.name.firstName} {initiator.name.lastName}</TableCell>
-                                        <TableCell>{initiator.emails.map(emailObj => emailObj.emailAddress).join('<br/>')}</TableCell>
+                                        <TableCell>{payment.initiator.name.first_name} {payment.initiator.name.last_name}</TableCell>
+                                        <TableCell>{payment.initiator.emails.map(emailObj => emailObj.email_address).join('<br/>')}</TableCell>
+                                        <TableCell>{ccAddress.postalCode}</TableCell>
+                                        <TableCell>{ccAddress.country}</TableCell>
+                                        <TableCell>{payment.user_id}</TableCell>
+                                        <TableCell>{payment.initiator.external_id}</TableCell>
                                         <TableCell>{payment.transactionType}</TableCell>
                                         <TableCell>{DateTime.fromSeconds(payment.date).toISO()}</TableCell>
                                         <TableCell>{payment.amount}</TableCell>
-                                        <TableCell>{payment['sourceMethod']['creditCard'].first_6 + '...' + payment.sourceMethod.creditCard.last_4}</TableCell>
+                                        <TableCell>{payment.sourceMethod.creditCard.first_6 + '...' + payment.sourceMethod.creditCard.last_4}</TableCell>
                                         <TableCell>{payment.status}</TableCell>
                                     </TableRow>
                                 )
