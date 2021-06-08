@@ -105,7 +105,6 @@ const UserPaymentsTable = (props) => {
         API.graphql(graphqlOperation(getWorldpayDetailsQuery, {
             request_id: requestId
         })).then((obj) => {
-            console.log(obj.data.getWorldPayResultsByRequest);
             showDrawer('Details for request ' + requestId, obj.data.getWorldPayResultsByRequest.map(r => r.result_data));
         }).catch(e => {
             console.log(e);

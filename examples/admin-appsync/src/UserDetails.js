@@ -29,7 +29,9 @@ query ($user_id: ID!) {
         phone_number
         phone_type
         default_phone
-    }    
+    }
+    client_meta_information
+    pti_meta_information    
   }
 }
 `
@@ -50,6 +52,11 @@ const UserDetails = (props) => {
             console.log(e);
         });
     }, [props.userId]);
+
+    const extractMeta = (jsonMeta) => {
+        const map = JSON.parse(jsonMeta);
+        Object.keys(map).map(k => k + '=' + map[k]).join('<br/>');
+    }
 
     return (
         <Card>
@@ -91,6 +98,14 @@ const UserDetails = (props) => {
                             )
                         )
                         }
+                    </Grid>
+                    <Grid item xs={3} style={{fontWeight: 'bold'}}>Client Meta:</Grid>
+                    <Grid item xs={9}>
+                        {user && extractMeta(user.client_meta_information)}
+                    </Grid>
+                    <Grid item xs={3} style={{fontWeight: 'bold'}}>Pti Meta:</Grid>
+                    <Grid item xs={9}>
+                        {user && extractMeta(user.pti_meta_information)}
                     </Grid>
                 </Grid>
             </CardContent>
