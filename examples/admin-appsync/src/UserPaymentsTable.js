@@ -87,6 +87,7 @@ const UserPaymentsTable = (props) => {
     const [payments, setPayments] = useState([]);
     const [drawerTitle, setDrawerTitle] = useState(null);
     const [drawerContent, setDrawerContent] = useState(null);
+    const [drawerContext, setDrawerContext] = useState(null);
 
     useEffect(() => {
         if (props.userId == null) {
@@ -105,18 +106,21 @@ const UserPaymentsTable = (props) => {
         API.graphql(graphqlOperation(getWorldpayDetailsQuery, {
             request_id: requestId
         })).then((obj) => {
-            showDrawer('Details for request ' + requestId, obj.data.getWorldPayResultsByRequest.map(r => r.result_data));
+            const results = obj.data.getWorldPayResultsByRequest;
+            let context = results.length > 0 ? {'OrderCode': results[0].order_code} : null;
+            showDrawer('Details for request ' + requestId, results.map(r => r.result_data), context);
         }).catch(e => {
             console.log(e);
         });
     }
 
-    const showDrawer = (title, content) => {
+    const showDrawer = (title, content, context) => {
         setDrawerTitle(title);
         let formattedContent = content.map(part =>
             JSON.stringify(JSON.parse(part), null, 2)
         );
         setDrawerContent(formattedContent);
+        setDrawerContext(context);
     }
 
     return (
@@ -166,6 +170,16 @@ const UserPaymentsTable = (props) => {
             <Drawer open={drawerTitle != null} onClose={() => setDrawerTitle(null)} anchor={'right'}>
                 <div style={{padding: '10px'}}>
                     <h1>{drawerTitle}</h1>
+                    {drawerContext &&
+                        Object.keys(drawerContext).map(key => {
+                            return (
+                                <div style={{marginBottom: '10px'}} key={key}>
+                                    <span style={{fontWeight: 'bold'}}>{key}</span>:&nbsp;
+                                    <span>{drawerContext[key]}</span>
+                                </div>
+                            )
+                        })
+                    }
                     {drawerContent &&
                     drawerContent.map((content, index) => (
                         <Accordion>
