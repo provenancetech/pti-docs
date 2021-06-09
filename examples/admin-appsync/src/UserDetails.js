@@ -47,7 +47,7 @@ const UserDetails = (props) => {
         API.graphql(graphqlOperation(getUserQuery, {
             user_id: props.userId
         })).then((obj) => {
-            setUser(obj.data.getUser[0]);
+            setUser(obj.data.getUser);
         }).catch(e => {
             console.log(e);
         });
