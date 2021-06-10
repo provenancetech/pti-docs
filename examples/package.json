@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "workspaces": [
+    "next-js-sdk-app",
+    "ReactJsSdkApp"
+  ],
+  "resolutions": {}
+}
