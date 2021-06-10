@@ -4,5 +4,9 @@
     "next-js-sdk-app",
     "ReactJsSdkApp"
   ],
-  "resolutions": {}
+  "resolutions": {
+    "browserslist": "^4.16.6",
+    "glob-parent": "^6.0.0",
+    "normalize-url": "^6.0.1"
+  }
 }
