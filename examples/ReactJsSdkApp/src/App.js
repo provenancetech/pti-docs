@@ -40,7 +40,8 @@ function SimpleDialog(props) {
                         userId: userId,
                         amount: amount,
                         parentElement: document.getElementById(e.id),
-                        callback: callback
+                        callback: callback,
+                        metaInformation: { var1: "value1", var2: "value2"}
                     })
                     break;
                 case 'KYC':
@@ -49,7 +50,8 @@ function SimpleDialog(props) {
                         requestId: requestId,
                         userId: userId,
                         parentElement: document.getElementById(e.id),
-                        callback: callback
+                        callback: callback,
+                        metaInformation: { var3: "value3", var4: "value4"}
                     });
                     break;
             }
@@ -70,7 +72,7 @@ function SimpleDialog(props) {
 export default function App() {
     const [paymentOpen, setPaymentOpen] = React.useState(false);
     const [kycOpen, setKycOpen] = React.useState(false);
-    const [userId, setUserId] = React.useState("9db9738d-1b41-4fd8-8536-319be308d9f2");
+    const [userId, setUserId] = React.useState("d19e2e0f-2f80-44c1-93ba-591b57a37173");
     const [requestId, setRequestId] = React.useState(uuidv4());
     const [amount, setAmount] = React.useState('' + Math.round(Math.random() * 100) + '.' + Math.round(Math.random() * 100));
     const [okDialog, setOkDialog] = React.useState(false);
