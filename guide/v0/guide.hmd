@@ -61,7 +61,7 @@ cat my_pti_private_key.jwk | docker run -i --rm docker.pkg.github.com/starcard-o
 You can also extract only the public key's thumbprint by adding the `--thumbprint` argument:
 
 ```docker
-cat my_pti_public_key.jw | docker run -i --rm docker.pkg.github.com/starcard-org/pti-tools/jwk-generator:latest pubkey --thumbprint
+cat my_pti_private_key.jwk | docker run -i --rm docker.pkg.github.com/starcard-org/pti-tools/jwk-generator:latest pubkey --thumbprint
 ```
 
 The public key (`my_pti_public_key.jwk`) is what you'll send to PTI. You will use your private key to sign all requests that you make to the PTI API, and to decrypt messages coming in through your Webhook.
