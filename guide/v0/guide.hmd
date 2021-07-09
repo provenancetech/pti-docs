@@ -55,7 +55,7 @@ The generated file contains JSON with the following structure:
 To extract the corresponding public key, do:
 
 ```docker
-cat my_pti_public_key.jw | docker run -i --rm docker.pkg.github.com/starcard-org/pti-tools/jwk-generator:latest pubkey  > my_pti_public_key.jwk
+cat my_pti_private_key.jwk | docker run -i --rm docker.pkg.github.com/starcard-org/pti-tools/jwk-generator:latest pubkey > my_pti_public_key.jwk
 ```
 
 You can also extract only the public key's thumbprint by adding the `--thumbprint` argument:
