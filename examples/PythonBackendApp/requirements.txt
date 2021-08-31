@@ -6,7 +6,7 @@ cryptography==3.3.2
 Flask==1.1.2
 idna==2.9
 itsdangerous==1.1.0
-Jinja2==2.11.2
+Jinja2==2.11.3
 jwcrypto==0.7
 MarkupSafe==1.1.1
 munch==2.5.0
