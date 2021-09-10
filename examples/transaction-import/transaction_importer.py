@@ -40,9 +40,12 @@ class LogWithdrawlTransactionBody(BaseModel):
 
 
 class LogWithdrawlTransactionHeaders(BaseModel):
-    request_id: uuid.UUID = Field(default_factory=uuid.uuid4, alias="x-pti-request-id")
+    request_id: uuid.UUID = Field(..., alias="x-pti-request-id")
     scenario_id: Optional[uuid.UUID] = Field(alias="x-pti-scenario-id")
     profile_id: Optional[uuid.UUID] = Field(alias="x-pti-profile-id")
+
+    class Config:
+        allow_population_by_field_name = True
 
 
 class WithdrawlTransaction(BaseModel):
@@ -55,9 +58,7 @@ class WithdrawlTransaction(BaseModel):
             eth_add: str) -> 'WithdrawlTransaction':
         instance = cls(
             user_id=uuid.UUID(user_id),
-            headers=LogWithdrawlTransactionHeaders(
-                request_id=uuid.uuid4()
-            ),
+            headers=LogWithdrawlTransactionHeaders(request_id=uuid.uuid4()),
             body=LogWithdrawlTransactionBody(
                 destinationMethod=PaymentInformation(
                     paymentInformation=PaymentMethod(
@@ -155,12 +156,12 @@ class TransactionImporter:
 
     def dump_transactions_json(self, json_filepath: str):
         with open(json_filepath, 'wt', encoding='utf-8') as f:
-            txn_json = self.transactions.json(by_alias=True, indent=2)
+            txn_json = self.transactions.json(by_alias=True, exclude_unset=True, indent=2)
             f.write(txn_json)
 
     def dump_results(self, json_filepath):
         with open(json_filepath, 'wt', encoding='utf-8') as f:
-            err_json = self.parse_errors.json(by_alias=True, indent=2)
+            err_json = self.parse_errors.json(exclude_unset=True, indent=2)
             f.write(err_json)
 
     def _extract_mandatory_field(self, row: Dict, line_num: int, field_name: str) -> Optional[str]:
