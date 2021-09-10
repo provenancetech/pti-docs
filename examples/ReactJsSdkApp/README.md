@@ -1,3 +1,5 @@
+Install all the dependencies of this REACT application with `yarn install` 
+
 Start the client with `yarn start`
 
 Then you need a backend to generate the tokens.
