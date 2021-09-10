@@ -19,6 +19,7 @@ class PaymentMethod(BaseModel):
 class PaymentInformation(BaseModel):
     paymentInformation: PaymentMethod = Field(..., alias="paymentInformation")
 
+
 class TransactionTypes(str, Enum):
     TRANSFER = 'TRANSFER'
     WITHDRAWAL = 'WITHDRAWAL'
@@ -50,7 +51,8 @@ class WithdrawlTransaction(BaseModel):
     body: LogWithdrawlTransactionBody
 
     @classmethod
-    def new(cls, date: str, user_id: str, email: str, coin: str, amount_usd: float, amount_coin: float, eth_add: str) -> 'WithdrawlTransaction':
+    def new(cls, date: str, user_id: str, email: str, coin: str, amount_usd: float, amount_coin: float,
+            eth_add: str) -> 'WithdrawlTransaction':
         instance = cls(
             user_id=uuid.UUID(user_id),
             headers=LogWithdrawlTransactionHeaders(
@@ -80,13 +82,16 @@ class WithdrawlTransactions(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
+
 class WithdrawlTransactions2(BaseModel):
     withdrawls: List[WithdrawlTransaction]
+
 
 class ParseError(BaseModel):
     line_num: int
     line_content: str
     error_messages: List[str]
+
 
 class ParseErrors(BaseModel):
     errors: List[ParseError]
@@ -103,8 +108,6 @@ class CsvHeaders(str, Enum):
     AMOUNT_USD = 'Amount'
     AMOUNT_COIN = 'Coins'
     ETH_ADD = 'ETHAddress'
-
-
 
 
 class TransactionImporter:
@@ -135,12 +138,13 @@ class TransactionImporter:
                 amount_coin = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.AMOUNT_COIN)
                 eth_add = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.ETH_ADD)
 
-
                 try:
-                    txn = WithdrawlTransaction.new(date=transaction_date, user_id=user_id, email=email, coin=coin, amount_usd=amount_usd, amount_coin=amount_coin, eth_add=eth_add)
+                    txn = WithdrawlTransaction.new(date=transaction_date, user_id=user_id, email=email, coin=coin,
+                                                   amount_usd=amount_usd, amount_coin=amount_coin, eth_add=eth_add)
                     self.transactions.withdrawls.append(txn)
                 except Exception as e:
-                    self._update_row_errors(row=row, line_num=reader.line_num, error_message=f"Failed to instantiate transaction {e}")
+                    self._update_row_errors(row=row, line_num=reader.line_num,
+                                            error_message=f"Failed to instantiate transaction {e}")
 
                 if self.row_warnings:
                     self.parse_errors.errors.append(self.row_warnings)
@@ -176,7 +180,6 @@ class TransactionImporter:
             self._run_validator(field_name, field_value, row, line_num)
         return field_value
 
-
     def _run_validator(self, field_name, field_value, row: Dict[str, str], line_num: int):
         validator_func: Callable = None
         if field_name == CsvHeaders.DATE:
@@ -192,27 +195,28 @@ class TransactionImporter:
             try:
                 validator_func(field_value)
             except Exception as e:
-                self._update_row_errors(row=row, line_num=line_num, error_message=f"Could not validate {field_name} - {field_value}: {e}")
-
+                self._update_row_errors(row=row, line_num=line_num,
+                                        error_message=f"Could not validate {field_name} - {field_value}: {e}")
 
     def _eth_validate(self, eth_add: str):
         result: ValidationResult = coinaddr.validate('eth', eth_add)
         if result.valid is False:
             raise ValueError
 
-
-    def _update_row_errors(self, row:Dict[str, str],  line_num: int, error_message: str):
+    def _update_row_errors(self, row: Dict[str, str], line_num: int, error_message: str):
         if self.row_errors:
             self.row_errors.error_messages.append(error_message)
         else:
-            self.row_errors = ParseError(line_num=line_num, line_content=",".join(row.values()), error_messages=[error_message])
+            self.row_errors = ParseError(line_num=line_num, line_content=",".join(row.values()),
+                                         error_messages=[error_message])
 
-    def _update_row_warnings(self, row:Dict[str, str],  line_num: int, error_message: str):
+    def _update_row_warnings(self, row: Dict[str, str], line_num: int, error_message: str):
         row_err_warn: Optional[ParseError] = getattr(self, 'row_warnings')
         if row_err_warn:
             row_err_warn.error_messages.append(error_message)
         else:
-            setattr(self, 'row_warnings', ParseError(line_num=line_num, line_content=",".join(row.values()), error_messages=[error_message]))
+            setattr(self, 'row_warnings',
+                    ParseError(line_num=line_num, line_content=",".join(row.values()), error_messages=[error_message]))
 
 
 if __name__ == "__main__":
