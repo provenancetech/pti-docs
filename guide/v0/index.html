@@ -43,7 +43,7 @@
 			      code: function(code, lang) {
 				if (lang === "mermaid") {
 				  return (
-				    '<div class="mermaid" style="background-color: white; height: 30em; padding-bottom: 1em;">' + mermaid.render('mermaid-svg-' + num++, code) + "</div>"
+				    '<div class="mermaid" style="background-color: white; height: 50em; padding-bottom: 1em;">' + mermaid.render('mermaid-svg-' + num++, code) + "</div>"
 				  );
 				}
 				return this.origin.code.apply(this, arguments);
