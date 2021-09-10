@@ -1,23 +1,46 @@
 import csv
+import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
-from typing import Optional, Dict, List, Callable
+from typing import Optional, Dict, List
 
 import coinaddr
 from coinaddr.validation import ValidationResult
+from jwcrypto.jwk import JWK
 from pydantic import BaseModel, Field, EmailStr
 
+from pti_tools import make_signed_request
 
-class PaymentMethod(BaseModel):
-    address: str
-    tokenType: str
-    billingEmail: EmailStr
-    type: str
+
+class PaymentMethodType(str, Enum):
+    FIAT = "FIAT"
+    TOKEN = "TOKEN"
+
+
+class PaymentInformationType(str, Enum):
+    CREDIT_CARD = "CREDIT_CARD"
+    PAYPAL = "PAYPAL"
+    TOKEN = "TOKEN"
+    BANK_ACCOUNT = "BANK_ACCOUNT"
+    ENCRYPTED_CREDIT_CARD = "ENCRYPTED_CREDIT_CARD"
 
 
 class PaymentInformation(BaseModel):
-    paymentInformation: PaymentMethod = Field(..., alias="paymentInformation")
+    type: PaymentMethodType
+    billingEmail: EmailStr
+
+
+class PaymentMethod(BaseModel):
+    paymentMethodType: PaymentMethodType
+    paymentInformation: PaymentInformation
+
+
+class TokenPaymentInformation(PaymentInformation):
+    type = PaymentMethodType.TOKEN
+    tokenAddress: str
+    tokenType: str
+
 
 
 class TransactionTypes(str, Enum):
@@ -26,15 +49,20 @@ class TransactionTypes(str, Enum):
     FUNDING = 'FUNDING'
 
 
+class PersonInitiator(BaseModel):
+    type = "PERSON"
+    id: uuid.UUID
+
+
 class LogWithdrawlTransactionBody(BaseModel):
-    destinationMethod: PaymentInformation
+    destinationMethod: PaymentMethod
     type: str = TransactionTypes.WITHDRAWAL
-    date: str
+    date: datetime
     requestId: Optional[str]
     status: Optional[str]
     usdValue: Optional[float]
     amount: Optional[float]
-    # initiator: Optional[Any]  # TODO: figure this out
+    initiator: PersonInitiator
     ptiMeta: Optional[Dict[str, str]]
     clientMeta: Optional[Dict[str, str]]
 
@@ -55,19 +83,20 @@ class WithdrawlTransaction(BaseModel):
 
     @classmethod
     def new(cls, date: str, user_id: str, email: str, coin: str, amount_usd: float, amount_coin: float,
+            transaction_type: str,
             eth_add: str) -> 'WithdrawlTransaction':
         instance = cls(
             user_id=uuid.UUID(user_id),
             headers=LogWithdrawlTransactionHeaders(request_id=uuid.uuid4()),
             body=LogWithdrawlTransactionBody(
-                destinationMethod=PaymentInformation(
-                    paymentInformation=PaymentMethod(
-                        address=eth_add,
-                        tokenType=coin,
+                destinationMethod=PaymentMethod(
+                    paymentMethodType=PaymentMethodType.TOKEN,
+                    paymentInformation=TokenPaymentInformation(
                         billingEmail=EmailStr(email),
-                        type='TODO'
-                    )
+                        tokenType=coin,
+                        tokenAddress=eth_add)
                 ),
+                initiator=PersonInitiator(id=uuid.UUID(user_id), type="PERSON"),
                 date=date,
                 usdValue=amount_usd,
                 amount=amount_coin,
@@ -77,14 +106,7 @@ class WithdrawlTransaction(BaseModel):
         return instance
 
 
-class WithdrawlTransactions(BaseModel):
-    __root__ = List[WithdrawlTransaction]
-
-    class Config:
-        arbitrary_types_allowed = True
-
-
-class WithdrawlTransactions2(BaseModel):
+class Transactions(BaseModel):
     withdrawls: List[WithdrawlTransaction]
 
 
@@ -94,8 +116,15 @@ class ParseError(BaseModel):
     error_messages: List[str]
 
 
-class ParseErrors(BaseModel):
-    errors: List[ParseError]
+class RequestError(BaseModel):
+    request_id: uuid.UUID
+    status_code: int
+    content: str
+
+
+class Errors(BaseModel):
+    parse_errors: List[ParseError] = Field(default_factory=list)
+    request_errors: List[RequestError] = Field(default_factory=list)
 
 
 class CsvHeaders(str, Enum):
@@ -113,15 +142,18 @@ class CsvHeaders(str, Enum):
 
 class TransactionImporter:
 
-    def __init__(self, csv_filepath: str):
-        self.load_csv_file(csv_filepath)
-
-    def load_csv_file(self, csv_filepath):
-        self.csv_fliepath = csv_filepath
-        self.parse_errors = ParseErrors(errors=[])
+    def __init__(self):
+        self.csv_filepath = None
+        self.errors = Errors()
         self.row_errors: Optional[ParseError] = None
         self.row_warnings: Optional[ParseError] = None
-        self.transactions = WithdrawlTransactions2(withdrawls=[])
+        self.transactions = Transactions(withdrawls=[])
+        self.private_key: Optional[JWK] = None
+
+    def load_csv_file(self, csv_filepath):
+        self.csv_filepath = csv_filepath
+        self.errors = Errors()
+        self.transactions = Transactions(withdrawls=[])
 
         with open(csv_filepath, newline='') as f:
             reader = csv.DictReader(f)
@@ -129,7 +161,8 @@ class TransactionImporter:
                 self.row_errors = None
                 self.row_warnings = None
                 transaction_date = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.DATE)
-                user_id = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.USER_ID)
+                # TODO: user_id = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.USER_ID)
+                user_id = 'c49f2030-1338-46c2-8485-71ccee592010'
                 first_name = self._extract_optional_field(row, reader.line_num, CsvHeaders.FIRST_NAME)
                 last_name = self._extract_optional_field(row, reader.line_num, CsvHeaders.LAST_NAME)
                 email = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.EMAIL)
@@ -140,18 +173,21 @@ class TransactionImporter:
                 eth_add = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.ETH_ADD)
 
                 try:
-                    txn = WithdrawlTransaction.new(date=transaction_date, user_id=user_id, email=email, coin=coin,
-                                                   amount_usd=amount_usd, amount_coin=amount_coin, eth_add=eth_add)
+                    txn_date = datetime.fromisoformat(transaction_date).astimezone(tz=timezone.utc)
+
+                    txn = WithdrawlTransaction.new(date=txn_date, user_id=user_id, email=email, coin=coin,
+                                                   amount_usd=float(amount_usd), amount_coin=float(amount_coin),
+                                                   transaction_type=tx_type, eth_add=eth_add)
                     self.transactions.withdrawls.append(txn)
                 except Exception as e:
                     self._update_row_errors(row=row, line_num=reader.line_num,
                                             error_message=f"Failed to instantiate transaction {e}")
 
                 if self.row_warnings:
-                    self.parse_errors.errors.append(self.row_warnings)
+                    self.errors.parse_errors.append(self.row_warnings)
 
                 if self.row_errors:
-                    self.parse_errors.errors.append(self.row_errors)
+                    self.errors.parse_errors.append(self.row_errors)
                     continue
 
     def dump_transactions_json(self, json_filepath: str):
@@ -161,8 +197,36 @@ class TransactionImporter:
 
     def dump_results(self, json_filepath):
         with open(json_filepath, 'wt', encoding='utf-8') as f:
-            err_json = self.parse_errors.json(exclude_unset=True, indent=2)
+            err_json = self.errors.json(indent=2)
             f.write(err_json)
+
+    def clear_transactions(self):
+        self.transactions = Transactions(withdrawls=[])
+
+    def clear_errors(self):
+        self.errors = Errors()
+
+    def load_json_file(self, json_filepath):
+        with open(json_filepath, 'rt', encoding='utf-8') as f:
+            json = f.read()
+            try:
+                self.transactions = Transactions.parse_raw(json)
+            except Exception as e:
+                self._update_row_errors({}, 0, f"Could not instantiate transaction list: {e}")
+
+    def log_transactions_via_api(self, client_id: str, api_base_url: str):
+        for txn in self.transactions.withdrawls:
+            url = f"/v0/users/{txn.user_id}/transactionLogs"
+            method = "POST"
+            resp = make_signed_request(client_id=client_id, request_id=str(txn.headers.request_id), key=self.private_key, url=api_base_url.rstrip('/') + url,
+                                       method=method, data=txn.body.json(by_alias=True, indent=2))
+            if not resp.ok:
+                self._update_request_errors(RequestError(request_id=txn.headers.request_id, status_code=resp.status_code, content=resp.text))
+
+    def load_private_key_json_file(self, priv_key_filepath: str) -> JWK:
+        with open(priv_key_filepath, "rb") as f:
+            self.private_key = JWK.from_json(f.read())
+        return self.private_key
 
     def _extract_mandatory_field(self, row: Dict, line_num: int, field_name: str) -> Optional[str]:
         field_value = row.get(field_name)
@@ -182,7 +246,7 @@ class TransactionImporter:
         return field_value
 
     def _run_validator(self, field_name, field_value, row: Dict[str, str], line_num: int):
-        validator_func: Callable = None
+        validator_func = None
         if field_name == CsvHeaders.DATE:
             validator_func = datetime.fromisoformat
         elif field_name == CsvHeaders.EMAIL:
@@ -205,22 +269,33 @@ class TransactionImporter:
             raise ValueError
 
     def _update_row_errors(self, row: Dict[str, str], line_num: int, error_message: str):
-        if self.row_errors:
-            self.row_errors.error_messages.append(error_message)
-        else:
-            self.row_errors = ParseError(line_num=line_num, line_content=",".join(row.values()),
-                                         error_messages=[error_message])
+        self._update_row_error_attr('row_errors', row=row, line_num=line_num, error_message=error_message)
 
     def _update_row_warnings(self, row: Dict[str, str], line_num: int, error_message: str):
-        row_err_warn: Optional[ParseError] = getattr(self, 'row_warnings')
-        if row_err_warn:
-            row_err_warn.error_messages.append(error_message)
+        self._update_row_error_attr('row_warnings', row=row, line_num=line_num, error_message=error_message)
+
+    def _update_row_error_attr(self, attr_name: str, row: Dict[str, str], line_num: int, error_message: str):
+        row_attr: Optional[ParseError] = getattr(self, attr_name)
+        if row_attr:
+            row_attr.error_messages.append(error_message)
         else:
-            setattr(self, 'row_warnings',
+            setattr(self, attr_name,
                     ParseError(line_num=line_num, line_content=",".join(row.values()), error_messages=[error_message]))
+
+    def _update_request_errors(self, error: RequestError):
+        self.errors.request_errors.append(error)
 
 
 if __name__ == "__main__":
-    importer = TransactionImporter("bridgeouts1.csv")
-    importer.dump_transactions_json("bridgeouts1.json")
-    importer.dump_results("bridgeouts1.results.json")
+    BASE_URL = os.environ.get("BASE_URL", "https://pti.apidev.pticlient.com")
+    CLIENT_ID = '3450582c-1955-11eb-adc1-0242ac120002'
+    PRIVATE_KEY = '/Users/sebastien/pti/secrets/private1.jwk'
+    importer = TransactionImporter()
+    importer.load_csv_file('bridgeouts1.csv')
+    importer.dump_results('bridgeout1.csvparser.results.json')
+    importer.dump_transactions_json('bridgeouts1.json')
+    importer.load_json_file("bridgeouts1.json")
+    importer.dump_results('bridgeout1.jsonparser.results.json')
+    importer.load_private_key_json_file(PRIVATE_KEY)
+    importer.log_transactions_via_api(client_id=CLIENT_ID, api_base_url=BASE_URL)
+    importer.dump_results("bridgeouts1.request.results.json")
