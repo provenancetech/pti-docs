@@ -7,7 +7,8 @@
   "resolutions": {
     "browserslist": "^4.16.6",
     "glob-parent": "^6.0.0",
+    "immer": "^9.0.6",
     "normalize-url": "^6.0.1",
-    "postcss":"^7.0.36"
+    "postcss": "^7.0.36"
   }
 }
