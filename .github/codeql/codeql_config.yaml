@@ -12,4 +12,4 @@ paths:
   - examples/transaction-import
 
 languages:
-  - Python
+  - python
