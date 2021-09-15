@@ -83,11 +83,11 @@ jobs:
 #        uses: github/codeql-action/analyze@v1
 
       - name: Build the transaction-import Docker image in ecr
-        run: DOCKER_USERNAME=${GIT_USERNAME} DOCKER_PASSWORD=${GIT_KEY} DOCKERFILE_DIR=examples/transaction-import DOCKER_IMAGE=transaction-import-lambda make ecr-release
+        run: DOCKER_USERNAME=${GIT_USERNAME} DOCKER_PASSWORD=${GIT_KEY} DOCKERFILE_DIR=examples/transaction-import DOCKER_IMAGE=starcard-org/pti-docs/transaction-import-lambda make ecr-release
 
       - name: Build the transaction-import Docker image
         run: |
-          DOCKER_USERNAME=${GIT_USERNAME} DOCKER_PASSWORD=${GIT_KEY} DOCKERFILE_DIR=examples/transaction-import DOCKER_IMAGE=transaction-import-lambda make release
+          DOCKER_USERNAME=${GIT_USERNAME} DOCKER_PASSWORD=${GIT_KEY} DOCKERFILE_DIR=examples/transaction-import DOCKER_IMAGE=starcard-org/pti-docs/transaction-import-lambda make release
           echo "CONTAINER_IMAGE=$(cat /tmp/com.pti.container.image)" >> $GITHUB_ENV
 
       - name: Scan the image
