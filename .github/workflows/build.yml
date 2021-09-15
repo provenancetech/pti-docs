@@ -51,13 +51,6 @@ jobs:
         with:
           fetch-depth: 2
 
-#      - name: Setup Java
-#        uses: actions/setup-java@v1
-#        with:
-#          java-version: '11'
-#          java-package: jdk
-
-
       - name: Login to the registry
         run: DOCKER_USERNAME=${GIT_USERNAME} DOCKER_PASSWORD=${GIT_KEY} make docker-login
 
