@@ -10,6 +10,7 @@ REPOSITORY ?= $(shell basename $(PWD))
 export DOCKER_IMAGE ?= $(OWNER)/$(REPOSITORY)/$(shell echo $(REPOSITORY) | sed -E 's|^pti-||')
 export DOCKER_TAG ?= $(shell V="$$(git describe --tags --match='[0-9][0-9.]*' --dirty 2>/dev/null)"; if [ "$$V" = "" ]; then git fetch --no-tags --prune origin +refs/heads/master:refs/remotes/origin/master && echo "0.0.0-$$(git rev-list --count origin/master)-$$(git rev-parse --short HEAD)"; else echo "$$V"; fi)
 export DOCKER_REGISTRY ?= docker.pkg.github.com
+export DOCKER_CONTEXT ?= .
 ECR_REGISTRY ?= 210944367560.dkr.ecr.us-west-2.amazonaws.com
 
 # can be used to define an HTTP proxy for APT, for example
@@ -60,7 +61,7 @@ build:
 
 	@$(call logme,"Build base image")
 	docker build \
-		--file examples/transaction-import/Dockerfile \
+		--file $(DOCKER_CONTEXT)/Dockerfile \
 		--tag $(DOCKER_REGISTRY)/$(DOCKER_IMAGE):$(DOCKER_TAG) \
 		--label build.commit.hash="$(shell git log -1 --format=%H)" \
 		--label build.commit.shorthash="$(shell git log -1 --format=%h)" \
@@ -69,14 +70,14 @@ build:
 		--label build.docker.image.created_on="$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")" \
 		$(DOCKER_BUILD_ARGS) \
 		--force-rm \
-		.
+		$(DOCKER_CONTEXT)
 
 build-ecr:
 	@$(call check_defined,DOCKER_TAG)
 
 	@$(call logme,"Build base image")
 	docker build \
-		--file Dockerfile \
+		--file $(DOCKER_CONTEXT)/Dockerfile \
 		--tag $(ECR_REGISTRY)/$(DOCKER_IMAGE):$(DOCKER_TAG) \
 		--label build.commit.hash="$(shell git log -1 --format=%H)" \
 		--label build.commit.shorthash="$(shell git log -1 --format=%h)" \
@@ -85,7 +86,7 @@ build-ecr:
 		--label build.docker.image.created_on="$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")" \
 		$(DOCKER_BUILD_ARGS) \
 		--force-rm \
-		.
+		$(DOCKER_CONTEXT)
 
 release: build
 	@$(call check_defined,DOCKER_TAG)
