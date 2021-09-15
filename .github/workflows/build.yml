@@ -5,12 +5,11 @@ on:
     branches: [ master ]
     tags:
       - '*'
+
   pull_request:
     branches: [ master ]
-  workflow_dispatch:
-    inputs:
-      dummy: dummy
 
+  workflow_dispatch:
 
 
 env:
