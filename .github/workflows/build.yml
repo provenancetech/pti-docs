@@ -5,10 +5,10 @@ on:
     branches: [ master ]
     tags:
       - '*'
-  schedule:
-    - cron: '0 0 * * 4'
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
+
 
 env:
   GITHUB_USERNAME: ${{ secrets.CI_USERNAME }}
