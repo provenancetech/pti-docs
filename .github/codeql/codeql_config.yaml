@@ -1,0 +1,11 @@
+name: "Custom codeql configuration"
+
+disable-default-queries: true
+
+queries:
+  - name: Extended-Security
+    uses: security-extended
+  - name: Security and Quality
+    uses: security-and-quality
+  - name: Custom query suit
+    uses: starcard-org/pti-codeql/javascript/pti-client/query-suit.qls@master
