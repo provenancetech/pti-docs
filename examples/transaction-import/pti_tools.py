@@ -1,5 +1,5 @@
 import json
-import logging
+from logging import getLogger
 import os
 import sys
 import urllib.parse
@@ -10,6 +10,7 @@ import requests
 from jwcrypto import jwk, jws, jwe
 from jwcrypto.common import json_encode, json_decode
 
+log = getLogger(__name__)
 
 def environ_or_required(key):
     return (
@@ -56,7 +57,7 @@ def get_signature(client_id, private_key, url, method, data=None, content_type="
     if data:
         method = "POST"
 
-    logging.debug(f'Data: {data}')
+    log.debug(f'Data: {data}')
 
     payload = method + "\n"
     if method == "POST":
@@ -70,8 +71,8 @@ def get_signature(client_id, private_key, url, method, data=None, content_type="
     payload = payload + urllib.parse.urlparse(url).path
     signature = sign_payload(client_id, private_key, payload.encode('UTF-8'))
 
-    logging.debug(f'Payload: {payload}', file=sys.stderr)
-    logging.debug(f'Signature (JWS): {signature}', file=sys.stderr)
+    log.debug(f'Payload: {payload}')
+    log.debug(f'Signature (JWS): {signature}')
 
     return signature
 
@@ -89,11 +90,11 @@ def decrypt_verify_and_get_payload(private_encryption_key, public_signature_key,
       # decrypt
       jwetoken = jwe.JWE()
       jwetoken.deserialize(content, key=private_encryption_key)
-      logging.debug(f'Payload correctly decrypted using our private key')
+      log.debug(f'Payload correctly decrypted using our private key')
       if json.loads(jwetoken.objects['protected'])['alg'] != 'RSA-OAEP-256' or json.loads(jwetoken.objects['protected'])['enc'] != 'A256CBC-HS512':
         raise Exception('Unsupported encryption') # we have to check those, otherwise other encryptions can be used as an attack vector
 
-      logging.debug(f'JWE payload: {jwetoken.payload}')
+      log.debug(f'JWE payload: {jwetoken.payload}')
       # verify
       jwstoken = jws.JWS()
       jwstoken.deserialize(jwetoken.payload)
@@ -103,22 +104,3 @@ def decrypt_verify_and_get_payload(private_encryption_key, public_signature_key,
 
       jwstoken.verify(public_signature_key) # if there's no exception, the signature is valid
       return jwstoken.payload
-
-def set_logging_level(log_level):
-    numeric_level = getattr(logging, log_level.upper(), None)
-    if not isinstance(numeric_level, int):
-        raise ValueError(f'Invalid log level: {log_level}')
-    logging.basicConfig(level=numeric_level)
-    logging.info(f'Log level is: {log_level.upper()}')
-
-class JWKType(object):
-    """Factory for creating JWK object types
-    """
-
-    def __init__(self):
-        pass
-
-    def __call__(self, path):
-        with open(path, "rb") as private_key_file:
-            encryption_private_key = jwk.JWK.from_json(private_key_file.read())
-            return encryption_private_key

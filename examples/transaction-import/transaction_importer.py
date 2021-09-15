@@ -3,7 +3,7 @@ import os
 import uuid
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, TextIO
 
 import coinaddr
 from coinaddr.validation import ValidationResult
@@ -11,6 +11,14 @@ from jwcrypto.jwk import JWK
 from pydantic import BaseModel, Field, EmailStr
 
 from pti_tools import make_signed_request
+
+import logging
+
+root_logger = logging.getLogger()
+logging_level = os.environ.get("LOG_LEVEL", logging.DEBUG)
+root_logger.setLevel(logging_level)
+
+log = logging.getLogger(__name__)
 
 
 class PaymentMethodType(str, Enum):
@@ -156,39 +164,42 @@ class TransactionImporter:
         self.transactions = Transactions(withdrawls=[])
 
         with open(csv_filepath, newline='') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                self.row_errors = None
-                self.row_warnings = None
-                transaction_date = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.DATE)
-                # TODO: user_id = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.USER_ID)
-                user_id = 'c49f2030-1338-46c2-8485-71ccee592010'
-                first_name = self._extract_optional_field(row, reader.line_num, CsvHeaders.FIRST_NAME)
-                last_name = self._extract_optional_field(row, reader.line_num, CsvHeaders.LAST_NAME)
-                email = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.EMAIL)
-                coin = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.COIN)
-                tx_type = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.TRANSACTION_TYPE)
-                amount_usd = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.AMOUNT_USD)
-                amount_coin = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.AMOUNT_COIN)
-                eth_add = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.ETH_ADD)
+            self.read_csv_stream(f)
 
-                try:
-                    txn_date = datetime.fromisoformat(transaction_date).astimezone(tz=timezone.utc)
+    def read_csv_stream(self, stream: TextIO):
+        reader = csv.DictReader(stream)
+        for row in reader:
+            self.row_errors = None
+            self.row_warnings = None
+            transaction_date = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.DATE)
+            # TODO: user_id = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.USER_ID)
+            user_id = 'c49f2030-1338-46c2-8485-71ccee592010'
+            first_name = self._extract_optional_field(row, reader.line_num, CsvHeaders.FIRST_NAME)
+            last_name = self._extract_optional_field(row, reader.line_num, CsvHeaders.LAST_NAME)
+            email = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.EMAIL)
+            coin = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.COIN)
+            tx_type = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.TRANSACTION_TYPE)
+            amount_usd = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.AMOUNT_USD)
+            amount_coin = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.AMOUNT_COIN)
+            eth_add = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.ETH_ADD)
 
-                    txn = WithdrawlTransaction.new(date=txn_date, user_id=user_id, email=email, coin=coin,
-                                                   amount_usd=float(amount_usd), amount_coin=float(amount_coin),
-                                                   transaction_type=tx_type, eth_add=eth_add)
-                    self.transactions.withdrawls.append(txn)
-                except Exception as e:
-                    self._update_row_errors(row=row, line_num=reader.line_num,
-                                            error_message=f"Failed to instantiate transaction {e}")
+            try:
+                txn_date = datetime.fromisoformat(transaction_date).astimezone(tz=timezone.utc)
 
-                if self.row_warnings:
-                    self.errors.parse_errors.append(self.row_warnings)
+                txn = WithdrawlTransaction.new(date=txn_date, user_id=user_id, email=email, coin=coin,
+                                               amount_usd=float(amount_usd), amount_coin=float(amount_coin),
+                                               transaction_type=tx_type, eth_add=eth_add)
+                self.transactions.withdrawls.append(txn)
+            except Exception as e:
+                self._update_row_errors(row=row, line_num=reader.line_num,
+                                        error_message=f"Failed to instantiate transaction {e}")
 
-                if self.row_errors:
-                    self.errors.parse_errors.append(self.row_errors)
-                    continue
+            if self.row_warnings:
+                self.errors.parse_errors.append(self.row_warnings)
+
+            if self.row_errors:
+                self.errors.parse_errors.append(self.row_errors)
+                continue
 
     def dump_transactions_json(self, json_filepath: str):
         with open(json_filepath, 'wt', encoding='utf-8') as f:
@@ -208,11 +219,15 @@ class TransactionImporter:
 
     def load_json_file(self, json_filepath):
         with open(json_filepath, 'rt', encoding='utf-8') as f:
-            json = f.read()
-            try:
-                self.transactions = Transactions.parse_raw(json)
-            except Exception as e:
-                self._update_row_errors({}, 0, f"Could not instantiate transaction list: {e}")
+            self.load_from_json_stream(f)
+
+    def load_from_json_stream(self, stream: TextIO):
+        log.debug("Loading json stream {}", stream)
+        json = stream.read()
+        try:
+            self.transactions = Transactions.parse_raw(json)
+        except Exception as e:
+            self._update_row_errors({}, 0, f"Could not instantiate transaction list: {e}")
 
     def log_transactions_via_api(self, client_id: str, api_base_url: str):
         for txn in self.transactions.withdrawls:
@@ -227,6 +242,10 @@ class TransactionImporter:
         with open(priv_key_filepath, "rb") as f:
             self.private_key = JWK.from_json(f.read())
         return self.private_key
+
+    @property
+    def has_errors(self):
+        return self.errors.parse_errors or self.errors.request_errors
 
     def _extract_mandatory_field(self, row: Dict, line_num: int, field_name: str) -> Optional[str]:
         field_value = row.get(field_name)
@@ -287,9 +306,9 @@ class TransactionImporter:
 
 
 if __name__ == "__main__":
-    BASE_URL = os.environ.get("BASE_URL", "https://pti.apidev.pticlient.com")
+    BASE_URL = os.environ.get("PTI_API_BASE_URL", "https://pti.apidev.pticlient.com")
     CLIENT_ID = '3450582c-1955-11eb-adc1-0242ac120002'
-    PRIVATE_KEY = '/Users/sebastien/pti/secrets/private1.jwk'
+    PRIVATE_KEY = 'private1.jwk'
     importer = TransactionImporter()
     importer.load_csv_file('bridgeouts1.csv')
     importer.dump_results('bridgeout1.csvparser.results.json')
