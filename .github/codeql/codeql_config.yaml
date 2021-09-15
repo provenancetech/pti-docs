@@ -10,6 +10,3 @@ queries:
 
 paths:
   - examples/transaction-import
-
-languages:
-  - python

@@ -77,6 +77,7 @@ jobs:
         with:
           config-file: ./.github/codeql/codeql_config.yaml
           external-repository-token: ${{ secrets.CI_TOKEN }}
+          languages: python
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v1
