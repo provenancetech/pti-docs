@@ -7,5 +7,9 @@ queries:
     uses: security-extended
   - name: Security and Quality
     uses: security-and-quality
-  - name: Custom query suit
-    uses: starcard-org/pti-codeql/javascript/pti-client/query-suit.qls@master
+
+paths:
+  - examples/transaction-import
+
+languages:
+  - Python
