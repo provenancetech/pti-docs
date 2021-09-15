@@ -21,6 +21,8 @@ RUN pip install \
 
 FROM python:3.8.12-slim-bullseye
 
+ARG FUNCTION_DIR
+
 COPY pti_tools.py ${FUNCTION_DIR}
 COPY lambda.py ${FUNCTION_DIR}
 COPY transaction_importer.py ${FUNCTION_DIR}

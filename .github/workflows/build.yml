@@ -72,15 +72,15 @@ jobs:
           # ...and ensure it's executable.
           sudo chmod a+x ./twistcli
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v1
-        with:
-          config-file: ./.github/codeql/codeql_config.yaml
-          external-repository-token: ${{ secrets.CI_TOKEN }}
-          languages: python
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v1
+#      - name: Initialize CodeQL
+#        uses: github/codeql-action/init@v1
+#        with:
+#          config-file: ./.github/codeql/codeql_config.yaml
+#          external-repository-token: ${{ secrets.CI_TOKEN }}
+#          languages: python
+#
+#      - name: Perform CodeQL Analysis
+#        uses: github/codeql-action/analyze@v1
 
       - name: Build the transaction-import Docker image in ecr
         run: DOCKER_USERNAME=${GIT_USERNAME} DOCKER_PASSWORD=${GIT_KEY} DOCKERFILE_DIR=examples/transaction-import DOCKER_IMAGE=transaction-import-lambda make ecr-release
