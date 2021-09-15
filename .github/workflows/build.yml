@@ -82,9 +82,9 @@ jobs:
       - name: Build the Docker image in ecr
         run: DOCKER_USERNAME=${GIT_USERNAME} DOCKER_PASSWORD=${GIT_KEY} make ecr-release
 
-      - name: Build the Docker image
+      - name: Build the transaction-import Docker image
         run: |
-          DOCKER_USERNAME=${GIT_USERNAME} DOCKER_PASSWORD=${GIT_KEY} make release
+          DOCKER_USERNAME=${GIT_USERNAME} DOCKER_PASSWORD=${GIT_KEY} DOCKER_CONTEXT=examples/transaction-import DOCKER_IMAGE=transaction-import make release
           echo "CONTAINER_IMAGE=$(cat /tmp/com.pti.container.image)" >> $GITHUB_ENV
 
       - name: Scan the image
