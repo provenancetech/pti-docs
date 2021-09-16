@@ -172,8 +172,7 @@ class TransactionImporter:
             self.row_errors = None
             self.row_warnings = None
             transaction_date = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.DATE)
-            # TODO: user_id = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.USER_ID)
-            user_id = 'c49f2030-1338-46c2-8485-71ccee592010'
+            user_id = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.USER_ID)
             first_name = self._extract_optional_field(row, reader.line_num, CsvHeaders.FIRST_NAME)
             last_name = self._extract_optional_field(row, reader.line_num, CsvHeaders.LAST_NAME)
             email = self._extract_mandatory_field(row, reader.line_num, CsvHeaders.EMAIL)
