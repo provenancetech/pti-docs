@@ -1,3 +1,22 @@
+""" Transaction Importer
+
+Usage:
+    transaction_importer.py convert CSV_INPUT_FILE JSON_OUTPUT_FILE
+    transaction_importer.py import --input=<json_input_file> --client_id=<client_id> --private_key=<pk_file> --endpoint=<api_endpoint>
+    transaction_importer.py -h | --help
+
+Arguments:
+    CSV_INPUT_FILE      csv input file to convert to json
+    JSON_OUTPUT_FILE    name of the json ouptut file containing the result of the conversion
+
+Options
+    -h --help       Show this screen
+    --input         Path to json input to use for importation
+    --client_id     Client ID to be used for importation calls to the API
+    --private_key   Path to a private key file in json format to be used to sign API requests
+    --endpoint      Root endpoint of the API
+
+"""
 import csv
 import os
 import uuid
@@ -9,6 +28,7 @@ import coinaddr
 from coinaddr.validation import ValidationResult
 from jwcrypto.jwk import JWK
 from pydantic import BaseModel, Field, EmailStr
+from docopt import docopt
 
 from pti_tools import make_signed_request
 
@@ -202,7 +222,7 @@ class TransactionImporter:
 
     def dump_transactions_json(self, json_filepath: str):
         with open(json_filepath, 'wt', encoding='utf-8') as f:
-            txn_json = self.transactions.json(by_alias=True, exclude_unset=True, indent=2)
+            txn_json = self.transactions.json(by_alias=True, exclude_none=True, indent=2)
             f.write(txn_json)
 
     def dump_results(self, json_filepath):
@@ -227,8 +247,11 @@ class TransactionImporter:
             self.transactions = Transactions.parse_raw(json)
         except Exception as e:
             self._update_row_errors({}, 0, f"Could not instantiate transaction list: {e}")
+            self.errors.parse_errors.append(self.row_errors)
+
 
     def log_transactions_via_api(self, client_id: str, api_base_url: str):
+        log.info(f"Importing {self.transactions.withdrawls} via api calls to {api_base_url} for client_id: {client_id}")
         for txn in self.transactions.withdrawls:
             url = f"/v0/users/{txn.user_id}/transactionLogs"
             method = "POST"
@@ -305,15 +328,42 @@ class TransactionImporter:
 
 
 if __name__ == "__main__":
-    BASE_URL = os.environ.get("PTI_API_BASE_URL", "https://pti.apidev.pticlient.com")
-    CLIENT_ID = '3450582c-1955-11eb-adc1-0242ac120002'
-    PRIVATE_KEY = 'private1.jwk'
-    importer = TransactionImporter()
-    importer.load_csv_file('bridgeouts1.csv')
-    importer.dump_results('bridgeout1.csvparser.results.json')
-    importer.dump_transactions_json('bridgeouts1.json')
-    importer.load_json_file("bridgeouts1.json")
-    importer.dump_results('bridgeout1.jsonparser.results.json')
-    importer.load_private_key_json_file(PRIVATE_KEY)
-    importer.log_transactions_via_api(client_id=CLIENT_ID, api_base_url=BASE_URL)
-    importer.dump_results("bridgeouts1.request.results.json")
+    # generate cli from module docstring
+    args = docopt(__doc__)
+    if args.get("convert"):
+        csv_input = args.get("CSV_INPUT_FILE")
+        json_output = args.get("JSON_OUTPUT_FILE")
+        importer = TransactionImporter()
+        importer.load_csv_file(csv_input)
+        importer.dump_transactions_json(json_output)
+        if importer.has_errors:
+            result_file = csv_input + ".errors.json"
+            log.error(f"Some errors occurred during conversion, see {result_file}")
+            importer.dump_results(result_file)
+    elif args.get("import"):
+        json_input = args.get("--input")
+        private_key_file = args.get("--private_key")
+        client_id = args.get("--client_id")
+        endpoint = args.get("--endpoint")
+        importer = TransactionImporter()
+        importer.load_json_file(json_input)
+        importer.load_private_key_json_file(private_key_file)
+        importer.log_transactions_via_api(client_id=client_id, api_base_url=endpoint)
+        if importer.has_errors:
+            result_file = json_input + ".errors.json"
+            log.error(f"Some errors occurred during importation, see {result_file}")
+            importer.dump_results(result_file)
+
+    # importer = TransactionImporter()
+    # importer.load_csv_file('bridgeouts1.csv')
+    # importer.dump_results('bridgeout1.csvparser.results.json')
+    # importer.dump_transactions_json('bridgeouts1.json')
+    # importer.load_json_file("bridgeouts1.json")
+    # importer.dump_results('bridgeout1.jsonparser.results.json')
+    # BASE_URL = os.environ.get("PTI_API_BASE_URL", "https://pti.apidev.pticlient.com")
+    # CLIENT_ID = '3450582c-1955-11eb-adc1-0242ac120002'
+    # PRIVATE_KEY = 'private1.jwk'
+    # importer.load_private_key_json_file(PRIVATE_KEY)
+    # importer.log_transactions_via_api(client_id=CLIENT_ID, api_base_url=BASE_URL)
+    # importer.dump_results("bridgeouts1.request.results.json")
+    # import --input=bridgeouts1.json --client_id=3450582c-1955-11eb-adc1-0242ac120002 --private_key=private1.jwk --endpoint=https://ptisebr.apidev.pticlient.com

@@ -210,9 +210,9 @@ curio = ["curio (>=1.2)", "sniffio (>=1.1)"]
 trio = ["trio (>=0.14.0)", "sniffio (>=1.1)"]
 
 [[package]]
-name = "docopt"
-version = "0.6.2"
-description = "Pythonic argument parser, that will make you smile"
+name = "docopt-ng"
+version = "0.7.2"
+description = "More-magic command line arguments parser. Now with more maintenance!"
 category = "main"
 optional = false
 python-versions = "*"
@@ -513,7 +513,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "953525db583c622e1d7d077602cec1a6240ec2f1a6355b00474c0a1c88e5e955"
+content-hash = "2adc150210325d80ce433b9e681efaabb15ef68f7320da7f91506a7ac1dd0c07"
 
 [metadata.files]
 atomicwrites = [
@@ -643,8 +643,9 @@ dnspython = [
     {file = "dnspython-2.1.0-py3-none-any.whl", hash = "sha256:95d12f6ef0317118d2a1a6fc49aac65ffec7eb8087474158f42f26a639135216"},
     {file = "dnspython-2.1.0.zip", hash = "sha256:e4a87f0b573201a0f3727fa18a516b055fd1107e0e5477cded4a2de497df1dd4"},
 ]
-docopt = [
-    {file = "docopt-0.6.2.tar.gz", hash = "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491"},
+docopt-ng = [
+    {file = "docopt-ng-0.7.2.tar.gz", hash = "sha256:86ceea032f0cfa59e60776eb0cf38ac73653581022872320f47dc874678d7244"},
+    {file = "docopt_ng-0.7.2-py2.py3-none-any.whl", hash = "sha256:e98145cc02220ac5b1a8ee1c40ca9cc0cbd8e480a1b4928872bde686dc48660b"},
 ]
 email-validator = [
     {file = "email_validator-1.1.3-py2.py3-none-any.whl", hash = "sha256:5675c8ceb7106a37e40e2698a57c056756bf3f272cfa8682a4f87ebd95d8440b"},

@@ -1,3 +1,6 @@
+"""
+This file contains the code that can be put in an AWS lambda to import the transaction json uploaded on S3
+"""
 from io import BytesIO
 import os
 from pathlib import Path
@@ -104,5 +107,5 @@ def handler(event, context):
     result_filename = f"{object_without_ext}.{status_suffix}.json"
 
     result_stream = BytesIO(importer.errors.json().encode("utf-8"))
-
+    log.debug("Creating result file {}/{}", result_bucket_name, result_filename)
     resp = s3_client.upload_fileobj(Fileobj=result_stream, Bucket=result_bucket_name, Key=result_filename)
