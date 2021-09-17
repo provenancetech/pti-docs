@@ -23,7 +23,7 @@ import os
 import uuid
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Optional, Dict, List, TextIO
+from typing import Optional, Dict, List, TextIO, Literal, Union
 
 import coinaddr
 from coinaddr.validation import ValidationResult
@@ -45,28 +45,48 @@ class PaymentMethodType(str, Enum):
     TOKEN = "TOKEN"
 
 
-class PaymentInformationType(str, Enum):
-    CREDIT_CARD = "CREDIT_CARD"
-    PAYPAL = "PAYPAL"
-    TOKEN = "TOKEN"
-    BANK_ACCOUNT = "BANK_ACCOUNT"
-    ENCRYPTED_CREDIT_CARD = "ENCRYPTED_CREDIT_CARD"
-
-
 class PaymentInformation(BaseModel):
-    type: PaymentMethodType
     billingEmail: EmailStr
 
 
-class PaymentMethod(BaseModel):
-    paymentMethodType: PaymentMethodType
-    paymentInformation: PaymentInformation
-
-
 class TokenPaymentInformation(PaymentInformation):
-    type = PaymentMethodType.TOKEN
+    type: Literal['TOKEN'] = "TOKEN"
     tokenAddress: str
     tokenType: str
+
+
+class StateCode(BaseModel):
+    code: str
+
+
+class CountryCode(BaseModel):
+    code: str
+
+
+class Address(BaseModel):
+    streetAddress: str
+    city: str
+    postalCode: str
+    stateCode: StateCode
+    country: CountryCode
+    default: bool
+
+
+class CreditCardPaymentInformation(PaymentInformation):
+    type: Literal['CREDIT_CARD'] = "CREDIT_CARD"
+    creditCardType: str
+    statementMessage: str
+    transactionDescription: str
+    creditCardAddress: Address
+    cardHolderFirstName: str
+    cardHolderLastName: str
+    expirationYear: str
+    expirationMonth: str
+
+
+class PaymentMethod(BaseModel):
+    paymentMethodType: Literal['FIAT', 'TOKEN']
+    paymentInformation: Union[TokenPaymentInformation, CreditCardPaymentInformation]
 
 
 class TransactionTypes(str, Enum):
