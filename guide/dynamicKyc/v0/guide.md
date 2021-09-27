@@ -108,28 +108,17 @@ const callTransactionLog = (accessToken) => {
 ```
 ## Server Config per Client
 
-### KYC tier scenario bracket table
+### KYC tier scenario bracket table example
 
-Reference Document : KYC matrix and work https://docs.google.com/spreadsheets/d/1m9HdNw91vyACc1c_C9SF2-OIJJ_AgSdP7cRajm23_wk/edit#gid=0
 
 | scenarioId | kycTiers        | Call Example                                                              |
 |------|--------------|--------------------------------------------------------------------------|
-| fiat_to_cc  | {"1":0,"101":0,"1900":0,"9800":0}           | <a href='#/?id=a-funding'>A</a>|
-| rly_from_reward| {"1":0,"101":0,"1900":0,"9800":0}           | <a href='#/?id=a-funding'>A</a>|
-| cc_to_cc  | {"1":1,"101":1,"1900":1,"9800":1}       | <a href='#/?id=b-internal-transfer'>B</a>|
-| cc_to_rly  | {"1":1,"101":2,"1900":2,"9800":2}         | <a href='#/?id=b-internal-transfer'>B</a>|
-| rly_to_cc  | {"1":0,"101":0,"1900":0,"9800":0}           | <a href='#/?id=b-internal-transfer'>B</a>|
-| fan_to_fan_cc  | {"1":1,"101":1,"1900":1,"9800":1}           | <a href='#/?id=c-external-transfer'>C</a>|
-| fiat_to_creator_cc  | {"1":1,"101":1,"1900":1,"9800":1}          | <a href='#/?id=c-external-transfer'>C</a>|
-| creator_to_fan_cc  | {"1":1,"101":1,"1900":1,"9800":1}         | <a href='#/?id=c-external-transfer'>C</a>|
-| creator_to_creator_cc  | {"1":1,"101":1,"1900":1,"9800":1}         | <a href='#/?id=c-external-transfer'>C</a>|
-| bridge_out  | {"1":4,"101":4,"1900":4,"9800":5}       | <a href='#/?id=d-withdrawal'>D</a>|
-| cc_to_nft_primary  | {"1":1,"101":1,"1900":1,"9800":1}}       | ?|
-| cc_to_nft_secondary  | {"1":1,"101":1,"1900":1,"9800":1}       | ?|
-| nft_sell  | {"1":1,"101":2,"1900":2,"9800":2}   | ?|
-| nft_gift  | {"1":1,"101":1,"1900":1,"9800":1}       | ?|
+| fiat_to_internalCoin  | {"1":0,"101":0,"1900":0,"9800":0}           | <a href='#/?id=a-funding'>A</a>|
+| internalCoin_to_internalCoin2  | {"1":1,"101":2,"1900":2,"9800":2}         | <a href='#/?id=b-internal-transfer'>B</a>|
+| user_to_user_internalCoin  | {"1":1,"101":1,"1900":1,"9800":1}           | <a href='#/?id=c-external-transfer'>C</a>|
+| withdrawal_to_erc20  | {"1":4,"101":4,"1900":4,"9800":5}       | <a href='#/?id=d-withdrawal'>D</a>|
 
-### KYC Tier fields
+### KYC Tier fields example
 
 | kycTier | fields
 |------|--------------
