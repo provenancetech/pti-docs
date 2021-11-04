@@ -155,7 +155,9 @@ export default function App() {
                 currency: "USD",
                 paymentInformation: {
                     type: "ENCRYPTED_CREDIT_CARD",
-                    creditCardNumberHash: "feead9c948a4b3393498cf17816fb289c2d4d80d4ffb5b11a7171c5f6c48f573"
+                    creditCardNumberHash: "feead9c948a4b3393498cf17816fb289c2d4d80d4ffb5b11a7171c5f6c48f573",
+                    creditCardAddress: {
+                    }
                 },
                 paymentMethodType: "FIAT"
             },
