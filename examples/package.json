@@ -5,6 +5,7 @@
     "ReactJsSdkApp"
   ],
   "resolutions": {
+    "ansi-regex": "^5.0.1",
     "browserslist": "^4.16.6",
     "glob-parent": "^6.0.0",
     "immer": "^9.0.6",
