@@ -9,6 +9,7 @@ import TextField from '@material-ui/core/TextField';
 import {v4 as uuidv4} from 'uuid';
 import io from "socket.io-client";
 import {DialogActions} from "@material-ui/core";
+require('dotenv').config()
 
 function SimpleDialog(props) {
     const {open, callback, type, userId, requestId, amount, scenarioId} = props;
@@ -62,7 +63,7 @@ function SimpleDialog(props) {
 export default function App() {
     const [paymentOpen, setPaymentOpen] = React.useState(false);
     const [kycOpen, setKycOpen] = React.useState(false);
-    const [userId, setUserId] = React.useState("d19e2e0f-2f80-44c1-93ba-591b57a37173");
+    const [userId, setUserId] = React.useState(process.env.REACT_APP_USER_ID);
     const [requestId, setRequestId] = React.useState(uuidv4());
     const [amount, setAmount] = React.useState('' + Math.round(Math.random() * 100) + '.' + Math.round(Math.random() * 100));
     const [scenarioId, setScenarioId] = React.useState('');
@@ -132,7 +133,7 @@ export default function App() {
     }
 
     const callTransactionLog = (accessToken) => {
-        const baseUrl = 'https://pti' + (ptiConfig.ptiPrefix ? ptiConfig.ptiPrefix : '') + '.apidev.pticlient.com/v0';
+        const baseUrl = 'https://pti' + (ptiConfig.ptiPrefix ? ptiConfig.ptiPrefix : '') + '.' + process.env.REACT_APP_BASE_URL + '/v0';
         const url = baseUrl + '/users/' + userId + '/transactionLogs';
         const date = new Date().toISOString();
         const headers = {
@@ -191,7 +192,7 @@ export default function App() {
     }
 
     const callIsKycNeeded = (accessToken) => {
-        const baseUrl = 'https://pti' + (ptiConfig.ptiPrefix ? ptiConfig.ptiPrefix : '') + '.apidev.pticlient.com/v0';
+        const baseUrl = 'https://pti' + (ptiConfig.ptiPrefix ? ptiConfig.ptiPrefix : '') + '.' + process.env.REACT_APP_BASE_URL + '/v0';
         const url = baseUrl + '/users/' + userId + '/kyc-needed?amount=' + amount;
         const date = new Date().toISOString();
         const headers = {
