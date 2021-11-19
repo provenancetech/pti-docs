@@ -9,7 +9,8 @@ import TextField from "@material-ui/core/TextField";
 import { v4 as uuidv4 } from "uuid";
 import io from "socket.io-client";
 import { DialogActions } from "@material-ui/core";
-require("dotenv").config();
+
+import { REACT_APP_BASE_URL, REACT_APP_USER_ID } from "./env";
 
 function SimpleDialog(props) {
   const { open, callback, type, userId, requestId, amount, scenarioId } = props;
@@ -68,7 +69,7 @@ function SimpleDialog(props) {
 export default function App() {
   const [paymentOpen, setPaymentOpen] = React.useState(false);
   const [kycOpen, setKycOpen] = React.useState(false);
-  const [userId, setUserId] = React.useState(process.env.REACT_APP_USER_ID);
+  const [userId, setUserId] = React.useState(REACT_APP_USER_ID);
   const [requestId, setRequestId] = React.useState(uuidv4());
   const [amount, setAmount] = React.useState(
     "" + Math.round(Math.random() * 100) + "." + Math.round(Math.random() * 100)
@@ -144,7 +145,7 @@ export default function App() {
       "https://pti" +
       (ptiConfig.ptiPrefix ? ptiConfig.ptiPrefix : "") +
       "." +
-      process.env.REACT_APP_BASE_URL +
+      REACT_APP_BASE_URL +
       "/v0";
     const url = baseUrl + "/users/" + userId + "/transactionLogs";
     const date = new Date().toISOString();
@@ -209,7 +210,7 @@ export default function App() {
       "https://pti" +
       (ptiConfig.ptiPrefix ? ptiConfig.ptiPrefix : "") +
       "." +
-      process.env.REACT_APP_BASE_URL +
+      REACT_APP_BASE_URL +
       "/v0";
     const url = baseUrl + "/users/" + userId + "/kyc-needed?amount=" + amount;
     const date = new Date().toISOString();

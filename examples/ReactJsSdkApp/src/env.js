@@ -1,0 +1,3 @@
+const { REACT_APP_BASE_URL, REACT_APP_USER_ID } = process.env;
+
+export { REACT_APP_BASE_URL, REACT_APP_USER_ID };
