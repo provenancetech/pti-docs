@@ -142,7 +142,7 @@ export default function App() {
 
   const callTransactionLog = (accessToken) => {
     const baseUrl =
-      "https://pti" +
+      "https://" + (ptiConfig.apiDomain ? ptiConfig.apiDomain : "pti") +
       (ptiConfig.ptiPrefix ? ptiConfig.ptiPrefix : "") +
       "." +
       REACT_APP_BASE_URL +
@@ -207,7 +207,7 @@ export default function App() {
 
   const callIsKycNeeded = (accessToken) => {
     const baseUrl =
-      "https://pti" +
+      "https://" + (ptiConfig.apiDomain ? ptiConfig.apiDomain : "pti") +
       (ptiConfig.ptiPrefix ? ptiConfig.ptiPrefix : "") +
       "." +
       REACT_APP_BASE_URL +
