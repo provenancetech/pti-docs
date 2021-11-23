@@ -31,7 +31,7 @@
       ptiConfig = {
         clientId: "%REACT_APP_CLIENT_ID%", //Use the clientId provided by the PTI team
         generateTokenPath: "/generateToken", //Path to the endpoint on your backend to generate token
-        //apiDomain: 'api', //uncomment for prod env
+        apiDomain: "%REACT_APP_API_DOMAIN%"
       };
       window.ptiAsyncInit = function() {
         PTI.init(ptiConfig);
