@@ -78,32 +78,32 @@ export default function App() {
   const [okDialog, setOkDialog] = React.useState(false);
   const [errorDialog, setErrorDialog] = React.useState(false);
 
-  let socket = io.connect("http://localhost:5000");
-
-  React.useEffect(() => {
-    socket.on(requestId, (msg) => {
-      console.log(msg);
-      setKycOpen(false);
-      setPaymentOpen(false);
-      switch (msg.resourceType) {
-        case "TRANSACTION_MONITORING":
-          if (msg.status !== "ACCEPT") {
-            setOkDialog(false);
-            setErrorDialog(true);
-          }
-          break;
-        case "PAYMENT_PROCESSOR":
-          if (msg.status !== "AUTHORIZED") {
-            setOkDialog(false);
-            setErrorDialog(true);
-          } else {
-            setErrorDialog(false);
-            setOkDialog(true);
-          }
-          break;
-      }
-    });
-  }, [requestId]);
+  // let socket = io.connect("http://localhost:5000");
+  //
+  // React.useEffect(() => {
+  //   socket.on(requestId, (msg) => {
+  //     console.log(msg);
+  //     setKycOpen(false);
+  //     setPaymentOpen(false);
+  //     switch (msg.resourceType) {
+  //       case "TRANSACTION_MONITORING":
+  //         if (msg.status !== "ACCEPT") {
+  //           setOkDialog(false);
+  //           setErrorDialog(true);
+  //         }
+  //         break;
+  //       case "PAYMENT_PROCESSOR":
+  //         if (msg.status !== "AUTHORIZED") {
+  //           setOkDialog(false);
+  //           setErrorDialog(true);
+  //         } else {
+  //           setErrorDialog(false);
+  //           setOkDialog(true);
+  //         }
+  //         break;
+  //     }
+  //   });
+  // }, [requestId]);
 
   const closeOkDialog = () => setOkDialog(false);
 
