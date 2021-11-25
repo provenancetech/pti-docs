@@ -13,11 +13,11 @@ There is two way to authenticate with the PTI system, either by signed requests 
 
 Making signed requests:
 
-https://starcard-org.github.io/pti-docs/guide/v0/#/?id=making-signed-requests
+https://provenancetech.github.io/pti-docs/guide/v0/#/?id=making-signed-requests
 
 Generate JWT tokens
 
-https://starcard-org.github.io/pti-docs/guide/v0/#/?id=generating-a-single-use-jwt-with-permissions-for-a-specific-url
+https://provenancetech.github.io/pti-docs/guide/v0/#/?id=generating-a-single-use-jwt-with-permissions-for-a-specific-url
 
 
 ## Creating PTI Users
@@ -27,7 +27,7 @@ This can be done either from the front end or the backend. Typically, you could 
 
 Here is the call reference
 
-https://starcard-org.github.io/pti-docs/api/v0/index.html#/paths/~1users/post
+https://provenancetech.github.io/pti-docs/api/v0/index.html#/paths/~1users/post
 
 ## Client-side integration
 ### Client-side flow
@@ -95,11 +95,11 @@ Request id is something that needs to be provided as a header to any actions you
 
 Here is an example of a very simple React/Python app that does the whole flow
 
-https://github.com/starcard-org/pti-docs/tree/master/examples/ReactJsSdkApp 
+https://github.com/provenancetech/pti-docs/tree/master/examples/ReactJsSdkApp 
 
 The backend
 
-https://github.com/starcard-org/pti-docs/tree/master/examples/PythonBackendApp 
+https://github.com/provenancetech/pti-docs/tree/master/examples/PythonBackendApp 
 
 ## Server-side integration
 ### Generating user tokens from your backend
@@ -125,7 +125,7 @@ It is **strongly recommended** that in addition to decrypting the message with y
 
 Here is an example that shows you how to do so(Python)
 
-https://starcard-org.github.io/pti-docs/guide/v0/#/?id=example-webhook
+https://provenancetech.github.io/pti-docs/guide/v0/#/?id=example-webhook
 
 ### Webhook Responses definitions
 Here is what you can receive on your webhook:
@@ -222,40 +222,40 @@ Here are the most useful API endpoints
 
 Create a user
 
-https://starcard-org.github.io/pti-docs/api/v0/index.html#/paths/~1users/post
+https://provenancetech.github.io/pti-docs/api/v0/index.html#/paths/~1users/post
 
  
 
 Create user token
 
-https://starcard-org.github.io/pti-docs/api/v0/index.html#/paths/~1auth~1userToken/post
+https://provenancetech.github.io/pti-docs/api/v0/index.html#/paths/~1auth~1userToken/post
 
  
 
 Get user KYC latest result
 
-https://starcard-org.github.io/pti-docs/api/v0/index.html#/paths/~1users~1{userId}~1kyc/get
+https://provenancetech.github.io/pti-docs/api/v0/index.html#/paths/~1users~1{userId}~1kyc/get
 
  
 
 Log a transaction
 
-https://starcard-org.github.io/pti-docs/api/v0/index.html#/paths/~1users~1{userId}~1transactionLogs/post
+https://provenancetech.github.io/pti-docs/api/v0/index.html#/paths/~1users~1{userId}~1transactionLogs/post
 
  
 
 Get transaction log result
 
-https://starcard-org.github.io/pti-docs/api/v0/index.html#/paths/~1users~1{userId}~1transactionLogs~1{requestId}/get
+https://provenancetech.github.io/pti-docs/api/v0/index.html#/paths/~1users~1{userId}~1transactionLogs~1{requestId}/get
 
  
 
 Fiat in call
 
-https://starcard-org.github.io/pti-docs/api/v0/index.html#/paths/~1users~1{userId}~1transactions~1fiat~1funding/post
+https://provenancetech.github.io/pti-docs/api/v0/index.html#/paths/~1users~1{userId}~1transactions~1fiat~1funding/post
 
  
 
 Start a KYC for a user
 
-https://starcard-org.github.io/pti-docs/api/v0/index.html#/paths/~1users~1{userId}~1kyc/post
+https://provenancetech.github.io/pti-docs/api/v0/index.html#/paths/~1users~1{userId}~1kyc/post
