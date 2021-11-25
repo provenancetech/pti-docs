@@ -24,14 +24,14 @@ All API requests must be made over HTTPS. Calls made over plain HTTP will fail. 
 The PTI API currently only support **RSA public/private** keypairs in the **JWK** format. To generate such a key, you can run:
 
 ```docker
-docker run -i --rm docker.pkg.github.com/starcard-org/pti-tools/jwk-generator:latest genkey > my_pti_private_key.jwk
+docker run -i --rm docker.pkg.github.com/provenancetech/pti-tools/jwk-generator:latest genkey > my_pti_private_key.jwk
 ```
 
-The source code for `docker.pkg.github.com/starcard-org/pti-tools/jwk-generator:latest` is available [here](https://github.com/starcard-org/pti-tools/blob/master/jwk-generator/keygen.py).
+The source code for `docker.pkg.github.com/provenancetech/pti-tools/jwk-generator:latest` is available [here](https://github.com/provenancetech/pti-tools/blob/master/jwk-generator/keygen.py).
 
 ?> You might need to `docker login docker.pkg.github.com` before you can run the above command.
 
-?> It's always a good idea to make sure you have the current version of a tagged container before executing it, eg, `docker pull docker.pkg.github.com/starcard-org/pti-tools/jwk-generator:latest`. The next major version of Docker after 19.03 will include a `--pull=always` option on the `docker run` command.
+?> It's always a good idea to make sure you have the current version of a tagged container before executing it, eg, `docker pull docker.pkg.github.com/provenancetech/pti-tools/jwk-generator:latest`. The next major version of Docker after 19.03 will include a `--pull=always` option on the `docker run` command.
 
 In this snippet, a new private key with a random Key ID (actually, a UUID) is generated, in the JWK format, and sent to a file called `my_pti_private_key.jwk`. Keep the content of this file secure: it's your private key.
 
@@ -55,13 +55,13 @@ The generated file contains JSON with the following structure:
 To extract the corresponding public key, do:
 
 ```docker
-cat my_pti_private_key.jwk | docker run -i --rm docker.pkg.github.com/starcard-org/pti-tools/jwk-generator:latest pubkey > my_pti_public_key.jwk
+cat my_pti_private_key.jwk | docker run -i --rm docker.pkg.github.com/provenancetech/pti-tools/jwk-generator:latest pubkey > my_pti_public_key.jwk
 ```
 
 You can also extract only the public key's thumbprint by adding the `--thumbprint` argument:
 
 ```docker
-cat my_pti_private_key.jwk | docker run -i --rm docker.pkg.github.com/starcard-org/pti-tools/jwk-generator:latest pubkey --thumbprint
+cat my_pti_private_key.jwk | docker run -i --rm docker.pkg.github.com/provenancetech/pti-tools/jwk-generator:latest pubkey --thumbprint
 ```
 
 The public key (`my_pti_public_key.jwk`) is what you'll send to PTI. You will use your private key to sign all requests that you make to the PTI API, and to decrypt messages coming in through your Webhook.
@@ -126,19 +126,19 @@ Note that for a GET request, `Content-MD5` and `Content-Type` are empty (but the
 
 #### Helper tool to make signed requests
 
-You can use the `docker.pkg.github.com/starcard-org/pti-tools/signed-request-maker:latest` container to make signed requests to the PTI API. It's useful as a testing and learning tool for signed requests.
+You can use the `docker.pkg.github.com/provenancetech/pti-tools/signed-request-maker:latest` container to make signed requests to the PTI API. It's useful as a testing and learning tool for signed requests.
 
 For example:
 
 ```docker
 docker run -it --rm -v $(pwd)/my_private_key.jwk:/data/key.jwk \
-  docker.pkg.github.com/starcard-org/pti-tools/signed-request-maker:latest \
+  docker.pkg.github.com/provenancetech/pti-tools/signed-request-maker:latest \
     --clientId "00000000-0000-0000-0000-000000000000" \
     --data '{"name": "Jane Doe", "id": "my_internal_id-12345678"}' \
     -k /data/key.jwk --debug https://api.ptidev.xyz/v0/users
 ```
 
-The source code for `docker.pkg.github.com/starcard-org/pti-tools/signed-request-maker:latest` is available [here](https://github.com/starcard-org/pti-tools/blob/master/signed-request-maker/signed_request_maker.py).
+The source code for `docker.pkg.github.com/provenancetech/pti-tools/signed-request-maker:latest` is available [here](https://github.com/provenancetech/pti-tools/blob/master/signed-request-maker/signed_request_maker.py).
 
 #### Examples of signing a payload using JWS
 
@@ -150,7 +150,7 @@ If you need your users or third parties to be able to call the PTI API on your b
 
 ### Generating a single-use JWT with permissions for a specific URL
 
-To generate a single-use token that can be used by one of your Users for a single request, you need to make a `POST` request to `/auth/userToken`. The details are explained in the [API Reference](https://starcard-org.github.io/pti-docs/api/v0/#/paths/~1auth~1userToken/post), but you need to specify the URL on which the token is to grant permission, eg, `{"url": "/v0/users/{userId}/wallets/fiat/{walletId}/funding"}`. You'll then get a JSON response containing `{"accessToken": "..."}`; the content of the `accessToken` field has to be included in the `x-pti-token` HTTP Header in the request made by your User.
+To generate a single-use token that can be used by one of your Users for a single request, you need to make a `POST` request to `/auth/userToken`. The details are explained in the [API Reference](https://provenancetech.github.io/pti-docs/api/v0/#/paths/~1auth~1userToken/post), but you need to specify the URL on which the token is to grant permission, eg, `{"url": "/v0/users/{userId}/wallets/fiat/{walletId}/funding"}`. You'll then get a JSON response containing `{"accessToken": "..."}`; the content of the `accessToken` field has to be included in the `x-pti-token` HTTP Header in the request made by your User.
 
 ### Example flow for a Funding transaction using a User JWT
 
@@ -182,7 +182,7 @@ This mechanism insures that nobody but you can ever have access to the content o
 
 ### Example webhook
 
-  !> You can find the source code for the example webhook server, along with a tool to make mock requests to your webhook server, [here](https://github.com/starcard-org/pti-docs/blob/master/examples/python/webhook_server).
+  !> You can find the source code for the example webhook server, along with a tool to make mock requests to your webhook server, [here](https://github.com/provenancetech/pti-docs/blob/master/examples/python/webhook_server).
 
 ```python
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -269,4 +269,4 @@ Some 4xx errors that could be handled programmatically (e.g., the User provided 
 
 ## PTI API v0 Reference
 
-You can find the PTI API v0 Reference here: https://starcard-org.github.io/pti-docs/api/v0/
+You can find the PTI API v0 Reference here: https://provenancetech.github.io/pti-docs/api/v0/
