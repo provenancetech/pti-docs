@@ -26,12 +26,13 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <script async defer src="https://sdk.%REACT_APP_BASE_URL%/0.0.11/index.js"></script>
+    <script async defer src="https://sdk.%REACT_APP_BASE_URL%/%REACT_APP_SDK_VERSION%/index.js"></script>
     <script>
       ptiConfig = {
         clientId: "%REACT_APP_CLIENT_ID%", //Use the clientId provided by the PTI team
         generateTokenPath: "/generateToken", //Path to the endpoint on your backend to generate token
-        apiDomain: "%REACT_APP_API_DOMAIN%"
+        apiDomain: "%REACT_APP_API_DOMAIN%",
+        ptiPrefix: "%REACT_APP_PTI_PREFIX%"
       };
       window.ptiAsyncInit = function() {
         PTI.init(ptiConfig);
