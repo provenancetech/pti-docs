@@ -155,6 +155,7 @@ export default function App() {
       "x-pti-client-id": ptiConfig.clientId,
       "x-pti-token": accessToken,
       "x-pti-scenario-id": scenarioId,
+      "x-pti-session-id": ptiConfig.sessionId, // this is set via the init of the sdk
       Date: date,
     };
     const body = {
