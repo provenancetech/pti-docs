@@ -29,15 +29,15 @@ function SimpleDialog(props) {
         metaInformation: { var3: "value3", var4: "value4" },
       };
       if (scenarioId) {
+        // note that the template corresponding to this scenarioId must exist in the PTI backend
         params.scenarioId = scenarioId;
+        // update the context
         PTI.updateContext(userId, scenarioId, ptiConfig.sessionId);
-
       }
 
       switch (type) {
         case "FIAT_FUNDING":
           params.type = "FIAT_FUNDING";
-          console.log(params);
           PTI.form(params);
           break;
         case "KYC":
@@ -281,7 +281,7 @@ export default function App() {
           id={"scenarioId"}
           value={scenarioId}
           onChange={(e) => setScenarioId(e.target.value)}
-          label={"ScenarioId"}
+          label={"ScenarioId ( associated template must be present in backend )"}
           fullWidth={true}
         />
         <br />
