@@ -19,31 +19,29 @@ function SimpleDialog(props) {
   const setRef = (e) => {
     if (e != null && !sdkInit) {
       setSdkInit(true);
+
+      const params = {
+        requestId: requestId,
+        userId: userId,
+        amount: amount,
+        parentElement: document.getElementById(e.id),
+        callback: callback,
+        metaInformation: { var3: "value3", var4: "value4" },
+      };
+      if (scenarioId) {
+        // note that the template corresponding to this scenarioId must exist in the PTI backend
+        params.scenarioId = scenarioId;
+        // update the context
+        PTI.updateContext(userId, scenarioId, ptiConfig.sessionId);
+      }
+
       switch (type) {
         case "FIAT_FUNDING":
-          PTI.form({
-            type: "FIAT_FUNDING",
-            requestId: requestId,
-            userId: userId,
-            amount: amount,
-            parentElement: document.getElementById(e.id),
-            callback: callback,
-            metaInformation: { var1: "value1", var2: "value2" },
-          });
+          params.type = "FIAT_FUNDING";
+          PTI.form(params);
           break;
         case "KYC":
-          const params = {
-            type: "KYC",
-            requestId: requestId,
-            userId: userId,
-            parentElement: document.getElementById(e.id),
-            callback: callback,
-            metaInformation: { var3: "value3", var4: "value4" },
-          };
-          if (scenarioId) {
-            params.scenarioId = scenarioId;
-            params.amount = amount;
-          }
+          params.type = "KYC";
           PTI.form(params);
           break;
       }
@@ -283,7 +281,7 @@ export default function App() {
           id={"scenarioId"}
           value={scenarioId}
           onChange={(e) => setScenarioId(e.target.value)}
-          label={"ScenarioId"}
+          label={"ScenarioId ( associated template must be present in backend )"}
           fullWidth={true}
         />
         <br />
