@@ -138,7 +138,8 @@ KYC Result
    "requestId":"$YOUR_REQUEST_ID",
    "clientId":"$YOUR_CLIENT_ID",
    "userId":"$YOUR_USER_ID",
-   "status":"ACCEPTED/REFUSED/UNDER_REVIEW/ERROR/PENDING"
+   "status":"ACCEPTED/REFUSED/UNDER_REVIEW/ERROR/PENDING",
+   "tier": "Integer"
 }
 ```
 
