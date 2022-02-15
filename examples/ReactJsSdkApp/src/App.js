@@ -7,7 +7,6 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import TextField from "@material-ui/core/TextField";
 import { v4 as uuidv4 } from "uuid";
-import io from "socket.io-client";
 import { DialogActions } from "@material-ui/core";
 
 import { REACT_APP_BASE_URL, REACT_APP_USER_ID } from "./env";
@@ -55,10 +54,10 @@ function SimpleDialog(props) {
       </DialogTitle>
       <DialogContent>
         <div
-          id={type + "PlaceHolder"}
-          ref={setRef}
-          style={{ width: "550px", height: "1200px" }}
-        ></div>
+    id={type + "PlaceHolder"}
+    ref={setRef}
+    style={{width: "550px", height: "1200px"}}
+    />
       </DialogContent>
     </Dialog>
   );
@@ -75,33 +74,6 @@ export default function App() {
   const [scenarioId, setScenarioId] = React.useState("");
   const [okDialog, setOkDialog] = React.useState(false);
   const [errorDialog, setErrorDialog] = React.useState(false);
-
-  // let socket = io.connect("http://localhost:5000");
-  //
-  // React.useEffect(() => {
-  //   socket.on(requestId, (msg) => {
-  //     console.log(msg);
-  //     setKycOpen(false);
-  //     setPaymentOpen(false);
-  //     switch (msg.resourceType) {
-  //       case "TRANSACTION_MONITORING":
-  //         if (msg.status !== "ACCEPT") {
-  //           setOkDialog(false);
-  //           setErrorDialog(true);
-  //         }
-  //         break;
-  //       case "PAYMENT_PROCESSOR":
-  //         if (msg.status !== "AUTHORIZED") {
-  //           setOkDialog(false);
-  //           setErrorDialog(true);
-  //         } else {
-  //           setErrorDialog(false);
-  //           setOkDialog(true);
-  //         }
-  //         break;
-  //     }
-  //   });
-  // }, [requestId]);
 
   const closeOkDialog = () => setOkDialog(false);
 
@@ -247,6 +219,62 @@ export default function App() {
       .catch((e) => alert("Error:" + JSON.stringify(e)));
   };
 
+    const callCreateUser = (accessToken) => {
+        const baseUrl =
+            "https://" + (ptiConfig.apiDomain ? ptiConfig.apiDomain : "pti") +
+            (ptiConfig.ptiPrefix ? ptiConfig.ptiPrefix : "") +
+            "." +
+            REACT_APP_BASE_URL +
+            "/v0";
+        const url = baseUrl + "/users";
+        const date = new Date().toISOString();
+        const headers = {
+            "Content-type": "application/json",
+            "x-pti-request-id": requestId,
+            "x-pti-client-id": ptiConfig.clientId,
+            "x-pti-token": accessToken,
+            "x-pti-scenario-id": scenarioId,
+            "x-pti-session-id": ptiConfig.sessionId, // this is set via the init of the sdk
+            Date: date
+        };
+        const body = {
+            id: uuidv4(),
+            type: "PERSON"
+        };
+        const options = {
+            method: "POST",
+            body: JSON.stringify(body),
+        };
+        const config = {
+            ...options,
+            headers,
+        };
+        return fetch(url, config).then((response) => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error(response.statusText);
+        });
+    };
+
+
+    const createUser = async () => {
+        const token = await generateToken({
+            method: "POST",
+            url: "/users"
+        });
+        const accessToken = token.accessToken;
+        await callCreateUser(accessToken)
+            .then((res) => {
+                setUserId(res.id);
+                alert("User " + res.id + " was created");
+            })
+            .catch((e) => {
+                console.log("Catch: ", e);
+                alert("Error:" + JSON.stringify(e));
+            });
+    }
+
   return (
     <Container>
       <Box my={4}>
@@ -257,6 +285,14 @@ export default function App() {
           label={"UserId"}
           fullWidth={true}
         />
+          <Button
+              variant="contained"
+              onClick={createUser}
+              fullWidth={true}
+              style={{marginTop: '5px'}}
+          >
+              Create a new User
+          </Button>
         <br />
         <br />
         <TextField
