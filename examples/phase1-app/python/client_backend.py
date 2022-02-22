@@ -55,7 +55,7 @@ def webhook():
     return '', 204
 
 def run_server():
-    app.run(port=8000, threaded=True, host='0.0.0.0')
+    app.run(port=8000, threaded=True, host='::')
 
 if __name__ == "__main__":
     run_server()
