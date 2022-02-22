@@ -49,7 +49,7 @@ def webhook():
     return '', 204
 
 def run_server():
-    socketio.run(app)
+    socketio.run(app, host='::', port=5000)
 
 if __name__ == "__main__":
     run_server()
