@@ -157,18 +157,18 @@ To generate a single-use token that can be used by one of your Users for a singl
 
 ```mermaid
 sequenceDiagram
-    Game->>+ForteBackend: GetPaymentIFrame (userId)
-    ForteBackend->>+PTI: GetUserToken (userId, url)
-    PTI->>-ForteBackend: JWT Token
-    ForteBackend->>-Game: IFrame+JWT Token
-    Game->>+PTI: POST (url, PaymentDetails, JWT Token)
-    PTI->>PTI: TransactionMonitoring
-    PTI->>Game: Ack (HTTP 201)
-    Game->>Game: Update UI?
-    PTI-X-ForteBackend: Async PaymentResult
-    ForteBackend->>Game: PaymentResult
-    Game->>Game: Update UI?
-    PTI-XForteBackend: Async KYC
+    Client UI->>+PTI Forms Service: SDK.form("KYC")
+    PTI Forms Service->>+PTI API: GetUserToken (userId, url)
+    PTI API->>-PTI Forms Service: JWT Token
+    PTI Forms Service->>-Client UI: IFrame+JWT Token
+    Client UI->>+PTI API: POST (url, PaymentDetails, JWT Token)
+    PTI API->>PTI API: TransactionMonitoring
+    PTI API->>Client UI: Ack (HTTP 201)
+    Client UI->>Client UI: Update UI?
+    PTI API-X-PTI Forms Service: Async PaymentResult
+    PTI Forms Service->>Client UI: PaymentResult
+    Client UI->>Client UI: Update UI?
+    PTI API-XPTI Forms Service: Async KYC
 
 ```
 
@@ -265,8 +265,20 @@ Some 4xx errors that could be handled programmatically (e.g., the User provided 
 | 429  | Too Many Requests | Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.                                  |
 | 5xx  | Server Errors | 	Something went wrong on PTI's end. (These are rare.)                              |
 
+## Integration guides
+
+Read our [integration guide](../integration/v0/guide.md) to learn how to leverage the PTI front-end sdk and integrate with the PTI backend
+
+Read our [Dynamic KYC integartion guide](../dynamicKyc/v0/guide.md) to learn all the details on how to configure the KYC tiers and associated information requirements
+
 
 
 ## PTI API v0 Reference
 
-You can find the PTI API v0 Reference here: https://provenancetech.github.io/pti-docs/api/v0/
+You can find the PTI API Reference [here](https://provenancetech.github.io/pti-docs/api/v0/)
+
+
+## Flows
+
+# Flows with PTI hosted forms
+# Backend only flow
