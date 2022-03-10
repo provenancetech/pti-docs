@@ -1,4 +1,5 @@
-- [Home](README.md)
+- [Home](home.md)
+- [Onboarding](onboarding.md)
 - [Authentication](auth.md)
 - [KYC](kyc.md)
 - [SDK](sdk.md)
