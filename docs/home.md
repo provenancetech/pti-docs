@@ -11,10 +11,12 @@ The PTI platform provides you with components that will allow you to achieve com
 Being in compliance means acting in accordance to local laws and regulations. Ensuring that all the required information is collected, all value transfers are appropriately licensed is all part of achieving compliance. The PTI platform aims to simplify this process as much as possible, but ultimately, PTI clients also have their role to play and are responsible for using the PTI platform correctly to achieve compliance.
 
 ### KYC         
-Acronym for Know Your Customer. In this documentation, "performing a KYC" means collecting as set of information about a person.
+Acronym for Know Your Customer. In this documentation, "performing a KYC" means collecting as set of information about a person and returning a status.
 
 ### KYC Tier
-The KYC tier, also referred to as the KYC level, is a grouping of information about a person. Depending on the information collected, a person will be considered to have reached a KYC level. Normally, the higher levels will require all the information from the lower levels. KYC tiers can then be used to allow or deny certain operations.
+The KYC tier, also referred to as the KYC level, is a grouping of information about a person associated to a numeric value. 
+Depending on the information collected and the returned status, a person will be considered to have reached a KYC level. 
+Higher tiers will require all the information from the lower levels.
 
 ### Transaction
 A transaction, in its general form, represents a transfer of assets from an originator to a recipient. Here are the 3 types of transactions that exist:
