@@ -19,7 +19,11 @@ This will create a pair of files in the form of `${CLIENT_NAME}_private_key.jwk`
 
 ### Opening your account with PTI
 
-When you are ready to start interacting with the PTI platform, write an email to [PTI customer service](mailto:customerservice@provenancetech.io) requesting an account. Attach your public key (`${CLIENT_NAME}_public_key.jwk`) to the email. 
+When you are ready to start interacting with the PTI platform, 
+write an email to [PTI customer service](mailto:customerservice@provenancetech.io) requesting an account.
+You need to provide these 2 pieces of information:
+* Your public key: ( attach your `${CLIENT_NAME}_public_key.jwk` to the email)
+* Your webhook URL: This must be an HTTPS url under your control. You will receive all transaction and KYC statuses on it as POST requests.
 As soon as your account application is approved, you will receive a client ID that will uniquely identify your account.
 
 With your client ID and private key on hand, you are ready start using the PTI platform.

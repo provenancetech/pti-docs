@@ -3,4 +3,5 @@
 - [Authentication](auth.md)
 - [KYC](kyc.md)
 - [SDK](sdk.md)
+- [Examples](examples.md)
 - [API Usage](usage.md)
