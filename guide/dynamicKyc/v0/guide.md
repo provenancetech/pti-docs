@@ -1,1 +1,0 @@
-# Dynamic Kyc - Integration Guide

@@ -16,7 +16,7 @@ Normally there should only be one call to the `PTI.init` function.
           clientId: "CLIENT_ID",
           generateTokenPath: "GENERATE_TOKEN_ENDPOINT",
           sessionId: "SESSION_ID"
-        });
+        })
       }
     </script>
 ```
