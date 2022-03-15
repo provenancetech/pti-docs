@@ -2,7 +2,8 @@
 
 The PTI API uses asymmetric cryptography, encapsulated in a signature, to authenticate the caller of the API.
 PTI only has access to your public key(s), never to your private key. It's your responsability to keep your private key secure at all times.
-Having access to your private key means having access to your PTI API account. Do not share your private key  in publicly accessible areas such as GitHub, client-side code, and so forth.
+Having access to your private key means having access to your PTI API account. 
+Do **NOT** share your private key  in publicly accessible areas such as code repositories, client-side code, and so forth.
 
 All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail.
 
@@ -13,7 +14,8 @@ There are two authentication mechanisms to make api requests:
 
 ## Signed requests
 
-Signed requests requires access to the private key to sign the request, so it is only possible to use this method when the API calls are made from a private client. Only your server backend should make signed requests.
+Signed requests requires access to the private key to sign the request, so it is only possible to use this method when the API calls
+are made from a private client. Only your server backend should make signed requests.
 
 #### Making signed requests
 
@@ -71,7 +73,7 @@ Note that for a GET request, `${SHA256 of request body}` and `${Content Type}` a
 
 #### Helper tool to make signed requests
 
-You can use the [signed_request_maker.py](../utils/signed_request_maker.py) utility to make signed requests to the PTI API. It's useful as a testing and learning tool for signed requests.
+You can use the [signed_request_maker.py](https://github.com/provenancetech/pti-docs/blob/master/utils/signed_request_maker.py) utility to make signed requests to the PTI API. It's useful as a testing and learning tool for signed requests.
 
 For example:
 
@@ -87,8 +89,8 @@ If you need your users or third parties to be able to call the PTI API on your b
 ### Generating a single-use JWT with permissions for a specific URL
 
 To generate a single-use token that can be used by one of your Users for a single request, you need to make a `POST` request to `/auth/userToken`. 
-You need to specify the URL on which the token is to grant permission, eg, `{"url": "/v0/users/{userId}/wallets/fiat/{walletId}/funding"}` and you will
-receive a JSON response containing `{"accessToken": "..."}`. The content of the `accessToken` field has to be included in the `x-pti-token` HTTP Header in the request made by your User.
+You need to specify the URL on which the token is to grant permission, eg, `{"url": "/v0/users/{userId}/transactions/fiat/funding"}` and you will
+receive a JSON response containing `{"accessToken": "..."}`. The value of the `accessToken` field has to be included in the `x-pti-token` HTTP Header in the request made by your User.
 
 The call the the `/auth/userToken` endpoint must be done via a signed request, so this means that you will need to have an endpoint in your own backend to proxy the request that will generate the auth token.
 
