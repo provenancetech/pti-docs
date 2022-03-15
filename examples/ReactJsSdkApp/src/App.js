@@ -12,7 +12,7 @@ import { DialogActions } from "@material-ui/core";
 import { REACT_APP_BASE_URL, REACT_APP_USER_ID } from "./env";
 
 function SimpleDialog(props) {
-  const { open, callback, type, userId, requestId, amount, scenarioId } = props;
+  const { open, type, userId, requestId, amount, scenarioId } = props;
   const [sdkInit, setSdkInit] = React.useState(false);
 
   const setRef = (e) => {
@@ -24,7 +24,6 @@ function SimpleDialog(props) {
         userId: userId,
         amount: amount,
         parentElement: document.getElementById(e.id),
-        callback: callback,
         metaInformation: { var3: "value3", var4: "value4" },
       };
       if (scenarioId) {
@@ -357,7 +356,6 @@ export default function App() {
       </Box>
       <SimpleDialog
         open={paymentOpen}
-        callback={() => setPaymentOpen(false)}
         type="FIAT_FUNDING"
         userId={userId}
         amount={amount}
@@ -366,7 +364,6 @@ export default function App() {
       />
       <SimpleDialog
         open={kycOpen}
-        callback={() => setKycOpen(false)}
         type="KYC"
         userId={userId}
         amount={amount}
