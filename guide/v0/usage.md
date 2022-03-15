@@ -41,7 +41,8 @@ Most operations on the PTI API will result in asynchronous responses which will 
 The content posted on your webhook is encrypted using your public key, and signed using PTI's private key.
 You have to decrypt the message using your private key, and verify that the message originated from PTI by validating the signature using PTI's public key.
 This mechanism insures that nobody but you can have access to the content of those messages, even if your webhook was hijacked, and you can always be sure 
-that the message originated from PTI by validating the signature of the message. 
+that the message originated from PTI by validating the signature of the message.
+The PTI public key used for signing webhook payloads can be found [here](https://github.com/provenancetech/pti-docs/blob/master/utils/pti-prod-public.jwk)
 Example code that shows you how to handle webhook requests can be found [here](https://github.com/provenancetech/pti-docs/blob/master/examples/webhook-server/python/webhook_server.py).
 
 Most webhook requests will originate form an API call you made, but it may not always be the case. For example, we may have gathered some new information about one of your users that 
