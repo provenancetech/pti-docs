@@ -33,17 +33,9 @@ const SimpleDialog = ({
         PTI.updateContext(userId, scenarioId, ptiConfig.sessionId);
       }
 
-      switch (type) {
-        case "FIAT_FUNDING":
-          params.type = "FIAT_FUNDING";
-          PTI.form(params);
-          break;
+      if (["FIAT_FUNDING", "KYC"].includes(type)) params.type = type;
 
-        case "KYC":
-          params.type = "KYC";
-          PTI.form(params);
-          break;
-      }
+      PTI.form(params);
     }
   };
 
