@@ -1,13 +1,7 @@
-import { REACT_APP_BASE_URL } from "../env";
+import { getBaseUrl } from "./getBaseUrl";
 
 const callIsKycNeeded = async (accessToken) => {
-  const baseUrl =
-    "https://" +
-    (ptiConfig.apiDomain || "pti") +
-    (ptiConfig.ptiPrefix || "") +
-    "." +
-    REACT_APP_BASE_URL +
-    "/v0";
+  const baseUrl = getBaseUrl();
 
   const url = baseUrl + "/users/" + userId + "/kyc-needed?amount=" + amount;
 
