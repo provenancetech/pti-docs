@@ -1,6 +1,12 @@
 import { getBaseUrl } from "./getBaseUrl";
 
-const callIsKycNeeded = async (accessToken) => {
+const callIsKycNeeded = async ({
+  accessToken,
+  amount,
+  requestId,
+  scenarioId,
+  userId,
+}) => {
   const baseUrl = getBaseUrl();
 
   const url = baseUrl + "/users/" + userId + "/kyc-needed?amount=" + amount;

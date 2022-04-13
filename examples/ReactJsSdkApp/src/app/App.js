@@ -49,7 +49,7 @@ const App = () => {
         />
         <Button
           fullWidth={true}
-          onClick={createUser}
+          onClick={() => createUser({ requestId, scenarioId, setUserId })}
           style={{ marginTop: "5px" }}
           variant="contained"
         >
@@ -113,14 +113,22 @@ const App = () => {
         <br />
         <Button
           fullWidth={true}
-          onClick={sendTransactionLog}
+          onClick={() =>
+            sendTransactionLog({ amount, requestId, scenarioId, userId })
+          }
           variant="contained"
         >
           Send Transaction Log
         </Button>
         <br />
         <br />
-        <Button fullWidth={true} onClick={checkIfKycNeeded} variant="contained">
+        <Button
+          fullWidth={true}
+          onClick={() =>
+            checkIfKycNeeded({ amount, requestId, scenarioId, userId })
+          }
+          variant="contained"
+        >
           Check if Kyc Needed
         </Button>
         <br />

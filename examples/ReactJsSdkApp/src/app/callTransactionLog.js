@@ -1,6 +1,12 @@
 import { getBaseUrl } from "./getBaseUrl";
 
-const callTransactionLog = async (accessToken) => {
+const callTransactionLog = async ({
+  accessToken,
+  amount,
+  requestId,
+  scenarioId,
+  userId,
+}) => {
   const baseUrl = getBaseUrl();
 
   const url = baseUrl + "/users/" + userId + "/transactionLogs";
