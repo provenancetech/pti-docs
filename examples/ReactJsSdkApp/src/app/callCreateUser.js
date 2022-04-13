@@ -1,6 +1,8 @@
+import { v4 as uuidv4 } from "uuid";
+
 import { getBaseUrl } from "./getBaseUrl";
 
-const callCreateUser = async (accessToken) => {
+const callCreateUser = async ({ accessToken, requestId, scenarioId }) => {
   const baseUrl = getBaseUrl();
 
   const url = baseUrl + "/users";
