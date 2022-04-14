@@ -51,7 +51,38 @@ allowed us to increase the level of KYC for that user. When this happens, we sen
 
 ### Webhook Responses definitions
 
-Here are the possible results that you can receive on your webhook endpoint:
+This section provides the details on the possible messages that you can receive on your webhook endpoint.
+
+* [User Status Update](#user-status-update)
+* [KYC Result](#kyc-result)
+* [Transaction Monitoring Result](#transaction-monitoring-result)
+* [Payment Processing Update](#payment-processing-update)
+
+#### User Status Update
+
+```json
+{
+  "resourceType":"USER",
+    "clientId":"CLIENT_ID",
+    "userId":"USER_ID",
+    "status":"ACTIVE | INACTIVE | BLOCKED",
+    "statusReason": "STATUS_REASON"
+}
+```
+The `CLIENT_ID` value will be set to the Client ID provided to you during [onboarding](onboarding.md)
+
+The `USER_ID` corresponds to the user for which we are providing the status udate.
+
+Here is the meaning of the possible statuses:
+
+ * `ACTIVE`: This is the status of a normal and valid user for which it is possible to initiate KYCs or be involved in transactions.
+ * `INACTIVE`: This is the status of a user that is within our systems for tracking purposes, but it is not possible to involve inactive users in transactions or initiate KYCs on them.
+ * `BLOCKED`: This is the status of a user that was blocked by PTI for security and compliance reasons. it is not possible to involve blocked users in transactions or initiate KYCs on them.
+
+Only PTI personnel can modify the status of a user.
+
+The `STATUS_REASON` value will provide more details on the reason why the status field is at the value provided.
+
 
 #### KYC Result
 
@@ -105,7 +136,7 @@ In the case of a `DENY` status, the `complianceProviderResponseCode` will contai
 
 The `TRANSACTION_DATE` will come in the form of an ISO 8601 compliant date string. 
 
-#### Payment processing
+#### Payment processing update
 
 ```json
 {
