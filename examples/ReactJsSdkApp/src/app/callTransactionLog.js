@@ -1,31 +1,16 @@
 import { getBaseUrl } from "./getBaseUrl";
+import { getHeaders } from "./getHeaders";
 
-const callTransactionLog = async ({
-  accessToken,
-  amount,
-  requestId,
-  scenarioId,
-  userId,
-}) => {
+const callTransactionLog = async ({ amount, userId, ...props }) => {
   const baseUrl = getBaseUrl();
 
   const url = baseUrl + "/users/" + userId + "/transactionLogs";
 
-  const date = new Date().toISOString();
-
-  const headers = {
-    "Content-type": "application/json",
-    Date: date,
-    "x-pti-client-id": ptiConfig.clientId,
-    "x-pti-request-id": requestId,
-    "x-pti-scenario-id": scenarioId,
-    "x-pti-session-id": ptiConfig.sessionId, // this is set via the init of the sdk
-    "x-pti-token": accessToken,
-  };
+  const headers = getHeaders(props);
 
   const body = {
     amount,
-    date: date,
+    date: headers.Date,
     initiator: { id: userId, type: "PERSON" },
     sourceMethod: {
       currency: "USD",

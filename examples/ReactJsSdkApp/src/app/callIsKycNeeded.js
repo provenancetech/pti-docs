@@ -1,25 +1,12 @@
 import { getBaseUrl } from "./getBaseUrl";
+import { getHeaders } from "./getHeaders";
 
-const callIsKycNeeded = async ({
-  accessToken,
-  amount,
-  requestId,
-  scenarioId,
-  userId,
-}) => {
+const callIsKycNeeded = async ({ amount, userId, ...props }) => {
   const baseUrl = getBaseUrl();
 
   const url = baseUrl + "/users/" + userId + "/kyc-needed?amount=" + amount;
 
-  const date = new Date().toISOString();
-
-  const headers = {
-    Date: date,
-    "x-pti-client-id": ptiConfig.clientId,
-    "x-pti-request-id": requestId,
-    "x-pti-scenario-id": scenarioId,
-    "x-pti-token": accessToken,
-  };
+  const headers = getHeaders(props);
 
   const options = { method: "GET" };
 

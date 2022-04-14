@@ -37,6 +37,8 @@ const App = () => {
   const closeOkDialog = () => setOkDialog(false);
   const closeErrorDialog = () => setErrorDialog(false);
 
+  const props = { amount, requestId, scenarioId, setUserId, userId };
+
   return (
     <Container>
       <Box my={4}>
@@ -49,7 +51,7 @@ const App = () => {
         />
         <Button
           fullWidth={true}
-          onClick={() => createUser({ requestId, scenarioId, setUserId })}
+          onClick={() => createUser(props)}
           style={{ marginTop: "5px" }}
           variant="contained"
         >
@@ -113,9 +115,7 @@ const App = () => {
         <br />
         <Button
           fullWidth={true}
-          onClick={() =>
-            sendTransactionLog({ amount, requestId, scenarioId, userId })
-          }
+          onClick={() => sendTransactionLog(props)}
           variant="contained"
         >
           Send Transaction Log
@@ -124,9 +124,7 @@ const App = () => {
         <br />
         <Button
           fullWidth={true}
-          onClick={() =>
-            checkIfKycNeeded({ amount, requestId, scenarioId, userId })
-          }
+          onClick={() => checkIfKycNeeded(props)}
           variant="contained"
         >
           Check if Kyc Needed

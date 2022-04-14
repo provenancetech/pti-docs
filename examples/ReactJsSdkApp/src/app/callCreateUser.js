@@ -1,23 +1,14 @@
 import { v4 as uuidv4 } from "uuid";
 
 import { getBaseUrl } from "./getBaseUrl";
+import { getHeaders } from "./getHeaders";
 
-const callCreateUser = async ({ accessToken, requestId, scenarioId }) => {
+const callCreateUser = async (props) => {
   const baseUrl = getBaseUrl();
 
   const url = baseUrl + "/users";
 
-  const date = new Date().toISOString();
-
-  const headers = {
-    "Content-type": "application/json",
-    Date: date,
-    "x-pti-client-id": ptiConfig.clientId,
-    "x-pti-request-id": requestId,
-    "x-pti-scenario-id": scenarioId,
-    "x-pti-session-id": ptiConfig.sessionId, // this is set via the init of the sdk
-    "x-pti-token": accessToken,
-  };
+  const headers = getHeaders(props);
 
   const body = { id: uuidv4(), type: "PERSON" };
 
