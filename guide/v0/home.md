@@ -5,8 +5,13 @@ for integrating with, and leveraging the PTI platform.
 
 
 ## Definitions
+
 ### Compliance
 Being in compliance means acting in accordance to local laws and regulations. Ensuring that all the required information is collected, all value transfers are appropriately licensed is all part of achieving compliance. The PTI platform aims to simplify this process as much as possible, but ultimately, PTI clients also have their role to play and are responsible for using the PTI platform correctly to achieve compliance.
+
+### User
+A user is either a person or a business for which a KYC can be initiated or that is part of a transaction. Users must be created via the create user route of the API before KYCs or transactions
+involving them can be initiated. Users have a status of `ACTIVE` when all is fine, but may also be `BLOCKED` for various reasons. Attempting API calls involving `BLOCKED` users will trigger an error.
 
 ### KYC         
 Acronym for Know Your Customer. In this documentation, "performing a KYC" means collecting as set of information about a person and returning a status.
