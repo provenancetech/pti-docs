@@ -1,12 +1,11 @@
 import { v4 as uuidv4 } from "uuid";
 
-import { getBaseUrl } from "./getBaseUrl";
+import { REACT_APP_API_URL } from "../env";
 import { getHeaders } from "./getHeaders";
 
 const callCreateUser = async (props) => {
-  const baseUrl = getBaseUrl();
 
-  const url = baseUrl + "/users";
+  const url = REACT_APP_API_URL + "/users";
 
   const headers = getHeaders(props);
 

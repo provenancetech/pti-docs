@@ -1,10 +1,9 @@
-import { getBaseUrl } from "./getBaseUrl";
+import { REACT_APP_API_URL } from "../env";
 import { getHeaders } from "./getHeaders";
 
 const callIsKycNeeded = async ({ amount, userId, ...props }) => {
-  const baseUrl = getBaseUrl();
 
-  const url = baseUrl + "/users/" + userId + "/kyc-needed?amount=" + amount;
+  const url = REACT_APP_API_URL + "/users/" + userId + "/kyc-needed?amount=" + amount;
 
   const headers = getHeaders(props);
 
