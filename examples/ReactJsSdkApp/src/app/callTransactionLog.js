@@ -1,10 +1,9 @@
-import { getBaseUrl } from "./getBaseUrl";
+import { REACT_APP_API_URL } from "../env";
 import { getHeaders } from "./getHeaders";
 
 const callTransactionLog = async ({ amount, userId, ...props }) => {
-  const baseUrl = getBaseUrl();
 
-  const url = baseUrl + "/users/" + userId + "/transactionLogs";
+  const url = REACT_APP_API_URL + "/users/" + userId + "/transactionLogs";
 
   const headers = getHeaders(props);
 
