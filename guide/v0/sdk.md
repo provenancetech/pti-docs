@@ -65,7 +65,8 @@ render the forms on your web application.
     requestId: "REQUEST_ID",
     userId: "USER_ID",
     scenarioId: "SCENARIO_ID",
-    parentElement: document.getElementById("kyc_form"),
+    parentElement: document.getElementById("kyc_form"), 
+    lang: "en",
  });
 </script>
 ```
@@ -83,6 +84,7 @@ render the forms on your web application.
       currency: "USD",
       amount: 150,
       parentElement: document.getElementById("payment_form"),
+      lang: "es",
   });
 </script>  
 ```
@@ -99,3 +101,5 @@ You must store the this value at user creation time to make sure you can associa
 The value of `SCENARIO_ID` will select the scenario under which the transaction or KYC will be made.
 The scenario must have been configured previously as explained [here](kyc.md).
 Passing an unconfigured `SCENARIO_ID` value will result in an error. 
+
+The value of `lang` is to specify which language strings should be used in the form. Default is `en` (English)
