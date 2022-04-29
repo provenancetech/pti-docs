@@ -1,4 +1,4 @@
-import Head from 'next/head'
+import Head from "next/head";
 
 export default function Home() {
   return (
@@ -7,24 +7,28 @@ export default function Home() {
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
         <script async defer src="/pti.js"></script>
-        <script async defer src="https://sdk.apidev.pticlient.com/0.0.7/index.js"></script>
+        <script
+          async
+          defer
+          src="https://sdk.apidev.pticlient.com/0.0.12/index.js"
+        ></script>
       </Head>
 
-        <h1 className="title">
-            Welcome to PTI Javascript SDK Example
-        </h1>
+      <h1 className="title">Welcome to PTI Javascript SDK Example</h1>
 
-        <a href={"#"} onClick={() => showPaymentForm('form')}>Start Payment</a>
-        <br/>
-        <div id={"form"} className={"form"}></div>
+      <a href={"#"} onClick={() => showPaymentForm("form")}>
+        Start Payment
+      </a>
+      <br />
+      <div id={"form"} className={"form"}></div>
 
       <style jsx>{`
         .form {
-            width: 600px;
-            height: 600px;
-            margin: 0 auto
+          width: 600px;
+          height: 600px;
+          margin: 0 auto;
         }
-      
+
         .container {
           display: flex;
           flex-direction: column;
@@ -59,5 +63,5 @@ export default function Home() {
         }
       `}</style>
     </div>
-  )
+  );
 }
