@@ -92,8 +92,10 @@ The `STATUS_REASON` value will provide more details on the reason why the status
     "requestId":"REQUEST_ID",
     "clientId":"CLIENT_ID",
     "userId":"USER_ID",
-    "status":"ACCEPTED | REFUSED | UNDER_REVIEW | ERROR | PENDING",
-    "tier": "KYC_TIER"
+    "status":"ACCEPTED | REFUSED | UNDER_REVIEW | ERROR | PENDING | REQUESTED_MORE_INFORMATION",
+    "tier": "KYC_TIER",
+    "refusalReason": "REFUSAL_REASON"
+  
 }
 ```
 The `REQUEST_ID` value will be set to the value you provided when you [initiated the KYC](#initiating-a-kyc)
