@@ -1,6 +1,7 @@
 import argparse
 import logging
 import json
+import uuid
 
 from flask import Flask, request
 from flask_socketio import SocketIO
