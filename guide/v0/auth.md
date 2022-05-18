@@ -69,7 +69,9 @@ x-pti-client-id:00000000-0000-0000-0000-000000000000
 /v0/users/00000000-0000-0000-0000-000000000000
 ```
 
-Note that for a GET request, `${SHA256 of request body}` and `${Content Type}` are empty (but the `\n` following them are still included).
+Note that for a GET request, `${SHA256 of request body}` and `${Content Type}` are empty, but the `\n` following them are still included. 
+
+You must include `${SHA256 of request body}` and `${Content Type}` for POST, PATCH and PUT requests.
 
 #### Helper tool to make signed requests
 
@@ -78,7 +80,7 @@ You can use the [signed_request_maker.py](https://github.com/provenancetech/pti-
 For example:
 
 ```shell
-python signed_request_maker.py --clientId "00000000-0000-0000-0000-000000000000" --data '{"name": "Jane Doe", "id": "my_internal_id-12345678"}' -k private_key.jwk --debug https//pti.apistaging.pticlient.com
+python signed_request_maker.py --clientId "00000000-0000-0000-0000-000000000000" --http-method 'POST' --data '{"name": "Jane Doe", "id": "my_internal_id-12345678"}' -k private_key.jwk --debug https//pti.apistaging.pticlient.com
 ```
 
 

@@ -1,9 +1,10 @@
 import argparse
 import logging
 import json
+import uuid
 
 from flask import Flask, request
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO
 
 from pti_tools import make_signed_request, environ_or_default, environ_or_required, set_logging_level, JWKType, decrypt_verify_and_get_payload
 
@@ -19,14 +20,14 @@ p.add_argument('-u', '--pti-api-base-url', help='PTI API base URL',
 args = p.parse_args()
 set_logging_level(args.log_level)
 
-app = Flask('example_passthrough', static_url_path='')
+app = Flask('example_backend', static_url_path='')
 socketio = SocketIO(app, cors_allowed_origins='*')
 
 @app.route('/generateToken', methods=['POST'])
 def generate_token():
     payload = request.get_json()
     json_data = json.dumps(payload['x-pti-token-payload'])
-    response = make_signed_request(args.client_id, args.private_key, f'{args.pti_api_base_url}/auth/userToken',
+    response = make_signed_request(args.client_id, str(uuid.uuid4()), args.private_key, f'{args.pti_api_base_url}/auth/userToken',
                                    method="POST", data=json_data)
     if response.status_code != 200:
         return '', response.status_code
