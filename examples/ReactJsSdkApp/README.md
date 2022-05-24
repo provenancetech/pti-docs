@@ -38,7 +38,7 @@ python3 client_backend.py -sk <private_key> -pk <pti_public_key> -c <client id> 
 * `private_key`: path to a JWS json file containing your private key. It must match the public key in the endpoint you are targeting on the PTI platform
 * `pti_public_key`: path to PTI's prod public key. That key should be used to verify the signatures of webhook calls made by PTT. This public key is the `utils/pti-prod-public.jwk` provided in this repository.
 * `client_id`: ID provided to you during onboarding. This ID must have been setup by PTI in the targeted environment.
-* `pti_api_url`: Root url of the targeted PTI API. E.g. `https://api.apistaging.pticlient.com/v0`
+* `pti_api_url`: Root url of the targeted PTI API. E.g. `https://pti.apistaging.pticlient.com/v0`
 
 
 ### Exposed endpoints
