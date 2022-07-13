@@ -22,6 +22,7 @@ import { SimpleDialog } from "./SimpleDialog";
 const App = () => {
   const [kycOpen, setKycOpen] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
+  const [onboardingOpen, setOnboardingOpen] = useState(false);
 
   const [amount, setAmount] = useState(
     "" + Math.round(Math.random() * 100) + "." + Math.round(Math.random() * 100)
@@ -115,6 +116,15 @@ const App = () => {
         <br />
         <Button
           fullWidth={true}
+          onClick={() => setOnboardingOpen(true)}
+          variant="contained"
+        >
+          Open Onboarding Form
+        </Button>
+        <br />
+        <br />
+        <Button
+          fullWidth={true}
           onClick={() => sendTransactionLog(props)}
           variant="contained"
         >
@@ -150,6 +160,16 @@ const App = () => {
         requestId={requestId}
         scenarioId={scenarioId}
         type="KYC"
+        userId={userId}
+      />
+
+      <SimpleDialog
+        amount={amount}
+        lang={lang}
+        open={onboardingOpen}
+        requestId={requestId}
+        scenarioId={scenarioId}
+        type="ONBOARDING"
         userId={userId}
       />
 
