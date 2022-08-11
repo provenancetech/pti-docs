@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Box,
@@ -9,6 +9,9 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
+  Select,
+  InputLabel,
+  MenuItem
 } from "@material-ui/core";
 import { v4 as uuidv4 } from "uuid";
 
@@ -16,14 +19,16 @@ import { REACT_APP_USER_ID } from "../env";
 
 import { checkIfKycNeeded } from "./checkIfKycNeeded";
 import { createUser } from "./createUser";
-import { sendTransactionLog } from "./sendTransactionLog";
+import { sendTransactionLog, generateTransactionLogPayload } from "./sendTransactionLog";
 import { SimpleDialog } from "./SimpleDialog";
 
 const App = () => {
   const [kycOpen, setKycOpen] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [onboardingOpen, setOnboardingOpen] = useState(false);
-
+  const [transactionType, setTransactionType] = useState(false);
+  const [paymentInformation, setPaymentInformation] = useState(false);
+  const [transactionLogPayload, setTransactionLogPayload] = useState(false);
   const [amount, setAmount] = useState(
     "" + Math.round(Math.random() * 100) + "." + Math.round(Math.random() * 100)
   );
@@ -38,7 +43,11 @@ const App = () => {
   const closeOkDialog = () => setOkDialog(false);
   const closeErrorDialog = () => setErrorDialog(false);
 
-  const props = { amount, requestId, scenarioId, setUserId, userId };
+  const props = { amount, requestId, scenarioId, setUserId, userId, transactionLogPayload };
+
+  useEffect(() => {
+    setTransactionLogPayload(generateTransactionLogPayload(transactionType, paymentInformation, amount, userId))
+  }, [transactionType, paymentInformation]);
 
   return (
     <Container>
@@ -123,13 +132,6 @@ const App = () => {
         </Button>
         <br />
         <br />
-        <Button
-          fullWidth={true}
-          onClick={() => sendTransactionLog(props)}
-          variant="contained"
-        >
-          Send Transaction Log
-        </Button>
         <br />
         <br />
         <Button
@@ -141,6 +143,50 @@ const App = () => {
         </Button>
         <br />
         <br />
+        <InputLabel id="transactiontype-select-label">Transaction Type</InputLabel>
+        <Select id="transactiontype" fullWidth={true}
+            value={transactionType}
+            onChange={(e) => {setTransactionType(e.target.value)}}
+            label="Transaction Type"
+        >
+           <MenuItem value="FUNDING">Funding</MenuItem>
+           <MenuItem value="WITHDRAWAL">Withdrawal</MenuItem>
+           <MenuItem value="TRANSFER">Transfer</MenuItem>
+           <MenuItem value="BUY">Buy</MenuItem>
+           <MenuItem value="SELL">Sell</MenuItem>
+           <MenuItem value="MINT">Mint</MenuItem>
+           <MenuItem value="SWAP">Swap</MenuItem>
+        </Select>
+        <br/>
+        <br/>
+        <InputLabel id="paymentinfo-select-label">Payment Information</InputLabel>
+        <Select id="paymentInformation" fullWidth={true}
+            value={paymentInformation}
+            onChange={(e) => {setPaymentInformation(e.target.value)}}
+            label="Payment Information"
+        >
+
+           <MenuItem value="CREDIT_CARD">Credit card</MenuItem>
+           <MenuItem value="TOKEN">Token</MenuItem>
+        </Select>
+
+        <br/>
+        <br/>
+         <TextField
+          fullWidth={true}
+          multiline
+          rows={10}
+          id="transactionLogPayload"
+          label="Transaction Log Payload"
+          value={transactionLogPayload}
+        />
+        <Button
+          fullWidth={true}
+          onClick={() => {sendTransactionLog(props);setRequestId(uuidv4());}}
+          variant="contained"
+        >
+          Send Transaction Log
+        </Button>
       </Box>
 
       <SimpleDialog
