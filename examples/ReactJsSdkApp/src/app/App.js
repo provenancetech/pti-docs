@@ -1,74 +1,80 @@
-import React, { useState, useEffect } from "react";
-
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
-  Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  Select,
+  FormControl,
+  InputAdornment,
   InputLabel,
-  MenuItem
-} from "@material-ui/core";
-import { v4 as uuidv4 } from "uuid";
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
+import ReactJson from "react-json-view";
 
 import { REACT_APP_USER_ID } from "../env";
+import { actionType, paymentInfo, transactionTypes } from "../components/Consts";
+import { convertCamelCaseToText } from "../components/Utils";
+import { ContainerGrid, Header, Section, Title, TransactionInfos, TransactionSection, UserSection } from "./Styles";
+import { createUser } from "../repository/createUser";
+import { checkIfKycNeeded } from "../repository/checkIfKycNeeded";
+import { generateTransactionLogPayload, sendTransactionLog } from "../repository/sendTransactionLog";
+import { SimpleDialog } from "../components/simpleDialog/SimpleDialog";
 
-import { checkIfKycNeeded } from "./checkIfKycNeeded";
-import { createUser } from "./createUser";
-import { sendTransactionLog, generateTransactionLogPayload } from "./sendTransactionLog";
-import { SimpleDialog } from "./SimpleDialog";
+import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
+import ContactPageOutlinedIcon from "@mui/icons-material/ContactPageOutlined";
+import CreditCardOutlinedIcon from "@mui/icons-material/CreditCardOutlined";
+import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
+import PaidOutlinedIcon from "@mui/icons-material/PaidOutlined";
+import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
+import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
+import SnackAlert from "../components/snackAlert/SnackAlert";
 
 const App = () => {
   const [kycOpen, setKycOpen] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [onboardingOpen, setOnboardingOpen] = useState(false);
-  const [transactionType, setTransactionType] = useState(false);
-  const [paymentInformation, setPaymentInformation] = useState(false);
-  const [transactionLogPayload, setTransactionLogPayload] = useState(false);
-  const [amount, setAmount] = useState(
-    "" + Math.round(Math.random() * 100) + "." + Math.round(Math.random() * 100)
-  );
-  const [lang, setLang] = useState("en");
-  const [requestId, setRequestId] = useState(uuidv4());
-  const [scenarioId, setScenarioId] = useState("");
+  const [transactionType, setTransactionType] = useState(transactionTypes.funding);
+  const [paymentInformation, setPaymentInformation] = useState(paymentInfo.creditCard);
+  const [transactionLogPayload, setTransactionLogPayload] = useState({});
+
   const [userId, setUserId] = useState(REACT_APP_USER_ID);
+  const [requestId, setRequestId] = useState(crypto.randomUUID());
+  const [amount, setAmount] = useState(`${Math.round(Math.random() * 100) + "." + Math.round(Math.random() * 100)}`);
+  const [scenarioId, setScenarioId] = useState("");
+  const [lang, setLang] = useState("en");
 
-  const [errorDialog, setErrorDialog] = useState(false);
-  const [okDialog, setOkDialog] = useState(false);
-
-  const closeOkDialog = () => setOkDialog(false);
-  const closeErrorDialog = () => setErrorDialog(false);
-
-  const props = { amount, requestId, scenarioId, setUserId, userId, transactionLogPayload };
+  const props = { userId, requestId, amount, scenarioId, setUserId, transactionLogPayload };
 
   useEffect(() => {
-    setTransactionLogPayload(generateTransactionLogPayload(transactionType, paymentInformation, amount, userId))
+    setTransactionLogPayload(generateTransactionLogPayload(transactionType, paymentInformation, amount, userId));
   }, [transactionType, paymentInformation]);
 
   return (
-    <Container>
-      <Box my={4}>
-        <TextField
-          fullWidth={true}
-          id="userId"
-          label="UserId"
-          onChange={(e) => setUserId(e.target.value)}
-          value={userId}
-        />
-        <Button
-          fullWidth={true}
-          onClick={() => createUser(props)}
-          style={{ marginTop: "5px" }}
-          variant="contained"
-        >
-          Create a new User
-        </Button>
-        <br />
-        <br />
+    <ContainerGrid>
+      <Title>PTI SDK Example</Title>
+      <Section style={{ gridArea: "informations" }}>
+        <Header>
+          <TuneOutlinedIcon />
+          Settings
+        </Header>
+        <UserSection>
+          <TextField
+            fullWidth={true}
+            id="userId"
+            label="UserId"
+            onChange={(e) => setUserId(e.target.value)}
+            value={userId}
+          />
+          <Button
+            endIcon={<PersonOutlineOutlinedIcon />}
+            fullWidth={true}
+            onClick={() => createUser(props)}
+            variant="contained"
+          >
+            Create a new User
+          </Button>
+        </UserSection>
         <TextField
           fullWidth={true}
           id="requestId"
@@ -76,17 +82,25 @@ const App = () => {
           onChange={(e) => setRequestId(e.target.value)}
           value={requestId}
         />
-        <br />
-        <br />
-        <TextField
-          fullWidth={true}
-          id="amount"
-          label="Amount"
-          onChange={(e) => setAmount(e.target.value)}
-          value={amount}
-        />
-        <br />
-        <br />
+        <Box style={{ display: "flex", gap: "20px" }}>
+          <TextField
+            fullWidth={true}
+            id="amount"
+            InputProps={{
+              startAdornment: <InputAdornment position="start">$</InputAdornment>,
+            }}
+            label="Amount"
+            onChange={(e) => setAmount(e.target.value)}
+            value={amount}
+          />
+          <TextField
+            fullWidth={true}
+            id="lang"
+            label="Language"
+            onChange={(e) => setLang(e.target.value)}
+            value={lang}
+          />
+        </Box>
         <TextField
           fullWidth={true}
           id="scenarioId"
@@ -94,161 +108,158 @@ const App = () => {
           onChange={(e) => setScenarioId(e.target.value)}
           value={scenarioId}
         />
-        <br />
-        <br />
-        <TextField
-          fullWidth={true}
-          id="lang"
-          label="Language"
-          onChange={(e) => setLang(e.target.value)}
-          value={lang}
-        />
-        <br />
-        <br />
+      </Section>
+
+      <Section style={{ gridArea: "payment" }}>
+        <Header>
+          <CreditCardOutlinedIcon />
+          Payment
+        </Header>
         <Button
+          endIcon={<OpenInNewOutlinedIcon />}
           fullWidth={true}
           onClick={() => setPaymentOpen(true)}
           variant="contained"
         >
           Open Payment Form
         </Button>
-        <br />
-        <br />
+      </Section>
+
+      <Section style={{ gridArea: "kyc" }}>
+        <Header>
+          <ContactPageOutlinedIcon />
+          KYC
+        </Header>
         <Button
+          endIcon={<OpenInNewOutlinedIcon />}
           fullWidth={true}
           onClick={() => setKycOpen(true)}
           variant="contained"
         >
           Open KYC Form
         </Button>
-        <br />
-        <br />
         <Button
+          endIcon={<OpenInNewOutlinedIcon />}
           fullWidth={true}
           onClick={() => setOnboardingOpen(true)}
           variant="contained"
         >
           Open Onboarding Form
         </Button>
-        <br />
-        <br />
-        <br />
-        <br />
-        <Button
-          fullWidth={true}
-          onClick={() => checkIfKycNeeded(props)}
-          variant="contained"
-        >
+        <Button fullWidth={true} onClick={() => checkIfKycNeeded(props)} variant="contained">
           Check if Kyc Needed
         </Button>
-        <br />
-        <br />
-        <InputLabel id="transactiontype-select-label">Transaction Type</InputLabel>
-        <Select id="transactiontype" fullWidth={true}
-            value={transactionType}
-            onChange={(e) => {setTransactionType(e.target.value)}}
-            label="Transaction Type"
-        >
-           <MenuItem value="FUNDING">Funding</MenuItem>
-           <MenuItem value="WITHDRAWAL">Withdrawal</MenuItem>
-           <MenuItem value="TRANSFER">Transfer</MenuItem>
-           <MenuItem value="BUY">Buy</MenuItem>
-           <MenuItem value="SELL">Sell</MenuItem>
-           <MenuItem value="MINT">Mint</MenuItem>
-           <MenuItem value="SWAP">Swap</MenuItem>
-        </Select>
-        <br/>
-        <br/>
-        <InputLabel id="paymentinfo-select-label">Payment Information</InputLabel>
-        <Select id="paymentInformation" fullWidth={true}
-            value={paymentInformation}
-            onChange={(e) => {setPaymentInformation(e.target.value)}}
-            label="Payment Information"
-        >
+      </Section>
 
-           <MenuItem value="CREDIT_CARD">Credit card</MenuItem>
-           <MenuItem value="TOKEN">Token</MenuItem>
-        </Select>
+      <Section style={{ gridArea: "transaction" }}>
+        <Header>
+          <PaidOutlinedIcon />
+          Transaction
+        </Header>
+        <TransactionSection>
+          <TransactionInfos>
+            <FormControl>
+              <InputLabel id="transactiontype-select-label">Transaction Type</InputLabel>
+              <Select
+                id="transactiontype"
+                labelId="transactiontype-select-label"
+                fullWidth={true}
+                value={transactionType}
+                onChange={(e) => {
+                  setTransactionType(e.target.value);
+                }}
+                label="Transaction Type"
+              >
+                {Object.entries(transactionTypes).map((entry, index) => (
+                  <MenuItem key={"transactiontype-" + index} value={entry[1]}>
+                    {convertCamelCaseToText(entry[0])}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl>
+              <InputLabel id="paymentinfo-select-label">Payment Information</InputLabel>
+              <Select
+                id="paymentInformation"
+                labelId="paymentinfo-select-label"
+                fullWidth={true}
+                value={paymentInformation}
+                onChange={(e) => {
+                  setPaymentInformation(e.target.value);
+                }}
+                label="Payment Information"
+              >
+                {Object.entries(paymentInfo).map((entry, index) => (
+                  <MenuItem key={"paymentinfo-" + index} value={entry[1]}>
+                    {convertCamelCaseToText(entry[0])}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Button
+              endIcon={<SendOutlinedIcon />}
+              fullWidth={true}
+              onClick={() => {
+                sendTransactionLog(props).then(() => {
+                  setRequestId(crypto.randomUUID());
+                });
+              }}
+              variant="contained"
+            >
+              Send Transaction Log
+            </Button>
+          </TransactionInfos>
 
-        <br/>
-        <br/>
-         <TextField
-          fullWidth={true}
-          multiline
-          rows={10}
-          id="transactionLogPayload"
-          label="Transaction Log Payload"
-          value={transactionLogPayload}
-        />
-        <Button
-          fullWidth={true}
-          onClick={() => {sendTransactionLog(props);setRequestId(uuidv4());}}
-          variant="contained"
-        >
-          Send Transaction Log
-        </Button>
-      </Box>
+          <FormControl style={{ minWidth: "600px" }}>
+            <Typography component="p">Transaction Log Payload</Typography>
+            <ReactJson
+              collapsed={2}
+              displayDataTypes={false}
+              displayObjectSize={false}
+              enableClipboard={false}
+              iconStyle={"triangle"}
+              id="transactionLogPayload"
+              onEdit={() => {}}
+              src={transactionLogPayload}
+              theme={"rjv-default"}
+              style={{ fontSize: "14px", padding: "20px" }}
+            />
+          </FormControl>
+        </TransactionSection>
+      </Section>
 
       <SimpleDialog
         amount={amount}
+        closeHandler={() => setPaymentOpen(false)}
         lang={lang}
         open={paymentOpen}
         requestId={requestId}
         scenarioId={scenarioId}
-        type="FIAT_FUNDING"
+        type={actionType.funding}
         userId={userId}
       />
-
       <SimpleDialog
         amount={amount}
+        closeHandler={() => setKycOpen(false)}
         lang={lang}
         open={kycOpen}
         requestId={requestId}
         scenarioId={scenarioId}
-        type="KYC"
+        type={actionType.kyc}
         userId={userId}
       />
-
       <SimpleDialog
         amount={amount}
+        closeHandler={() => setOnboardingOpen(false)}
         lang={lang}
         open={onboardingOpen}
         requestId={requestId}
         scenarioId={scenarioId}
-        type="ONBOARDING"
+        type={actionType.onboarding}
         userId={userId}
       />
-
-      <Dialog onClose={closeOkDialog} open={okDialog}>
-        <DialogTitle onClose={closeOkDialog}>All Good !</DialogTitle>
-        <DialogContent>
-          <img
-            src="https://media.giphy.com/media/cOiXP74b6IDkpzb3Q7/giphy.gif"
-            alt="All Good !"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus color="primary" onClick={closeOkDialog}>
-            Ok
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog onClose={closeErrorDialog} open={errorDialog}>
-        <DialogTitle onClose={closeErrorDialog}>Nope</DialogTitle>
-        <DialogContent>
-          <img
-            src="https://media.giphy.com/media/FEikw3bXVHdMk/giphy.gif"
-            alt="Nope"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus color="primary" onClick={closeErrorDialog}>
-            Ok
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+      <SnackAlert />
+    </ContainerGrid>
   );
 };
 

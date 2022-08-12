@@ -1,11 +1,16 @@
 {
-  "short_name": "Your Orders",
-  "name": "Your Orders",
+  "short_name": "React JS SDK Example",
+  "name": "React JS SDK Example",
   "icons": [
     {
       "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
+      "sizes": "32x32 24x24 16x16",
       "type": "image/x-icon"
+    },
+    {
+      "src": "logo101.png",
+      "type": "image/png",
+      "sizes": "101x101"
     }
   ],
   "start_url": ".",
