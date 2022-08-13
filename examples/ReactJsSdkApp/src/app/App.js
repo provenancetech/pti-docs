@@ -10,6 +10,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 import ReactJson from "react-json-view";
 
 import { REACT_APP_USER_ID } from "../env";
@@ -44,6 +45,10 @@ const App = () => {
   const [scenarioId, setScenarioId] = useState("");
   const [lang, setLang] = useState("en");
 
+  const [kycNeededLoading, setKycNeededLoading] = useState(false);
+  const [createUserLoading, setCreateUserLoading] = useState(false);
+  const [transactionLogLoading, setTransactionLogLoading] = useState(false);
+
   const props = { userId, requestId, amount, scenarioId, setUserId, transactionLogPayload };
 
   useEffect(() => {
@@ -66,14 +71,19 @@ const App = () => {
             onChange={(e) => setUserId(e.target.value)}
             value={userId}
           />
-          <Button
+          <LoadingButton
             endIcon={<PersonOutlineOutlinedIcon />}
             fullWidth={true}
-            onClick={() => createUser(props)}
+            loading={createUserLoading}
+            loadingPosition="end"
+            onClick={() => {
+              setCreateUserLoading(true);
+              createUser(props).then(() => setCreateUserLoading(false));
+            }}
             variant="contained"
           >
             Create a new User
-          </Button>
+          </LoadingButton>
         </UserSection>
         <TextField
           fullWidth={true}
@@ -146,9 +156,18 @@ const App = () => {
         >
           Open Onboarding Form
         </Button>
-        <Button fullWidth={true} onClick={() => checkIfKycNeeded(props)} variant="contained">
+        <LoadingButton
+          fullWidth={true}
+          loading={kycNeededLoading}
+          loadingPosition="end"
+          onClick={() => {
+            setKycNeededLoading(true);
+            checkIfKycNeeded(props).then(() => setKycNeededLoading(false));
+          }}
+          variant="contained"
+        >
           Check if Kyc Needed
-        </Button>
+        </LoadingButton>
       </Section>
 
       <Section style={{ gridArea: "transaction" }}>
@@ -196,18 +215,22 @@ const App = () => {
                 ))}
               </Select>
             </FormControl>
-            <Button
+            <LoadingButton
               endIcon={<SendOutlinedIcon />}
               fullWidth={true}
+              loading={transactionLogLoading}
+              loadingPosition="end"
               onClick={() => {
+                setTransactionLogLoading(true);
                 sendTransactionLog(props).then(() => {
                   setRequestId(crypto.randomUUID());
+                  setTransactionLogLoading(false);
                 });
               }}
               variant="contained"
             >
               Send Transaction Log
-            </Button>
+            </LoadingButton>
           </TransactionInfos>
 
           <FormControl style={{ minWidth: "600px" }}>
