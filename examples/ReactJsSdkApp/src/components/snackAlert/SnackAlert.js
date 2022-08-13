@@ -8,7 +8,7 @@ const useSnackAlertStore = create((set) => ({
   options: {
     duration: 5000,
     severity: "error",
-    anchorOrigin: { vertical: "bottom", horizontal: "right" },
+    anchorOrigin: { vertical: "top", horizontal: "right" },
   },
   closeSnackBarHandler: () => set({ openSnackBar: false }),
 }));
@@ -36,7 +36,7 @@ export const showSnackAlert = (message, options = {}) => {
     options: {
       duration: options.duration || 5000,
       severity: options.severity || "error",
-      anchorOrigin: options.anchorOrigin || { vertical: "bottom", horizontal: "right" },
+      anchorOrigin: options.anchorOrigin || { vertical: "top", horizontal: "right" },
     },
   });
 };
@@ -51,7 +51,7 @@ const SnackAlert = () => {
       anchorOrigin={options.anchorOrigin}
       key={new Date().getTime()}
       TransitionComponent={(props) => (
-        <Slide {...props} direction="up">
+        <Slide {...props} direction="down">
           <Alert onClose={closeSnackBarHandler} severity={options.severity} sx={{ width: "100%" }}>
             {message.split("\n").map((messagePart, i) => (
               <Box key={i}>{messagePart}</Box>

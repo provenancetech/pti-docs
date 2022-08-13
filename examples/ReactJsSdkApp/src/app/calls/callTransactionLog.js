@@ -1,5 +1,5 @@
 import { REACT_APP_API_URL } from "../../env";
-import { getHeaders } from "./getHeaders";
+import { getHeaders } from "../../components/Utils";
 
 const callTransactionLog = async ({ transactionLogPayload, userId, ...props }) => {
   const url = REACT_APP_API_URL + "/users/" + userId + "/transactionLogs";

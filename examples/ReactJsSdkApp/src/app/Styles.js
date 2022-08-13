@@ -50,7 +50,7 @@ export const TransactionSection = styled(Box)`
 
 export const TransactionInfos = styled(Box)`
   display: flex;
-  flex: 1;
   gap: 30px;
+  flex: 1;
   flex-direction: column;
 `;

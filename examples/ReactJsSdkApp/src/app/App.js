@@ -20,6 +20,7 @@ import { createUser } from "../repository/createUser";
 import { checkIfKycNeeded } from "../repository/checkIfKycNeeded";
 import { generateTransactionLogPayload, sendTransactionLog } from "../repository/sendTransactionLog";
 import { SimpleDialog } from "../components/simpleDialog/SimpleDialog";
+import SnackAlert from "../components/snackAlert/SnackAlert";
 
 import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
 import ContactPageOutlinedIcon from "@mui/icons-material/ContactPageOutlined";
@@ -28,7 +29,6 @@ import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined
 import PaidOutlinedIcon from "@mui/icons-material/PaidOutlined";
 import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
-import SnackAlert from "../components/snackAlert/SnackAlert";
 
 const App = () => {
   const [kycOpen, setKycOpen] = useState(false);
@@ -48,7 +48,7 @@ const App = () => {
 
   useEffect(() => {
     setTransactionLogPayload(generateTransactionLogPayload(transactionType, paymentInformation, amount, userId));
-  }, [transactionType, paymentInformation]);
+  }, ["", transactionType, paymentInformation]);
 
   return (
     <ContainerGrid>
