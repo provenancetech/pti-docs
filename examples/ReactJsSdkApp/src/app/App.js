@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box,
   Button,
   FormControl,
   InputAdornment,
   InputLabel,
   MenuItem,
   Select,
+  Stack,
   TextField,
   Typography,
 } from "@mui/material";
@@ -15,8 +15,8 @@ import ReactJson from "react-json-view";
 
 import { REACT_APP_USER_ID } from "../env";
 import { actionType, paymentInfo, transactionTypes } from "../components/Consts";
-import { convertCamelCaseToText } from "../components/Utils";
-import { ContainerGrid, Header, Section, Title, TransactionInfos, TransactionSection, UserSection } from "./Styles";
+import { convertCamelCaseToText, getRandomInt } from "../components/Utils";
+import { ContainerGrid, Header, Section, Title } from "./Styles";
 import { createUser } from "../repository/createUser";
 import { checkIfKycNeeded } from "../repository/checkIfKycNeeded";
 import { generateTransactionLogPayload, sendTransactionLog } from "../repository/sendTransactionLog";
@@ -35,13 +35,13 @@ const App = () => {
   const [kycOpen, setKycOpen] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [onboardingOpen, setOnboardingOpen] = useState(false);
-  const [transactionType, setTransactionType] = useState(transactionTypes.funding);
   const [paymentInformation, setPaymentInformation] = useState(paymentInfo.creditCard);
+  const [transactionType, setTransactionType] = useState(transactionTypes.funding);
   const [transactionLogPayload, setTransactionLogPayload] = useState({});
 
   const [userId, setUserId] = useState(REACT_APP_USER_ID);
   const [requestId, setRequestId] = useState(crypto.randomUUID());
-  const [amount, setAmount] = useState(`${Math.round(Math.random() * 100) + "." + Math.round(Math.random() * 100)}`);
+  const [amount, setAmount] = useState(`${getRandomInt(100)}.${getRandomInt(100)}`);
   const [scenarioId, setScenarioId] = useState("");
   const [lang, setLang] = useState("en");
 
@@ -53,7 +53,7 @@ const App = () => {
 
   useEffect(() => {
     setTransactionLogPayload(generateTransactionLogPayload(transactionType, paymentInformation, amount, userId));
-  }, ["", transactionType, paymentInformation]);
+  }, ["", amount, transactionType, paymentInformation, userId]);
 
   return (
     <ContainerGrid>
@@ -63,7 +63,7 @@ const App = () => {
           <TuneOutlinedIcon />
           Settings
         </Header>
-        <UserSection>
+        <Stack direction="row" spacing={2}>
           <TextField
             fullWidth={true}
             id="userId"
@@ -84,7 +84,7 @@ const App = () => {
           >
             Create a new User
           </LoadingButton>
-        </UserSection>
+        </Stack>
         <TextField
           fullWidth={true}
           id="requestId"
@@ -92,7 +92,7 @@ const App = () => {
           onChange={(e) => setRequestId(e.target.value)}
           value={requestId}
         />
-        <Box style={{ display: "flex", gap: "20px" }}>
+        <Stack direction="row" spacing={2}>
           <TextField
             fullWidth={true}
             id="amount"
@@ -110,7 +110,7 @@ const App = () => {
             onChange={(e) => setLang(e.target.value)}
             value={lang}
           />
-        </Box>
+        </Stack>
         <TextField
           fullWidth={true}
           id="scenarioId"
@@ -176,8 +176,8 @@ const App = () => {
           <PaidOutlinedIcon />
           Transaction
         </Header>
-        <TransactionSection>
-          <TransactionInfos>
+        <Stack direction="row" spacing={2}>
+          <Stack spacing={3} style={{ flex: 1 }}>
             <FormControl>
               <InputLabel id="transactiontype-select-label">Transaction Type</InputLabel>
               <Select
@@ -232,7 +232,7 @@ const App = () => {
             >
               Send Transaction Log
             </LoadingButton>
-          </TransactionInfos>
+          </Stack>
 
           <FormControl style={{ minWidth: "600px" }}>
             <Typography component="p">Transaction Log Payload</Typography>
@@ -243,13 +243,15 @@ const App = () => {
               enableClipboard={false}
               iconStyle={"triangle"}
               id="transactionLogPayload"
-              onEdit={() => {}}
+              onEdit={(value) => {
+                if (value?.updated_src) setTransactionLogPayload(value.updated_src);
+              }}
               src={transactionLogPayload}
               theme={"rjv-default"}
               style={{ fontSize: "14px", padding: "20px" }}
             />
           </FormControl>
-        </TransactionSection>
+        </Stack>
       </Section>
 
       <SimpleDialog

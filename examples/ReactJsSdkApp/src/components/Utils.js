@@ -18,3 +18,7 @@ export const getHeaders = ({ accessToken, requestId, scenarioId }) => ({
   "x-pti-session-id": ptiConfig.sessionId,
   "x-pti-token": accessToken,
 });
+
+export const getRandomInt = (range) => {
+  return Math.round(Math.random() * range);
+};

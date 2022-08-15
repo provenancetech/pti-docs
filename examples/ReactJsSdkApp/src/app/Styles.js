@@ -37,20 +37,3 @@ export const Header = styled.h2`
   gap: 5px;
   margin: 10px 0px 10px 0px;
 `;
-
-export const UserSection = styled(Box)`
-  display: flex;
-  gap: 30px;
-`;
-
-export const TransactionSection = styled(Box)`
-  display: flex;
-  gap: 30px;
-`;
-
-export const TransactionInfos = styled(Box)`
-  display: flex;
-  gap: 30px;
-  flex: 1;
-  flex-direction: column;
-`;

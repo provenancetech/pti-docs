@@ -7,7 +7,7 @@ import { actionType } from "../Consts";
 
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 
-export const CloseButton = styled(IconButton)`
+const CloseButton = styled(IconButton)`
   &.MuiIconButton-root {
     margin: 12px 16px;
   }
