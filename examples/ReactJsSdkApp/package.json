@@ -7,15 +7,33 @@
     "build": "craco build",
     "test": "craco test"
   },
+  "devDependencies": {
+    "lint-staged": "^11.1.2",
+    "prettier": "^2.3.0",
+    "stylelint": "^14.0.1",
+    "stylelint-config-standard": "^23.0.0"
+  },
   "dependencies": {
     "@craco/craco": "^6.4.3",
-    "@material-ui/core": "^4.12.3",
+    "@emotion/react": "^11.8.2",
+    "@emotion/styled": "^11.8.1",
+    "@mui/core": "^5.0.0-alpha.54",
+    "@mui/lab": "^5.0.0-alpha.73",
+    "@mui/material": "^5.5.1",
+    "@mui/icons-material": "^5.5.1",
     "clsx": "^1.1.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-json-view": "^1.21.3",
     "react-scripts": "^5.0.0-next.58",
     "socket.io-client": "^4.0.0",
-    "uuid": "^8.3.2"
+    "styled-components": "^5.3.5",
+    "uuid": "^8.3.2",
+    "zustand": "^3.7.1"
+  },
+  "resolutions": {
+    "clean-css": "^5.2.2",
+    "postcss": "^8.4.12"
   },
   "browserslist": {
     "production": [
@@ -28,6 +46,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "lint-staged": {
+    "*.{css,scss}": "stylelint --fix",
+    "*.{css,js,md,mdx,scss,ts,tsx}": "prettier --write"
   },
   "proxy": "http://localhost:5100"
 }

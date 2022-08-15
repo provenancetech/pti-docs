@@ -1,0 +1,2 @@
+[*.{js,jsx,ts,tsx}]
+max_line_length = 120
