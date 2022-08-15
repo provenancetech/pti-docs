@@ -158,6 +158,7 @@ const App = () => {
         </Button>
         <LoadingButton
           fullWidth={true}
+          endIcon={<></>}
           loading={kycNeededLoading}
           loadingPosition="end"
           onClick={() => {
