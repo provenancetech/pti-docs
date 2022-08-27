@@ -6,7 +6,7 @@ const useSnackAlertStore = create((set) => ({
   message: "",
   openSnackBar: false,
   options: {
-    duration: 8000,
+    duration: 6000,
     severity: "error",
     anchorOrigin: { vertical: "top", horizontal: "right" },
   },
@@ -34,7 +34,7 @@ export const showSnackAlert = (message, options = {}) => {
     message,
     openSnackBar: true,
     options: {
-      duration: options.duration || 8000,
+      duration: options.duration || 6000,
       severity: options.severity || "error",
       anchorOrigin: options.anchorOrigin || { vertical: "top", horizontal: "right" },
     },

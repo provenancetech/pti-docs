@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import { Box, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
+import React from "react";
+import { Box, CircularProgress, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import styled from "styled-components";
-import PropTypes from "prop-types";
+import create from "zustand";
 
 import { actionType } from "../Consts";
+import { showErrorSnackAlert } from "../snackAlert/SnackAlert";
 
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 
@@ -13,18 +14,59 @@ const CloseButton = styled(IconButton)`
   }
 `;
 
-const SimpleDialog = ({ type, userId, requestId, amount, scenarioId, lang, open, closeHandler }) => {
-  const [sdkInit, setSdkInit] = useState(false);
+const DialogContentStyled = styled(DialogContent)`
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
 
-  const setRef = (e) => {
-    if (e != null && !sdkInit) {
-      setSdkInit(true);
+const IFrame = styled(Box)`
+  align-items: center;
+  background-color: #f2f2f2;
+  display: flex;
+  justify-content: center;
+  min-height: 800px;
+  min-width: 550px;
+`;
 
+const useSimpleDialogStore = create((set) => ({
+  open: false,
+  sdkInit: false,
+  type: "",
+  userId: "",
+  requestId: "",
+  amount: "",
+  scenarioId: "",
+  lang: "",
+  closeHandler: () => set({ open: false }),
+  setSdkInit: (value) => set({ sdkInit: value }),
+}));
+
+export const openSimpleDialog = (type, userId, requestId, amount, scenarioId, lang) => {
+  useSimpleDialogStore.setState({
+    open: true,
+    sdkInit: false,
+    type,
+    userId,
+    requestId,
+    amount,
+    scenarioId,
+    lang,
+  });
+};
+
+const SimpleDialog = () => {
+  const { open, sdkInit, type, userId, requestId, amount, scenarioId, lang, closeHandler, setSdkInit } =
+    useSimpleDialogStore();
+
+  const iframeRef = (event) => {
+    if (event && !sdkInit && open) {
       const params = {
         amount,
         lang,
         metaInformation: { var3: "value3", var4: "value4" },
-        parentElement: document.getElementById(e.id),
+        parentElement: document.getElementById(event.id),
         requestId,
         userId,
       };
@@ -37,7 +79,9 @@ const SimpleDialog = ({ type, userId, requestId, amount, scenarioId, lang, open,
       }
 
       if (Object.values(actionType).includes(type)) params.type = type;
-      PTI.form(params);
+      PTI.form(params)
+        .then(() => setSdkInit(true))
+        .catch(() => showErrorSnackAlert(`Error while loading the ${type} form`));
     }
   };
 
@@ -51,22 +95,13 @@ const SimpleDialog = ({ type, userId, requestId, amount, scenarioId, lang, open,
           <CloseOutlinedIcon />
         </CloseButton>
       </Box>
-      <DialogContent style={{ display: "flex", justifyContent: "center" }}>
-        <Box id={type + "PlaceHolder"} ref={setRef} style={{ minHeight: "800px", minWidth: "550px" }} />
-      </DialogContent>
+      <DialogContentStyled>
+        <IFrame id={`${type}PlaceHolder`} ref={iframeRef}>
+          {!sdkInit && <CircularProgress />}
+        </IFrame>
+      </DialogContentStyled>
     </Dialog>
   );
-};
-
-SimpleDialog.propTypes = {
-  type: PropTypes.string.isRequired,
-  userId: PropTypes.string.isRequired,
-  requestId: PropTypes.string.isRequired,
-  amount: PropTypes.string.isRequired,
-  scenarioId: PropTypes.string.isRequired,
-  lang: PropTypes.string.isRequired,
-  open: PropTypes.bool.isRequired,
-  closeHandler: PropTypes.func.isRequired,
 };
 
 export { SimpleDialog };
