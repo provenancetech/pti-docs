@@ -1,9 +1,11 @@
 import React from "react";
 import { Box, CircularProgress, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
-import styled from "styled-components";
 import create from "zustand";
+import styled from "styled-components";
 
 import { actionType } from "../Consts";
+import { convertConstToStr } from "../Utils";
+import { FieldCopy } from "../fieldCopy/FieldCopy";
 import { showErrorSnackAlert } from "../snackAlert/SnackAlert";
 
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
@@ -87,9 +89,13 @@ const SimpleDialog = () => {
 
   return (
     <Dialog fullScreen={true} open={open}>
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <DialogTitle>
-          {type} - {`${amount}$`} - Request Id: {requestId} - User Id: {userId}
+      <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+        <DialogTitle alignItems="center" display="flex" gap="20px">
+          <Box>
+            {convertConstToStr(type)} - {`${amount}$`}
+          </Box>
+          <FieldCopy label={"User Id:"} value={userId} variant={"outlined"} style={{ width: "340px" }} />
+          <FieldCopy label={"Request Id:"} value={requestId} variant={"outlined"} style={{ width: "340px" }} />
         </DialogTitle>
         <CloseButton onClick={closeHandler}>
           <CloseOutlinedIcon />
