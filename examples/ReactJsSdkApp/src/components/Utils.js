@@ -3,6 +3,11 @@ export const capitalizeFirstLetter = (value) => {
   return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
 };
 
+export const convertConstToStr = (value) => {
+  if (!value) return "";
+  return capitalizeFirstLetter(value.replaceAll("_", " "));
+};
+
 export const convertCamelCaseToText = (value) => {
   if (!value) return "";
   const result = value.replace(/([A-Z])/g, " $1");
