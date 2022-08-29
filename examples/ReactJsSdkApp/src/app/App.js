@@ -20,7 +20,7 @@ import { ContainerGrid, Header, Section, Title } from "./Styles";
 import { createUser } from "../repository/createUser";
 import { checkIfKycNeeded } from "../repository/checkIfKycNeeded";
 import { generateTransactionLogPayload, sendTransactionLog } from "../repository/sendTransactionLog";
-import { SimpleDialog } from "../components/simpleDialog/SimpleDialog";
+import { openSimpleDialog, SimpleDialog } from "../components/simpleDialog/SimpleDialog";
 import SnackAlert from "../components/snackAlert/SnackAlert";
 
 import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
@@ -32,9 +32,6 @@ import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 
 const App = () => {
-  const [kycOpen, setKycOpen] = useState(false);
-  const [paymentOpen, setPaymentOpen] = useState(false);
-  const [onboardingOpen, setOnboardingOpen] = useState(false);
   const [paymentInformation, setPaymentInformation] = useState(paymentInfo.creditCard);
   const [transactionType, setTransactionType] = useState(transactionTypes.funding);
   const [transactionLogPayload, setTransactionLogPayload] = useState({});
@@ -128,7 +125,7 @@ const App = () => {
         <Button
           endIcon={<OpenInNewOutlinedIcon />}
           fullWidth={true}
-          onClick={() => setPaymentOpen(true)}
+          onClick={() => openSimpleDialog(actionType.funding, userId, requestId, amount, scenarioId, lang)}
           variant="contained"
         >
           Open Payment Form
@@ -143,7 +140,7 @@ const App = () => {
         <Button
           endIcon={<OpenInNewOutlinedIcon />}
           fullWidth={true}
-          onClick={() => setKycOpen(true)}
+          onClick={() => openSimpleDialog(actionType.kyc, userId, requestId, amount, scenarioId, lang)}
           variant="contained"
         >
           Open KYC Form
@@ -151,7 +148,7 @@ const App = () => {
         <Button
           endIcon={<OpenInNewOutlinedIcon />}
           fullWidth={true}
-          onClick={() => setOnboardingOpen(true)}
+          onClick={() => openSimpleDialog(actionType.onboarding, userId, requestId, amount, scenarioId, lang)}
           variant="contained"
         >
           Open Onboarding Form
@@ -254,36 +251,7 @@ const App = () => {
         </Stack>
       </Section>
 
-      <SimpleDialog
-        amount={amount}
-        closeHandler={() => setPaymentOpen(false)}
-        lang={lang}
-        open={paymentOpen}
-        requestId={requestId}
-        scenarioId={scenarioId}
-        type={actionType.funding}
-        userId={userId}
-      />
-      <SimpleDialog
-        amount={amount}
-        closeHandler={() => setKycOpen(false)}
-        lang={lang}
-        open={kycOpen}
-        requestId={requestId}
-        scenarioId={scenarioId}
-        type={actionType.kyc}
-        userId={userId}
-      />
-      <SimpleDialog
-        amount={amount}
-        closeHandler={() => setOnboardingOpen(false)}
-        lang={lang}
-        open={onboardingOpen}
-        requestId={requestId}
-        scenarioId={scenarioId}
-        type={actionType.onboarding}
-        userId={userId}
-      />
+      <SimpleDialog />
       <SnackAlert />
     </ContainerGrid>
   );
