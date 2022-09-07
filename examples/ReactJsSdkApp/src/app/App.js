@@ -10,6 +10,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { v4 as uuidv4 } from "uuid";
 import { LoadingButton } from "@mui/lab";
 import ReactJson from "react-json-view";
 
@@ -37,7 +38,7 @@ const App = () => {
   const [transactionLogPayload, setTransactionLogPayload] = useState({});
 
   const [userId, setUserId] = useState(REACT_APP_USER_ID);
-  const [requestId, setRequestId] = useState(crypto.randomUUID());
+  const [requestId, setRequestId] = useState(uuidv4());
   const [amount, setAmount] = useState(`${getRandomInt(100)}.${getRandomInt(100)}`);
   const [scenarioId, setScenarioId] = useState("");
   const [lang, setLang] = useState("en");
@@ -221,7 +222,7 @@ const App = () => {
               onClick={() => {
                 setTransactionLogLoading(true);
                 sendTransactionLog(props).then(() => {
-                  setRequestId(crypto.randomUUID());
+                  setRequestId(uuidv4());
                   setTransactionLogLoading(false);
                 });
               }}
