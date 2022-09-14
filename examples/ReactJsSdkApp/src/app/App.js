@@ -76,7 +76,7 @@ const App = () => {
             loadingPosition="end"
             onClick={() => {
               setCreateUserLoading(true);
-              createUser(props).then(() => setCreateUserLoading(false));
+              createUser(props).finally(() => setCreateUserLoading(false));
             }}
             variant="contained"
           >
@@ -161,7 +161,7 @@ const App = () => {
           loadingPosition="end"
           onClick={() => {
             setKycNeededLoading(true);
-            checkIfKycNeeded(props).then(() => setKycNeededLoading(false));
+            checkIfKycNeeded(props).finally(() => setKycNeededLoading(false));
           }}
           variant="contained"
         >
@@ -221,10 +221,13 @@ const App = () => {
               loadingPosition="end"
               onClick={() => {
                 setTransactionLogLoading(true);
-                sendTransactionLog(props).then(() => {
-                  setRequestId(uuidv4());
-                  setTransactionLogLoading(false);
-                });
+                sendTransactionLog(props)
+                  .then(() => {
+                    setRequestId(uuidv4());
+                  })
+                  .finally(() => {
+                    setTransactionLogLoading(false);
+                  });
               }}
               variant="contained"
             >

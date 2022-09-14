@@ -1,23 +1,20 @@
-import { callCreateUser } from "../app/calls/callCreateUser";
 import { generateToken } from "./generateToken";
+import { callCreateUser } from "../app/calls/callCreateUser";
+import { outputIfExists } from "../components/Utils";
 import { showErrorSnackAlert, showSuccessSnackAlert } from "../components/snackAlert/SnackAlert";
 
 const createUser = async ({ setUserId, ...props }) => {
-  const token = await generateToken({
-    method: "POST",
-    url: "/users",
-  });
-  const accessToken = token.accessToken;
-
-  await callCreateUser({ accessToken, ...props })
-    .then((res) => {
-      setUserId(res.id);
-      showSuccessSnackAlert(`User "${res.id}" successfully created`);
-    })
-    .catch((e) => {
-      console.log("Catch: ", e);
-      showErrorSnackAlert(`Error while creating user: ${JSON.stringify(e)}`);
-    });
+  const accessToken = await generateToken("POST", `/users`);
+  if (accessToken) {
+    await callCreateUser({ accessToken, ...props })
+      .then((res) => {
+        setUserId(res.id);
+        showSuccessSnackAlert(`User "${res.id}" successfully created`);
+      })
+      .catch((e) => {
+        showErrorSnackAlert(`Error ${outputIfExists(e.status)} while creating user: ${JSON.stringify(e.error)}`);
+      });
+  }
 };
 
 export { createUser };

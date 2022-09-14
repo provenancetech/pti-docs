@@ -83,7 +83,7 @@ const SimpleDialog = () => {
       if (Object.values(actionType).includes(type)) params.type = type;
       PTI.form(params)
         .then(() => setSdkInit(true))
-        .catch(() => showErrorSnackAlert(`Error while loading the ${type} form`));
+        .catch(() => showErrorSnackAlert(`Error while loading the ${convertConstToStr(type)} form`));
     }
   };
 

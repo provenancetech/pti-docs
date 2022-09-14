@@ -9,7 +9,7 @@ const callTransactionLog = async ({ transactionLogPayload, userId, ...props }) =
 
   return fetch(url, config).then((response) => {
     if (response.ok) return response.json();
-    throw new Error(response.statusText);
+    throw { status: response.status, error: new Error(response.statusText) };
   });
 };
 

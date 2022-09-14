@@ -1,17 +1,19 @@
-import { callTransactionLog } from "../app/calls/callTransactionLog";
 import { generateToken } from "./generateToken";
+import { callTransactionLog } from "../app/calls/callTransactionLog";
+import { outputIfExists } from "../components/Utils";
 import { showErrorSnackAlert, showSuccessSnackAlert } from "../components/snackAlert/SnackAlert";
 
 const sendTransactionLog = async ({ userId, ...props }) => {
-  const token = await generateToken({
-    method: "POST",
-    url: `/users/${userId}/transactionLogs`,
-  });
-  const accessToken = token.accessToken;
-
-  await callTransactionLog({ accessToken, userId, ...props })
-    .then(() => showSuccessSnackAlert("Transaction log sent successfully"))
-    .catch((e) => showErrorSnackAlert(`Error while sending transaction log: ${JSON.stringify(e)}`));
+  const accessToken = await generateToken("POST", `/users/${userId}/transactionLogs`);
+  if (accessToken) {
+    await callTransactionLog({ accessToken, userId, ...props })
+      .then(() => showSuccessSnackAlert("Transaction log sent successfully"))
+      .catch((e) =>
+        showErrorSnackAlert(
+          `Error ${outputIfExists(e.status)} while sending transaction log: ${JSON.stringify(e.error)}`
+        )
+      );
+  }
 };
 
 const generateTransactionLogPayload = (transactionType, paymentInformationType, amount, userId) => {
