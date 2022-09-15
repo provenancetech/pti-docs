@@ -14,6 +14,8 @@ const checkIfKycNeeded = async ({ userId, ...props }) => {
       .catch((e) =>
         showErrorSnackAlert(`Error ${outputIfExists(e.status)} while calling isKycNeeded: ${JSON.stringify(e.error)}`)
       );
+  } else {
+    showErrorSnackAlert("Error while generating token.");
   }
 };
 

@@ -14,6 +14,8 @@ const createUser = async ({ setUserId, ...props }) => {
       .catch((e) => {
         showErrorSnackAlert(`Error ${outputIfExists(e.status)} while creating user: ${JSON.stringify(e.error)}`);
       });
+  } else {
+    showErrorSnackAlert("Error while generating token.");
   }
 };
 

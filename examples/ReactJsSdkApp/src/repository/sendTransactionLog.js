@@ -13,6 +13,8 @@ const sendTransactionLog = async ({ userId, ...props }) => {
           `Error ${outputIfExists(e.status)} while sending transaction log: ${JSON.stringify(e.error)}`
         )
       );
+  } else {
+    showErrorSnackAlert("Error while generating token.");
   }
 };
 
