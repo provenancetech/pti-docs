@@ -27,3 +27,7 @@ export const getHeaders = ({ accessToken, requestId, scenarioId }) => ({
 export const getRandomInt = (range) => {
   return Math.round(Math.random() * range);
 };
+
+export const outputIfExists = (value) => {
+  return value ? value : "";
+};

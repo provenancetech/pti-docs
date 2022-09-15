@@ -1,20 +1,22 @@
-import { callIsKycNeeded } from "../app/calls/callIsKycNeeded";
 import { generateToken } from "./generateToken";
+import { callIsKycNeeded } from "../app/calls/callIsKycNeeded";
+import { outputIfExists } from "../components/Utils";
 import { showErrorSnackAlert, showInfoSnackAlert } from "../components/snackAlert/SnackAlert";
 
 const checkIfKycNeeded = async ({ userId, ...props }) => {
-  const token = await generateToken({
-    method: "GET",
-    url: `/users/${userId}/kyc-needed`,
-  });
-  const accessToken = token.accessToken;
-
-  await callIsKycNeeded({ accessToken, userId, ...props })
-    .then((res) => {
-      const kycNeeded = res?.kyc_needed ? "true" : "false";
-      showInfoSnackAlert(`Kyc needed: ${kycNeeded}`);
-    })
-    .catch((e) => showErrorSnackAlert(`Error while calling isKycNeeded: ${JSON.stringify(e)}`));
+  const accessToken = await generateToken("GET", `/users/${userId}/kyc-needed`);
+  if (accessToken) {
+    await callIsKycNeeded({ accessToken, userId, ...props })
+      .then((res) => {
+        const kycNeeded = res?.kyc_needed ? "true" : "false";
+        showInfoSnackAlert(`Kyc needed: ${kycNeeded}`);
+      })
+      .catch((e) =>
+        showErrorSnackAlert(`Error ${outputIfExists(e.status)} while calling isKycNeeded: ${JSON.stringify(e.error)}`)
+      );
+  } else {
+    showErrorSnackAlert("Error while generating token.");
+  }
 };
 
 export { checkIfKycNeeded };

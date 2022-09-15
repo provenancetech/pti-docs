@@ -1,17 +1,13 @@
-const generateToken = async (payload) => {
-  const url = ptiConfig.generateTokenPath;
-  const headers = { "Content-type": "application/json" };
-  const body = {
-    "x-pti-client-id": ptiConfig.clientId,
-    "x-pti-token-payload": payload,
-  };
-  const options = { method: "POST", body: JSON.stringify(body) };
-  const config = { headers, ...options };
+import { callGenerateToken } from "../app/calls/callGenerateToken";
+import { outputIfExists } from "../components/Utils";
+import { showErrorSnackAlert } from "../components/snackAlert/SnackAlert";
 
-  return fetch(url, config).then((response) => {
-    if (response.ok) return response.json();
-    throw new Error(response.statusText);
-  });
+const generateToken = async (method = "GET", url) => {
+  await callGenerateToken({ method, url })
+    .then((token) => token?.accessToken || "")
+    .catch((e) => {
+      showErrorSnackAlert(`Error ${outputIfExists(e.status)} while generating token: ${outputIfExists(e.error)}`);
+    });
 };
 
 export { generateToken };
