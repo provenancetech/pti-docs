@@ -9,7 +9,8 @@ export const ContainerGrid = styled(Container)`
     "title title"
     "informations payment"
     "informations kyc"
-    "transaction transaction";
+    "transaction transaction"
+    "feedback feedback";
 `;
 
 export const Title = styled.h1`
