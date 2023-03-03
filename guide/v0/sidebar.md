@@ -3,6 +3,7 @@
 - [Authentication](auth.md)
 - [KYC Configuration](kyc.md)
 - [SDK](sdk.md)
+- [Forms](forms.md)
 - [API Usage](usage.md)
 - [Examples](examples.md)
 - [API Reference](https://provenancetech.github.io/pti-docs/api/v0/)
