@@ -7,7 +7,7 @@ and client configuration.
 
 ## Client configuration
 
-The client configuration can be used to customize form styles, translations and more.
+The client configuration can be used to customize Form's settings such as styles, translations and more.
 The config should follow this format:
 
 ```typescript
@@ -41,8 +41,8 @@ interface ExceptionLists {
 }
 ```
 
-- `embargoedList` is a list of country codes where service providing should be denied. A default list will be provided
-if none is specified.
+- `embargoedList` is a list of country codes where service providing should be denied. The default list will be provided
+if none is specified: `["AF", "AL", "BA", "BD", "BI", "BO", "BY", "CD", "CF", "CI", "CU", "DZ", "GW", "IQ", "IR", "KP", "LB", "LY", "ME", "MK", "MM", "RS", "RU", "SD", "SL", "SO", "SY", "TJ", "VE", "VU", "YE", "ZW"]`
 - `highRiskList` is a list of country codes considered high risk, this will show warnings for users in these areas.
 - `regulatoryIssuesList` is a list of country codes with regulatory issues, this will also display a warning for users 
 in these areas.
@@ -79,5 +79,5 @@ configuration for you.
 
 In addition to the client configuration, scenarios are another way to use Forms to its full extent.
 Scenarios dictate whether some form fields should be made `readOnly` or `secret`. They also dictate if
-exiting values of a form field should be filled with the existing value, be made read-only, secret, editable, or
-simply be hidden. Contact us If you need to use custom scenarios and we will work out the configuration you need.
+existing values of a form field should be filled with the existing value, be made read-only, secret, editable, or
+simply be hidden. Contact us if you need to use custom scenarios, and we will work out the configuration you need.
