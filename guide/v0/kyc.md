@@ -69,7 +69,7 @@ Please note that the amount passed in the above example must be in USD.
 
 ### KYC via API calls
 
-Anoher way to perform KYC flows is to use the API directly.
+Another way to perform KYC flows is to use the API directly.
 
 #### Checking if a KYC is needed
 
