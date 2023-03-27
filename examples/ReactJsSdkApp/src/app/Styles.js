@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Container, Paper } from "@mui/material";
+import { Container, Paper } from "@mui/material";
 import styled from "styled-components";
 
 export const ContainerGrid = styled(Container)`

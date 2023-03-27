@@ -18,5 +18,4 @@ const sendTransactionFeedback = async ({ requestId, ...props }) => {
   }
 };
 
-
 export { sendTransactionFeedback };

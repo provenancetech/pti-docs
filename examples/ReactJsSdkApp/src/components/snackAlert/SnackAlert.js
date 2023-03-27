@@ -1,5 +1,5 @@
 import React from "react";
-import create from "zustand";
+import { create } from "zustand";
 import { Alert, Box, Slide, Snackbar } from "@mui/material";
 
 const useSnackAlertStore = create((set) => ({
