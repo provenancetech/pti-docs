@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, CircularProgress, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
-import create from "zustand";
+import { create } from "zustand";
 import styled from "styled-components";
 
 import { actionType } from "../Consts";
@@ -28,7 +28,7 @@ const IFrame = styled(Box)`
   background-color: #f2f2f2;
   display: flex;
   justify-content: center;
-  min-height: 800px;
+  min-height: 910px;
   min-width: 550px;
 `;
 
@@ -94,6 +94,7 @@ const SimpleDialog = () => {
           <Box>
             {convertConstToStr(type)} - {`${amount}$`}
           </Box>
+          <FieldCopy label={"Client Id:"} value={ptiConfig.clientId} variant={"outlined"} style={{ width: "340px" }} />
           <FieldCopy label={"User Id:"} value={userId} variant={"outlined"} style={{ width: "340px" }} />
           <FieldCopy label={"Request Id:"} value={requestId} variant={"outlined"} style={{ width: "340px" }} />
         </DialogTitle>

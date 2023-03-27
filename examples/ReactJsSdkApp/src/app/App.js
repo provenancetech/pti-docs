@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   FormControl,
@@ -10,19 +10,19 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import {v4 as uuidv4} from "uuid";
-import {LoadingButton} from "@mui/lab";
+import { v4 as uuidv4 } from "uuid";
+import { LoadingButton } from "@mui/lab";
 import ReactJson from "react-json-view";
 
-import {REACT_APP_USER_ID} from "../env";
-import {actionType, paymentInfo, transactionTypes} from "../components/Consts";
-import {convertCamelCaseToText, getRandomInt} from "../components/Utils";
-import {ContainerGrid, Header, Section, Title} from "./Styles";
-import {createUser} from "../repository/createUser";
-import {callTransactionFeedback, sendTransactionFeedback} from "../repository/sendTransactionFeedback";
-import {checkIfKycNeeded} from "../repository/checkIfKycNeeded";
-import {generateTransactionLogPayload, sendTransactionLog} from "../repository/sendTransactionLog";
-import {openSimpleDialog, SimpleDialog} from "../components/simpleDialog/SimpleDialog";
+import { REACT_APP_USER_ID } from "../env";
+import { actionType, paymentInfo, transactionTypes } from "../components/Consts";
+import { convertCamelCaseToText, getRandomInt } from "../components/Utils";
+import { ContainerGrid, Header, Section, Title } from "./Styles";
+import { createUser } from "../repository/createUser";
+import { callTransactionFeedback, sendTransactionFeedback } from "../repository/sendTransactionFeedback";
+import { checkIfKycNeeded } from "../repository/checkIfKycNeeded";
+import { generateTransactionLogPayload, sendTransactionLog } from "../repository/sendTransactionLog";
+import { openSimpleDialog, SimpleDialog } from "../components/simpleDialog/SimpleDialog";
 import SnackAlert from "../components/snackAlert/SnackAlert";
 
 import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
@@ -49,11 +49,11 @@ const App = () => {
   const [transactionLogLoading, setTransactionLogLoading] = useState(false);
   const [transactionFeedbackLoading, setTransactionFeedbackLoading] = useState(false);
   const [transactionFeedbackPayload, setTransactionFeedbackPayload] = useState({
-    feedback: 'SETTLED',
-    transactionId: '0xbb0ec8b4ab6679a0e0486f44a867dcd913cd5acee368180ac72432784eba48e4',
-    date: new Date().toISOString()
+    feedback: "SETTLED",
+    transactionId: "0xbb0ec8b4ab6679a0e0486f44a867dcd913cd5acee368180ac72432784eba48e4",
+    date: new Date().toISOString(),
   });
-  const props = {userId, requestId, amount, scenarioId, setUserId, transactionLogPayload, transactionFeedbackPayload};
+  const props = { userId, requestId, amount, scenarioId, setUserId, transactionLogPayload, transactionFeedbackPayload };
 
   useEffect(() => {
     setTransactionLogPayload(generateTransactionLogPayload(transactionType, paymentInformation, amount, userId));
@@ -62,13 +62,20 @@ const App = () => {
   return (
     <ContainerGrid>
       <Title>PTI SDK Example</Title>
-      <Section style={{gridArea: "informations"}}>
+      <Section style={{ gridArea: "informations" }}>
         <Header>
-          <TuneOutlinedIcon/>
+          <TuneOutlinedIcon />
           Settings
         </Header>
-        <Button onClick={() => {setRequestId(uuidv4())}}
-                variant="contained">New Request Id</Button>
+        <TextField disabled fullWidth={true} id="clientId" label="ClientId" value={ptiConfig.clientId} />
+        <Button
+          onClick={() => {
+            setRequestId(uuidv4());
+          }}
+          variant="contained"
+        >
+          New Request Id
+        </Button>
         <Stack direction="row" spacing={2}>
           <TextField
             fullWidth={true}
@@ -78,7 +85,7 @@ const App = () => {
             value={userId}
           />
           <LoadingButton
-            endIcon={<PersonOutlineOutlinedIcon/>}
+            endIcon={<PersonOutlineOutlinedIcon />}
             fullWidth={true}
             loading={createUserLoading}
             loadingPosition="end"
@@ -126,13 +133,13 @@ const App = () => {
         />
       </Section>
 
-      <Section style={{gridArea: "payment"}}>
+      <Section style={{ gridArea: "payment" }}>
         <Header>
-          <CreditCardOutlinedIcon/>
+          <CreditCardOutlinedIcon />
           Payment
         </Header>
         <Button
-          endIcon={<OpenInNewOutlinedIcon/>}
+          endIcon={<OpenInNewOutlinedIcon />}
           fullWidth={true}
           onClick={() => openSimpleDialog(actionType.funding, userId, requestId, amount, scenarioId, lang)}
           variant="contained"
@@ -141,13 +148,13 @@ const App = () => {
         </Button>
       </Section>
 
-      <Section style={{gridArea: "kyc"}}>
+      <Section style={{ gridArea: "kyc" }}>
         <Header>
-          <ContactPageOutlinedIcon/>
+          <ContactPageOutlinedIcon />
           KYC
         </Header>
         <Button
-          endIcon={<OpenInNewOutlinedIcon/>}
+          endIcon={<OpenInNewOutlinedIcon />}
           fullWidth={true}
           onClick={() => openSimpleDialog(actionType.kyc, userId, requestId, amount, scenarioId, lang)}
           variant="contained"
@@ -155,7 +162,7 @@ const App = () => {
           Open KYC Form
         </Button>
         <Button
-          endIcon={<OpenInNewOutlinedIcon/>}
+          endIcon={<OpenInNewOutlinedIcon />}
           fullWidth={true}
           onClick={() => openSimpleDialog(actionType.onboarding, userId, requestId, amount, scenarioId, lang)}
           variant="contained"
@@ -177,13 +184,13 @@ const App = () => {
         </LoadingButton>
       </Section>
 
-      <Section style={{gridArea: "transaction"}}>
+      <Section style={{ gridArea: "transaction" }}>
         <Header>
-          <PaidOutlinedIcon/>
+          <PaidOutlinedIcon />
           Transaction
         </Header>
         <Stack direction="row" spacing={2}>
-          <Stack spacing={3} style={{flex: 1}}>
+          <Stack spacing={3} style={{ flex: 1 }}>
             <FormControl>
               <InputLabel id="transactiontype-select-label">Transaction Type</InputLabel>
               <Select
@@ -223,16 +230,15 @@ const App = () => {
               </Select>
             </FormControl>
             <LoadingButton
-              endIcon={<SendOutlinedIcon/>}
+              endIcon={<SendOutlinedIcon />}
               fullWidth={true}
               loading={transactionLogLoading}
               loadingPosition="end"
               onClick={() => {
                 setTransactionLogLoading(true);
-                sendTransactionLog(props)
-                  .finally(() => {
-                    setTransactionLogLoading(false);
-                  });
+                sendTransactionLog(props).finally(() => {
+                  setTransactionLogLoading(false);
+                });
               }}
               variant="contained"
             >
@@ -240,7 +246,7 @@ const App = () => {
             </LoadingButton>
           </Stack>
 
-          <FormControl style={{minWidth: "600px"}}>
+          <FormControl style={{ minWidth: "600px" }}>
             <Typography component="p">Transaction Log Payload</Typography>
             <ReactJson
               collapsed={2}
@@ -254,29 +260,28 @@ const App = () => {
               }}
               src={transactionLogPayload}
               theme={"rjv-default"}
-              style={{fontSize: "14px", padding: "20px"}}
+              style={{ fontSize: "14px", padding: "20px" }}
             />
           </FormControl>
         </Stack>
       </Section>
 
-      <Section style={{gridArea: "feedback"}}>
+      <Section style={{ gridArea: "feedback" }}>
         <Header>
-          <PaidOutlinedIcon/>
+          <PaidOutlinedIcon />
           Transaction Feedback
         </Header>
         <Stack direction="row" spacing={2}>
-          <Stack spacing={3} style={{flex: 1}}>
+          <Stack spacing={3} style={{ flex: 1 }}>
             <LoadingButton
-              endIcon={<SendOutlinedIcon/>}
+              endIcon={<SendOutlinedIcon />}
               fullWidth={true}
               loading={transactionFeedbackLoading}
               loadingPosition="end"
               onClick={() => {
                 setTransactionFeedbackLoading(true);
                 sendTransactionFeedback(props)
-                  .then(() => {
-                  })
+                  .then(() => {})
                   .finally(() => {
                     setTransactionFeedbackLoading(false);
                   });
@@ -287,7 +292,7 @@ const App = () => {
             </LoadingButton>
           </Stack>
 
-          <FormControl style={{minWidth: "600px"}}>
+          <FormControl style={{ minWidth: "600px" }}>
             <Typography component="p">Transaction Feedback Payload</Typography>
             <ReactJson
               collapsed={2}
@@ -301,16 +306,16 @@ const App = () => {
               }}
               src={transactionFeedbackPayload}
               theme={"rjv-default"}
-              style={{fontSize: "14px", padding: "20px"}}
+              style={{ fontSize: "14px", padding: "20px" }}
             />
           </FormControl>
         </Stack>
       </Section>
 
-      <SimpleDialog/>
-      <SnackAlert/>
+      <SimpleDialog />
+      <SnackAlert />
     </ContainerGrid>
   );
 };
 
-export {App};
+export { App };
