@@ -97,6 +97,7 @@ const SimpleDialog = () => {
           <FieldCopy label={"Client Id:"} value={ptiConfig.clientId} variant={"outlined"} style={{ width: "340px" }} />
           <FieldCopy label={"User Id:"} value={userId} variant={"outlined"} style={{ width: "340px" }} />
           <FieldCopy label={"Request Id:"} value={requestId} variant={"outlined"} style={{ width: "340px" }} />
+          <FieldCopy label={"Scenario Id:"} value={scenarioId} variant={"outlined"} style={{ width: "200px" }} />
         </DialogTitle>
         <CloseButton onClick={closeHandler}>
           <CloseOutlinedIcon />
