@@ -9,7 +9,7 @@ python = "^3.9"
 jwcrypto = "^1.4"
 Flask = "^2.1.2"
 Flask-SocketIO = "^5.1.2"
-requests = "^2.27.1"
+requests = "^2.31.0"
 
 [tool.poetry.dev-dependencies]
 
