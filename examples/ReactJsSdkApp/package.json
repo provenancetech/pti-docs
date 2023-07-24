@@ -8,6 +8,7 @@
     "test": "craco test"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "7.21.11",
     "lint-staged": "^13.2.0",
     "prettier": "^2.8.4",
     "stylelint": "^15.3.0",
