@@ -85,6 +85,10 @@ def make_signed_request(client_id: str, request_id: str, key: jwk.JWK, url: str,
 
     resp = request_func(**params)
 
+    if resp.status_code > 299:
+        print(f"Invalid http status returned : {resp.status_code}")
+        return None
+
     return resp
 
 
@@ -103,4 +107,5 @@ if __name__ == "__main__":
         method=args.http_method,
         data=args.data
     )
-    print(resp.json())
+    if resp:
+        print(resp.json())
