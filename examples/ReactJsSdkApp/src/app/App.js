@@ -252,7 +252,7 @@ const App = () => {
               collapsed={2}
               displayDataTypes={false}
               displayObjectSize={false}
-              enableClipboard={false}
+              enableClipboard={true}
               iconStyle={"triangle"}
               id="transactionLogPayload"
               onEdit={(value) => {
@@ -298,7 +298,7 @@ const App = () => {
               collapsed={2}
               displayDataTypes={false}
               displayObjectSize={false}
-              enableClipboard={false}
+              enableClipboard={true}
               iconStyle={"triangle"}
               id="transactionFeedbackPayload"
               onEdit={(value) => {
