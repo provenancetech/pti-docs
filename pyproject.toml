@@ -5,6 +5,7 @@ description = ""
 authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
+cryptography = "^41.0.4"
 python = "^3.9"
 jwcrypto = "^1.4"
 Flask = "^2.3.2"
