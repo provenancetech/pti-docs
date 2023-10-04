@@ -50,7 +50,7 @@ def webhook():
     return '', 204
 
 def run_server():
-    socketio.run(app, host='::', port=5100)
+    socketio.run(app, host='::', port=5100, allow_unsafe_werkzeug=True)
 
 if __name__ == "__main__":
     run_server()
