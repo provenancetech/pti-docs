@@ -7,6 +7,6 @@
   "resolutions": {
     "glob-parent": "^6.0.0",
     "nth-check": "^2.0.1",
-    "postcss": "^8.4.5"
+    "postcss": "^8.4.31"
   }
 }
