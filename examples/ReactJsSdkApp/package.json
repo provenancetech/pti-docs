@@ -34,7 +34,7 @@
   },
   "resolutions": {
     "clean-css": "^5.2.2",
-    "postcss": "^8.4.12"
+    "postcss": "^8.4.31"
   },
   "browserslist": {
     "production": [
