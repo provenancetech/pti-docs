@@ -39,6 +39,7 @@ const App = () => {
   const [transactionLogPayload, setTransactionLogPayload] = useState({});
 
   const [userId, setUserId] = useState(REACT_APP_USER_ID);
+  const [subClientId, setSubClientId] = useState("");
   const [requestId, setRequestId] = useState(uuidv4());
   const [amount, setAmount] = useState(`${getRandomInt(100)}.${getRandomInt(100)}`);
   const [scenarioId, setScenarioId] = useState("");
@@ -56,8 +57,8 @@ const App = () => {
   const props = { userId, requestId, amount, scenarioId, setUserId, transactionLogPayload, transactionFeedbackPayload };
 
   useEffect(() => {
-    setTransactionLogPayload(generateTransactionLogPayload(transactionType, paymentInformation, amount, userId));
-  }, ["", amount, transactionType, paymentInformation, userId]);
+    setTransactionLogPayload(generateTransactionLogPayload(transactionType, paymentInformation, amount, userId, subClientId));
+  }, ["", amount, transactionType, paymentInformation, userId, subClientId]);
 
   return (
     <ContainerGrid>
@@ -68,6 +69,7 @@ const App = () => {
           Settings
         </Header>
         <TextField disabled fullWidth={true} id="clientId" label="ClientId" value={ptiConfig.clientId} />
+        <TextField fullWidth={true} id="subClientId" label="Sub ClientId" value={subClientId} onChange={(e) => setSubClientId(e.target.value)} />
         <Button
           onClick={() => {
             setRequestId(uuidv4());

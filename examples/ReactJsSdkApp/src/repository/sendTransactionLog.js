@@ -18,7 +18,7 @@ const sendTransactionLog = async ({ userId, ...props }) => {
   }
 };
 
-const generateTransactionLogPayload = (transactionType, paymentInformationType, amount, userId) => {
+const generateTransactionLogPayload = (transactionType, paymentInformationType, amount, userId, subClientId) => {
   let payload = {};
   let paymentInformation = {};
   switch (paymentInformationType) {
@@ -41,6 +41,7 @@ const generateTransactionLogPayload = (transactionType, paymentInformationType, 
           tokenAddress: "0x2a2d248d83e58870b2a1bab0ec4438efdcb444e8",
           tokenType: "ETH",
           blockchain: "Ethereum",
+          privateBlockchain: false
         },
       };
       break;
@@ -58,12 +59,21 @@ const generateTransactionLogPayload = (transactionType, paymentInformationType, 
       break;
     case "WITHDRAWAL":
       payload = {
-        amount,
+        amount: "1900",
         date: new Date().toISOString(),
         initiator: { id: userId, type: "PERSON" },
-        destinationMethod: paymentInformation,
+        destinationMethod: {
+            paymentMethodType: "TOKEN",
+            paymentInformation: {
+                type: "TOKEN",
+                tokenAddress: "0x0000000000000000000000000000000000000000",
+                tokenType: "ATC",
+                blockchain: "Ethereum",
+                privateBlockchain: true
+            },
+        },
         type: "WITHDRAWAL",
-        usdValue: amount,
+        usdValue: "19",
       };
       break;
     case "TRANSFER":
@@ -89,6 +99,9 @@ const generateTransactionLogPayload = (transactionType, paymentInformationType, 
       };
       break;
     case "BUY":
+      paymentInformation['paymentInformation']['privateBlockchain'] = true;
+      paymentInformation['paymentInformation']['tokenType'] = 'ATC';
+      paymentInformation['paymentInformation']['tokenAddress'] = '0x0000000000000000000000000000000000000000';
       payload = {
         amount,
         date: new Date().toISOString(),
@@ -97,22 +110,25 @@ const generateTransactionLogPayload = (transactionType, paymentInformationType, 
         type: "BUY",
         usdValue: amount,
         asset: {
-          transactedAssetType: "COIN",
-          transactedAssetReference: "https://coinmarketcap.com/currencies/rally/",
-        },
+          transactedAssetType: "NFT",
+            transactedAssetReference: "Item Description: Uncommon Great Harrison Smith Level 1 Item Title: S, Mint Condition, #33/40 From Core 22 Set Item ID: 015168ee-bb00-4fec-97c9-c624f35d5e29"
+          }
       };
       break;
     case "SELL":
+      paymentInformation['paymentInformation']['privateBlockchain'] = true;
+      paymentInformation['paymentInformation']['tokenType'] = 'ATC';
+      paymentInformation['paymentInformation']['tokenAddress'] = '0x0000000000000000000000000000000000000000';
       payload = {
-        amount,
+        amount: "2500",
         date: new Date().toISOString(),
         initiator: { id: userId, type: "PERSON" },
         destinationMethod: paymentInformation,
         type: "SELL",
-        usdValue: amount,
+        usdValue: "25",
         asset: {
-          transactedAssetType: "COIN",
-          transactedAssetReference: "https://coinmarketcap.com/currencies/rally/",
+          transactedAssetType: "NFT",
+          transactedAssetReference: "Item Description: Very Rare Great Devin White Level 3 Item Title: LB, Mint Condition, #15/25 From Founders Set Item ID: 6186b7c9-d2aa-431d-8017-c050bcf1c8fb",
         },
       };
       break;
@@ -128,6 +144,7 @@ const generateTransactionLogPayload = (transactionType, paymentInformationType, 
       };
       break;
   }
+  payload['subClientId'] = subClientId;
   return payload;
 };
 
