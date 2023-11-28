@@ -1,7 +1,7 @@
 # Authentication
 
 The PTI API uses asymmetric cryptography, encapsulated in a signature, to authenticate the caller of the API.
-PTI only has access to your public key(s), never to your private key. It's your responsability to keep your private key secure at all times.
+PTI only has access to your public key(s), never to your private key. It's your responsibility to keep your private key secure at all times.
 Having access to your private key means having access to your PTI API account. 
 Do **NOT** share your private key  in publicly accessible areas such as code repositories, client-side code, and so forth.
 
@@ -90,11 +90,11 @@ If you need your users or third parties to be able to call the PTI API on your b
 
 ### Generating a single-use JWT with permissions for a specific URL
 
-To generate a single-use token that can be used by one of your Users for a single request, you need to make a `POST` request to `/auth/userToken`. 
+To generate a single-use token that can be used by one of your Users for a single request, you need to make a `POST` request to `/auth/jwt`. 
 You need to specify the URL on which the token is to grant permission, eg, `{"url": "/v0/users/{userId}/transactions/fiat/funding"}` and you will
 receive a JSON response containing `{"accessToken": "..."}`. The value of the `accessToken` field has to be included in the `x-pti-token` HTTP Header in the request made by your User.
 
-The call the the `/auth/userToken` endpoint must be done via a signed request, so this means that you will need to have an endpoint in your own backend to proxy the request that will generate the auth token.
+The call to the `/auth/jwt` endpoint must be done via a signed request, so this means that you will need to have an endpoint in your own backend to proxy the request that will generate the auth token.
 
 The following diagram illustrates the token generation process leading to an API call with a single use token.
 
@@ -103,7 +103,7 @@ sequenceDiagram
     Client UI->>Client Back End: Get JWT Token ( http_method, pti_api_url )
     activate Client Back End
     Client Back End->>Client Back End: Sign ( private_key, {method: http_method, url: pti_api_url} )
-    Client Back End->>PTI API: POST(/auth/userToken) with signature
+    Client Back End->>PTI API: POST(/auth/jwt) with signature
     activate PTI API
     PTI API->>Client Back End: JWT Token
     deactivate PTI API
