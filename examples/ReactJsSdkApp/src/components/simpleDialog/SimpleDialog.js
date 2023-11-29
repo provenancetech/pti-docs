@@ -27,8 +27,8 @@ const IFrame = styled(Box)`
   align-items: center;
   background-color: #f2f2f2;
   display: flex;
+  height:100%;
   justify-content: center;
-  min-height: 910px;
   min-width: 550px;
 `;
 
