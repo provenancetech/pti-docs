@@ -27,7 +27,7 @@ socketio = SocketIO(app, cors_allowed_origins='*')
 def generate_token():
     payload = request.get_json()
     json_data = json.dumps(payload['x-pti-token-payload'])
-    response = make_signed_request(args.client_id, str(uuid.uuid4()), args.private_key, f'{args.pti_api_base_url}/auth/userToken',
+    response = make_signed_request(args.client_id, str(uuid.uuid4()), args.private_key, f'{args.pti_api_base_url}/auth/jwt',
                                    method="POST", data=json_data)
     if response.status_code != 200:
         return '', response.status_code
