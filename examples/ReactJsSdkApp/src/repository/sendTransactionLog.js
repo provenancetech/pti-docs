@@ -3,10 +3,10 @@ import { callTransactionLog } from "../app/calls/callTransactionLog";
 import { outputIfExists } from "../components/Utils";
 import { showErrorSnackAlert, showSuccessSnackAlert } from "../components/snackAlert/SnackAlert";
 
-const sendTransactionLog = async ({ transactionType, ...props }) => {
-  const accessToken = await generateToken("POST", `/transactions/${transactionType.toLowerCase()}s`);
+const sendTransactionLog = async (props) => {
+  const accessToken = await generateToken("POST", `/transactions/assessments`);
   if (accessToken) {
-    await callTransactionLog({ accessToken, transactionType, ...props })
+    await callTransactionLog({ accessToken, ...props })
       .then(() => showSuccessSnackAlert("Transaction log sent successfully"))
       .catch((e) =>
         showErrorSnackAlert(

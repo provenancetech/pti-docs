@@ -51,7 +51,7 @@ const App = () => {
     transactionId: "0xbb0ec8b4ab6679a0e0486f44a867dcd913cd5acee368180ac72432784eba48e4",
     date: new Date().toISOString(),
   });
-  const props = { userId, requestId, amount, scenarioId, setUserId, transactionType, transactionLogPayload, transactionFeedbackPayload };
+  const props = { userId, requestId, amount, scenarioId, setUserId, transactionLogPayload, transactionFeedbackPayload };
 
   useEffect(() => {
     setTransactionLogPayload(generateTransactionLogPayload(transactionType, paymentInformation, amount, userId));
