@@ -20,7 +20,6 @@ import { convertCamelCaseToText, getRandomInt } from "../components/Utils";
 import { ContainerGrid, Header, Section, Title } from "./Styles";
 import { createUser } from "../repository/createUser";
 import { callTransactionFeedback, sendTransactionFeedback } from "../repository/sendTransactionFeedback";
-import { checkIfKycNeeded } from "../repository/checkIfKycNeeded";
 import { generateTransactionLogPayload, sendTransactionLog } from "../repository/sendTransactionLog";
 import { openSimpleDialog, SimpleDialog } from "../components/simpleDialog/SimpleDialog";
 import SnackAlert from "../components/snackAlert/SnackAlert";
@@ -35,7 +34,7 @@ import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 
 const App = () => {
   const [paymentInformation, setPaymentInformation] = useState(paymentInfo.creditCard);
-  const [transactionType, setTransactionType] = useState(transactionTypes.funding);
+  const [transactionType, setTransactionType] = useState(transactionTypes.deposit);
   const [transactionLogPayload, setTransactionLogPayload] = useState({});
 
   const [userId, setUserId] = useState(REACT_APP_USER_ID);
@@ -44,7 +43,6 @@ const App = () => {
   const [scenarioId, setScenarioId] = useState("");
   const [lang, setLang] = useState("en");
 
-  const [kycNeededLoading, setKycNeededLoading] = useState(false);
   const [createUserLoading, setCreateUserLoading] = useState(false);
   const [transactionLogLoading, setTransactionLogLoading] = useState(false);
   const [transactionFeedbackLoading, setTransactionFeedbackLoading] = useState(false);
@@ -169,19 +167,6 @@ const App = () => {
         >
           Open Onboarding Form
         </Button>
-        <LoadingButton
-          fullWidth={true}
-          endIcon={<></>}
-          loading={kycNeededLoading}
-          loadingPosition="end"
-          onClick={() => {
-            setKycNeededLoading(true);
-            checkIfKycNeeded(props).finally(() => setKycNeededLoading(false));
-          }}
-          variant="contained"
-        >
-          Check if Kyc Needed
-        </LoadingButton>
       </Section>
 
       <Section style={{ gridArea: "transaction" }}>

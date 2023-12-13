@@ -3,10 +3,10 @@ import { callTransactionLog } from "../app/calls/callTransactionLog";
 import { outputIfExists } from "../components/Utils";
 import { showErrorSnackAlert, showSuccessSnackAlert } from "../components/snackAlert/SnackAlert";
 
-const sendTransactionLog = async ({ userId, ...props }) => {
-  const accessToken = await generateToken("POST", `/users/${userId}/transactionLogs`);
+const sendTransactionLog = async (props) => {
+  const accessToken = await generateToken("POST", `/transactions/assessments`);
   if (accessToken) {
-    await callTransactionLog({ accessToken, userId, ...props })
+    await callTransactionLog({ accessToken, ...props })
       .then(() => showSuccessSnackAlert("Transaction log sent successfully"))
       .catch((e) =>
         showErrorSnackAlert(
@@ -46,13 +46,13 @@ const generateTransactionLogPayload = (transactionType, paymentInformationType, 
       break;
   }
   switch (transactionType) {
-    case "FUNDING":
+    case "DEPOSIT":
       payload = {
         amount,
         date: new Date().toISOString(),
         initiator: { id: userId, type: "PERSON" },
         sourceMethod: paymentInformation,
-        type: "FUNDING",
+        type: "DEPOSIT",
         usdValue: amount,
       };
       break;
