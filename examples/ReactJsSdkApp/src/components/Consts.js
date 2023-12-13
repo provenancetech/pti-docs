@@ -5,11 +5,9 @@ export const actionType = {
 };
 
 export const transactionTypes = {
-  funding: "FUNDING",
+  deposit: "DEPOSIT",
   withdrawal: "WITHDRAWAL",
   transfer: "TRANSFER",
-  buy: "BUY",
-  sell: "SELL",
   mint: "MINT",
   swap: "SWAP",
 };

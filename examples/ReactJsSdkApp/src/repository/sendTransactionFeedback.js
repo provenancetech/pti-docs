@@ -4,7 +4,7 @@ import { outputIfExists } from "../components/Utils";
 import { showErrorSnackAlert, showSuccessSnackAlert } from "../components/snackAlert/SnackAlert";
 
 const sendTransactionFeedback = async ({ requestId, ...props }) => {
-  const accessToken = await generateToken("POST", `/transactions/${requestId}/feedback`);
+  const accessToken = await generateToken("POST", `/transactions/${requestId}/updates`);
   if (accessToken) {
     await callTransactionFeedback({ accessToken, requestId, ...props })
       .then(() => showSuccessSnackAlert("Transaction feedback sent successfully"))
