@@ -1,0 +1,300 @@
+:root {
+    /* Common colors */
+    --get-color: 36, 104, 239;
+    --post-color: 0, 189, 171;
+    --put-color: 0, 140, 200;
+    --patch-color: 136, 36, 224;
+    --delete-color: 330, 45, 92;
+
+    /* Dark Theme colors */
+    --bg-color: 16, 16, 52;
+    --required-color: orangered;
+    --text-color: 255, 255, 255;
+    --alt-text-color: lightgray;
+
+    /* Light Theme colors */
+    --required-color-light: 255, 0, 0;
+    --alt-text-color-light: 59, 65, 81;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+html {
+    /* Dark background by default */
+    background-color: rgb(var(--bg-color));
+    box-sizing: border-box;
+    overflow-y: scroll;
+}
+
+body {
+    font-family: Jost, sans-serif;
+    margin:0;
+}
+
+.swagger-ui {
+    /* Swagger components to hide */
+    .info__license,
+    .scheme-container,
+    .try-out__btn,
+    .authorization__btn,
+    .info .main .title small,
+    .wrapper .block .models {
+        display: none;
+    }
+
+    /* Endpoint titles */
+    .opblock-summary .opblock-summary-control .opblock-summary-description,
+    .opblock-summary-path {
+        font-size: 18px;
+        margin-right: 24px;
+    }
+
+    /* Apply font family to most text elements, and white text color for default dark theme */
+    .info p,
+    .info .main h2,
+    .opblock .opblock-section-header h4,
+    .opblock-title_normal p,
+    .opblock-description-wrapper p,
+    .opblock-external-docs-wrapper p,
+    .opblock-tag,
+    .opblock-description,
+    .opblock-description th,
+    .opblock-summary .opblock-summary-control .opblock-summary-description,
+    .opblock-summary .opblock-summary-control .opblock-summary-method,
+    .opblock-body .opblock-section,
+    .opblock-body .opblock-section .opblock-title,
+    .table-container thead tr td div,
+    .table-container thead tr th,
+    .col_header,
+    .response-col_status,
+    .response-col_links,
+    .response-col_description__inner,
+    .response-control-media-type__title {
+        color: rgb(var(--text-color));
+        font-family: Jost, sans-serif;
+    }
+
+    .markdown code, .renderedMarkdown code {
+        background: rgba(0, 0, 0, .2);
+    }
+
+    /* Element to apply text color but not font family */
+    .opblock .opblock-summary .opblock-summary-path,
+    .parameter__name,
+    .parameter__type,
+    .tab .tabitem .tablinks,
+    .prop-type,
+    .prop-format,
+    .model,
+    .model-title {
+        color: rgb(var(--text-color));
+    }
+
+    /* Element with alt text color */
+    .parameters-col_name .parameter__in,
+    .response-control-media-type__accept-message,
+    .prop .property.primitive {
+        color: var(--alt-text-color);
+    }
+    .tab li:first-of-type::after {
+        background: var(--alt-text-color);
+    }
+
+    /* Main sections highlights */
+    .opblock-tag-section {
+        margin-bottom: 15px;
+    }
+    .opblock-tag {
+        border-radius: 5px;
+        background: rgba(var(--text-color), .08);
+    }
+    .opblock-tag:hover {
+        background: rgba(var(--text-color), .2);
+    }
+
+    /* Brighter svg arrows required for dark theme */
+    .opblock-tag .expand-operation,
+    .opblock-summary .opblock-control-arrow {
+        fill: rgb(var(--text-color));
+    }
+
+    /* Brighter "required" keyword for dark theme */
+    .parameter__name.required::after {
+        color: var(--required-color);
+    }
+
+    /* Background color for dark mode on section headers */
+    .opblock .opblock-section-header {
+        background-color: rgb(var(--bg-color));
+    }
+
+    /* GET method colors */
+    .opblock.opblock-get {
+        border-color: rgba(var(--get-color), 1);
+        background-color: rgba(var(--get-color), 0.3);
+    }
+    .opblock.opblock-get .opblock-summary {
+        border-color: rgba(var(--get-color), 1);
+    }
+    .opblock.opblock-get .opblock-summary-method {
+        background: rgba(var(--get-color), 0.5);
+    }
+
+    /* POST method colors */
+    .opblock.opblock-post {
+        border-color: rgba(var(--post-color), 1);
+        background-color: rgba(var(--post-color), 0.3);
+    }
+    .opblock.opblock-post .opblock-summary {
+        border-color: rgba(var(--post-color), 1);
+    }
+    .opblock.opblock-post .opblock-summary-method {
+        background: rgba(var(--post-color), 0.5) !important;
+    }
+
+    /* PUT method colors */
+    .opblock.opblock-put {
+        border-color: rgba(var(--put-color), 1);
+        background-color: rgba(var(--put-color), 0.3);
+    }
+    .opblock.opblock-put .opblock-summary {
+        border-color: rgba(var(--put-color), 1);
+    }
+    .opblock.opblock-put .opblock-summary-method {
+        background: rgba(var(--put-color), 0.5);
+    }
+
+    /* PATCH method colors */
+    .opblock.opblock-patch {
+        border-color: rgba(var(--patch-color), 1);
+        background-color: rgba(var(--patch-color), 0.3);
+    }
+    .opblock.opblock-patch .opblock-summary {
+        border-color: rgba(var(--patch-color), 1);
+    }
+    .opblock.opblock-patch .opblock-summary-method {
+        background: rgba(var(--patch-color), 0.5);
+    }
+
+    /* DELETE method colors */
+    .opblock.opblock-delete {
+        border-color: rgba(var(--delete-color), 1);
+        background-color: rgba(var(--delete-color), 0.3);
+    }
+    .opblock.opblock-delete .opblock-summary {
+        border-color: rgba(var(--delete-color), 1);
+    }
+    .opblock.opblock-delete .opblock-summary-method {
+        background: rgba(var(--delete-color), 0.5);
+    }
+
+    .parameters-col_description {
+        width: 80%;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    html {
+        /* Inherit default background for light theme */
+        background-color: inherit;
+    }
+    .swagger-ui {
+        background-color: inherit;
+
+        /* Inherit default text color for light theme */
+        .info p,
+        .info .main h2,
+        .opblock .opblock-section-header h4,
+        .opblock-title_normal p,
+        .opblock-description-wrapper p,
+        .opblock-external-docs-wrapper p,
+        .opblock-tag,
+        .opblock-description,
+        .opblock-description th,
+        .opblock-summary .opblock-summary-control .opblock-summary-description,
+        .opblock-summary .opblock-summary-control .opblock-summary-method,
+        .opblock .opblock-summary .opblock-summary-path,
+        .opblock-body .opblock-section,
+        .opblock-body .opblock-section .opblock-title,
+        .table-container thead tr td div,
+        .table-container thead tr th,
+        .col_header,
+        .response-col_status,
+        .response-col_links,
+        .response-col_description__inner,
+        .response-control-media-type__title,
+        .parameter__name,
+        .parameter__type,
+        .tab .tabitem .tablinks,
+        .prop-type,
+        .prop-format,
+        .model,
+        .model-title,
+        .parameters-col_name .parameter__in,
+        .response-control-media-type__accept-message,
+        .prop .property.primitive {
+            color: inherit;
+        }
+
+        .markdown code, .renderedMarkdown code {
+            background: rgba(0, 0, 0, .05);
+        }
+
+        .tab li:first-of-type::after {
+            background: rgb(var(--alt-text-color-light));
+        }
+
+        /* Main sections highlights */
+        .opblock-tag {
+            background: rgba(0, 0, 0, .03);
+        }
+        .opblock-tag:hover {
+            background: rgba(0, 0, 0, .08);
+        }
+
+        /* Restore svg arrows colors */
+        .opblock-tag .expand-operation,
+        .opblock-summary .opblock-control-arrow {
+            fill: currentColor;
+        }
+
+        /* Darker "required" keyword for light theme */
+        .parameter__name.required::after {
+            color: rgba(var(--required-color-light, 0.6));
+        }
+
+        /* Background color for light mode on section headers */
+        .opblock .opblock-section-header {
+            background-color: inherit;
+        }
+
+        /* GET method light theme color */
+        .opblock.opblock-get {
+            background-color: rgba(var(--get-color), 0.1);
+        }
+
+        /* POST method light theme color */
+        .opblock.opblock-post {
+            background-color: rgba(var(--post-color), 0.1);
+        }
+
+        /* PUT method light theme color */
+        .opblock.opblock-put {
+            background-color: rgba(var(--put-color), 0.1);
+        }
+
+        /* PATCH method light theme color */
+        .opblock.opblock-patch {
+            background-color: rgba(var(--patch-color), 0.1);
+        }
+
+        /* DELETE method light theme color */
+        .opblock.opblock-delete {
+            background-color: rgba(var(--delete-color), 0.1);
+        }
+    }
+}
