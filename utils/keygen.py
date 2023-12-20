@@ -12,7 +12,8 @@ def generate_credentials(client_name: str):
         f.write(key.export(private_key=True))
     with open(f"{client_name}_public_key.jwk", "w") as f:
         f.write(key.export_public())
-
+    with open(f"{client_name}_thumbprint.txt", "w") as f:
+        f.write(key.thumbprint())
 
 if __name__ == "__main__":
     generate_credentials(sys.argv[1])
