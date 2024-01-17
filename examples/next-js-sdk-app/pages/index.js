@@ -10,7 +10,7 @@ export default function Home() {
         <script
           async
           defer
-          src="https://sdk.apidev.pticlient.com/0.0.17/index.js"
+          src="https://sdk.apidev.pticlient.com/0.0.18/index.js"
         ></script>
       </Head>
 
