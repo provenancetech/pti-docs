@@ -28,6 +28,7 @@ import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
 import ContactPageOutlinedIcon from "@mui/icons-material/ContactPageOutlined";
 import CreditCardOutlinedIcon from "@mui/icons-material/CreditCardOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
+import SailingOutlinedIcon from '@mui/icons-material/SailingOutlined';
 import PaidOutlinedIcon from "@mui/icons-material/PaidOutlined";
 import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
@@ -66,14 +67,6 @@ const App = () => {
           Settings
         </Header>
         <TextField disabled fullWidth={true} id="clientId" label="ClientId" value={ptiConfig.clientId} />
-        <Button
-          onClick={() => {
-            setRequestId(uuidv4());
-          }}
-          variant="contained"
-        >
-          New Request Id
-        </Button>
         <Stack direction="row" spacing={2}>
           <TextField
             fullWidth={true}
@@ -82,27 +75,35 @@ const App = () => {
             onChange={(e) => setUserId(e.target.value)}
             value={userId}
           />
-          <LoadingButton
-            endIcon={<PersonOutlineOutlinedIcon />}
-            fullWidth={true}
-            loading={createUserLoading}
-            loadingPosition="end"
-            onClick={() => {
-              setCreateUserLoading(true);
-              createUser(props).finally(() => setCreateUserLoading(false));
-            }}
-            variant="contained"
-          >
-            Create a new User
-          </LoadingButton>
+          <Button onClick={() => setUserId(uuidv4())} variant="contained" style={{ width:"50%" }}>
+            Generate
+          </Button>
         </Stack>
-        <TextField
+        <LoadingButton
+          endIcon={<PersonOutlineOutlinedIcon />}
           fullWidth={true}
-          id="requestId"
-          label="RequestId"
-          onChange={(e) => setRequestId(e.target.value)}
-          value={requestId}
-        />
+          loading={createUserLoading}
+          loadingPosition="end"
+          onClick={() => {
+            setCreateUserLoading(true);
+            createUser(props).finally(() => setCreateUserLoading(false));
+          }}
+          variant="contained"
+        >
+          Create a new User
+        </LoadingButton>
+        <Stack direction="row" spacing={2}>
+          <TextField
+            fullWidth={true}
+            id="requestId"
+            label="RequestId"
+            onChange={(e) => setRequestId(e.target.value)}
+            value={requestId}
+          />
+          <Button onClick={() => setRequestId(uuidv4())} variant="contained" style={{ width:"50%" }}>
+            Generate
+          </Button>
+        </Stack>
         <Stack direction="row" spacing={2}>
           <TextField
             fullWidth={true}
@@ -159,6 +160,13 @@ const App = () => {
         >
           Open KYC Form
         </Button>
+      </Section>
+
+      <Section style={{ gridArea: "onboarding" }}>
+        <Header>
+          <SailingOutlinedIcon />
+          Onboarding
+        </Header>
         <Button
           endIcon={<OpenInNewOutlinedIcon />}
           fullWidth={true}
