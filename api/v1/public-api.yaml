@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: 1.0.143
+  version: '1.0.144'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -43,36 +43,26 @@ paths:
                 $ref: '#/components/schemas/invalidRequestError'
         '401':
           description: unauthorized
-          content:
-            text/plain:
-              schema:
-                type: string
         '403':
           description: forbidden
-          content:
-            text/plain:
-              schema:
-                type: string
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
   /users:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
-      - $ref: '#/components/parameters/offsetHeaderParam'
-      - $ref: '#/components/parameters/pageSizeHeaderParam'
     get:
       operationId: getListOfUsers
       summary: Get the list of your users
+      parameters:
+        - $ref: '#/components/parameters/offsetParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/sortByParam'
       tags:
         - Collect User Data
       responses:
@@ -81,29 +71,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/objectReferencePage'
+                $ref: '#/components/schemas/userPage'
         '401':
           description: unauthorized
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
     post:
       operationId: addAUser
       summary: Add a user
@@ -134,7 +112,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/objectReference'
+                $ref: '#/components/schemas/oneOfUserSubTypes'
         '400':
           description: Missing required fields on User
           content:
@@ -143,34 +121,20 @@ paths:
                 $ref: '#/components/schemas/invalidRequestError'
         '401':
           description: unauthorized
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         '409':
           description: User already exist
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
     put:
       operationId: updateUser
       summary: Replace all informations for a user by the informations provided
@@ -188,7 +152,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/objectReference'
+                $ref: '#/components/schemas/oneOfUserSubTypes'
         '400':
           description: User invalid or missing fields
           content:
@@ -197,34 +161,16 @@ paths:
                 $ref: '#/components/schemas/invalidRequestError'
         '401':
           description: unauthorized
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         '404':
           description: User not found
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
     patch:
       operationId: mergeUserInfo
       summary: Add information to a user
@@ -242,7 +188,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/objectReference'
+                $ref: '#/components/schemas/oneOfUserSubTypes'
         '400':
           description: User invalid or missing fields
           content:
@@ -251,34 +197,16 @@ paths:
                 $ref: '#/components/schemas/invalidRequestError'
         '401':
           description: unauthorized
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         '404':
           description: User not found
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
   '/users/{userId}':
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -308,33 +236,23 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
   /transactions/validations:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -366,34 +284,24 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
-  /users/assessements:
+                $ref: '#/components/schemas/unmanagedError'
+  /users/assessments:
     post:
       operationId: startUserAssessment
       summary: Start user assessment
@@ -445,42 +353,30 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '403':
           description: Forbidden. Happens when the targeted user is not active.
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                pattern: '^[ -~]*$'
-                type: string
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
-  '/users/{userId}/assessements':
+                $ref: '#/components/schemas/unmanagedError'
+  '/users/{userId}/assessments':
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
       - name: userId
@@ -505,34 +401,24 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
-  /transactions/assessements:
+                $ref: '#/components/schemas/unmanagedError'
+  /transactions/assessments:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
     post:
@@ -585,29 +471,23 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '403':
           description: >-
             Forbidden. Happens when a user involved in the transaction is not
             active.
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '422':
           description: >-
             One of these 2 cases: More information about the User is needed in
@@ -619,19 +499,13 @@ paths:
                 $ref: '#/components/schemas/oneOfTransactionValidationError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
-  '/transactions/assessements/{requestId}':
+                $ref: '#/components/schemas/unmanagedError'
+  '/transactions/assessments/{requestId}':
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
       - name: requestId
@@ -654,33 +528,23 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User of Transaction Log not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
   '/transactions/swap/quotes/{requestId}':
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -704,33 +568,23 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User of Transaction Log not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
   /transactions/swap/quotes:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -780,41 +634,29 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '403':
           description: Forbidden. Happens when the targeted user is not active.
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
   /transactions/deposits:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -868,27 +710,21 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '403':
           description: Forbidden. Happens when the targeted user is not active.
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '422':
           description: >-
             One of these 2 cases: More information about the User is needed in
@@ -900,18 +736,12 @@ paths:
                 $ref: '#/components/schemas/oneOfTransactionValidationError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
   /transactions/purchases:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -965,27 +795,21 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '403':
           description: Forbidden. Happens when the targeted user is not active.
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '422':
           description: >-
             One of these 2 cases: More information about the User is needed in
@@ -997,18 +821,12 @@ paths:
                 $ref: '#/components/schemas/oneOfTransactionValidationError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
   /transactions/sales:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -1062,27 +880,21 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '403':
           description: Forbidden. Happens when the targeted user is not active.
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '422':
           description: >-
             One of these 2 cases: More information about the User is needed in
@@ -1094,18 +906,12 @@ paths:
                 $ref: '#/components/schemas/oneOfTransactionValidationError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
   /transactions/withdrawals:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -1159,27 +965,21 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '403':
           description: Forbidden. Happens when the targeted user is not active.
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '422':
           description: >-
             One of these 2 cases: More information about the User is needed in
@@ -1191,18 +991,12 @@ paths:
                 $ref: '#/components/schemas/oneOfTransactionValidationError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
   /transactions/transfers:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -1256,27 +1050,21 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '403':
           description: Forbidden. Happens when the targeted user is not active.
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '422':
           description: >-
             One of these 2 cases: More information about the User is needed in
@@ -1288,18 +1076,13 @@ paths:
                 $ref: '#/components/schemas/oneOfTransactionValidationError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
   /transactions/swaps:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -1353,27 +1136,21 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '403':
           description: Forbidden. Happens when the targeted user is not active.
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '422':
           description: >-
             One of these 2 cases: More information about the User is needed in
@@ -1385,18 +1162,12 @@ paths:
                 $ref: '#/components/schemas/oneOfTransactionValidationError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
   /transactions/mints:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -1450,27 +1221,21 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '403':
           description: Forbidden. Happens when the targeted user is not active.
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '422':
           description: >-
             One of these 2 cases: More information about the User is needed in
@@ -1482,18 +1247,12 @@ paths:
                 $ref: '#/components/schemas/oneOfTransactionValidationError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
   '/transactions/{requestId}':
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -1517,33 +1276,23 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User of Transaction Log not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
     delete:
       operationId: deleteTransaction
       summary: Cancel a transaction
@@ -1559,33 +1308,23 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User of Transaction Log not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
   '/users/{userId}/documents':
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -1621,10 +1360,6 @@ paths:
       responses:
         '201':
           description: Successfully uploaded the document
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
         '400':
           description: Missing required fields on document
           content:
@@ -1634,33 +1369,23 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
   '/digital-items/{digitalItemId}':
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -1686,38 +1411,29 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User or digital item not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
   '/users/{userId}/digital-items':
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
-      - $ref: '#/components/parameters/offsetHeaderParam'
-      - $ref: '#/components/parameters/pageSizeHeaderParam'
+      - $ref: '#/components/parameters/offsetParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      - $ref: '#/components/parameters/sortByParam'
       - name: userId
         schema:
           type: string
@@ -1740,33 +1456,23 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
   '/users/{userId}/wallets':
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -1804,33 +1510,23 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
     get:
       operationId: getWallets
       summary: Get a list of wallets for the user
@@ -1849,33 +1545,23 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
   '/users/{userId}/wallets/{walletId}':
     summary: Delete a wallet for the user
     parameters:
@@ -1905,33 +1591,23 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User or wallet not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
     get:
       operationId: getWallet
       summary: Get a wallet details
@@ -1947,25 +1623,17 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
   '/transactions/{requestId}/updates':
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -2033,33 +1701,23 @@ paths:
         '401':
           description: unauthorized
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: Transaction identified by requestId not found
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
+                $ref: '#/components/schemas/unmanagedError'
         '429':
           description: Too many requests
-          content:
-            text/plain:
-              schema:
-                type: string
-                pattern: '^[ -~]*$'
-                maxLength: 2048
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/error'
+                $ref: '#/components/schemas/unmanagedError'
 components:
   schemas:
     address:
@@ -2388,7 +2046,7 @@ components:
     invalidUserAssessmentError:
       type: object
       allOf:
-        - $ref: '#/components/schemas/error'
+        - $ref: '#/components/schemas/managedError'
       required:
         - assessment
       properties:
@@ -2400,7 +2058,7 @@ components:
     invalidRequestError:
       type: object
       allOf:
-        - $ref: '#/components/schemas/error'
+        - $ref: '#/components/schemas/managedError'
       required:
         - errors
       properties:
@@ -2418,7 +2076,7 @@ components:
     missingInformationError:
       type: object
       allOf:
-        - $ref: '#/components/schemas/error'
+        - $ref: '#/components/schemas/managedError'
       required:
         - fields
       additionalProperties: false
@@ -2436,14 +2094,28 @@ components:
         fields:
           - FULL_NAME
           - EMAIL_ADDRESS
-    error:
+    managedError:
       type: object
       required:
         - type
-      additionalProperties: false
+      additionalProperties: true
       properties:
         type:
           $ref: '#/components/schemas/errorType'
+
+
+    unmanagedError:
+        type: object
+        required:
+            - error
+        additionalProperties: true
+        properties:
+            error:
+              type: string
+              pattern: '^[ -~]*$'
+              maxLength: 100
+
+
     transactionUpdate:
       description: Set of possible transaction feedbacks
       type: object
@@ -2492,7 +2164,7 @@ components:
           $ref: '#/components/schemas/walletPaymentMethod'
       example:
         initiator:
-          userId: 36dbe68f-2747-41c6-8748-559588fd3248
+          id: 36dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
         sourceMethod:
           currency: USD
@@ -2539,7 +2211,7 @@ components:
         - $ref: '#/components/schemas/transactionType'
       example:
         initiator:
-          userId: 36dbe68f-2747-41c6-8748-559588fd3248
+          id: 36dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
         sourceTransferMethod:
           paymentMethodType: WALLET
@@ -2552,7 +2224,7 @@ components:
             type: WALLET
             walletId: MyUSDWallet2
         destination:
-          userId: 99dbe68f-2747-41c6-8748-559588fd3248
+          id: 99dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
         amount: 200
         type: TRANSFER
@@ -2582,7 +2254,7 @@ components:
           $ref: '#/components/schemas/oneOfUserSubTypes'
       example:
         initiator:
-          userId: 36dbe68f-2747-41c6-8748-559588fd3248
+          id: 36dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
         digitalItem:
           itemType: NFT
@@ -2595,7 +2267,7 @@ components:
             type: WALLET
             walletId: MyUSDWallet
         seller:
-          userId: 99dbe68f-2747-41c6-8748-559588fd3248
+          id: 99dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
         amount: 200
         usdValue: 200
@@ -2619,7 +2291,7 @@ components:
           $ref: '#/components/schemas/oneOfUserSubTypes'
       example:
         initiator:
-          userId: 36dbe68f-2747-41c6-8748-559588fd3248
+          id: 36dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
         digitalItem:
           itemType: NFT
@@ -2632,7 +2304,7 @@ components:
             type: WALLET
             walletId: MyUSDWallet
         buyer:
-          userId: 99dbe68f-2747-41c6-8748-559588fd3248
+          id: 99dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
         amount: 200
         usdValue: 200
@@ -2653,7 +2325,7 @@ components:
           $ref: '#/components/schemas/walletPaymentMethod'
       example:
         initiator:
-          userId: 36dbe68f-2747-41c6-8748-559588fd3248
+          id: 36dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
         destinationMethod:
           paymentMethodType: TOKEN
@@ -2687,7 +2359,7 @@ components:
           $ref: '#/components/schemas/walletPaymentMethod'
       example:
         initiator:
-          userId: 36dbe68f-2747-41c6-8748-559588fd3248
+          id: 36dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
         sourceMethod:
           paymentMethodType: WALLET
@@ -2714,7 +2386,7 @@ components:
         - $ref: '#/components/schemas/transactionType'
       example:
         destination:
-          userId: 36dbe68f-2747-41c6-8748-559588fd3248
+          id: 36dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
         destinationMethod:
           paymentMethodType: WALLET
@@ -2916,7 +2588,7 @@ components:
           pattern: '^[A-Z]+(?:_[A-Z]+)*$'
       example:
         initiator:
-          userId: 36dbe68f-2747-41c6-8748-559588fd3248
+          id: 36dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
         sourceMethod:
           paymentMethodType: WALLET
@@ -2929,7 +2601,7 @@ components:
             type: WALLET
             walletId: MyUSDWallet2
         destination:
-          userId: 99dbe68f-2747-41c6-8748-559588fd3248
+          id: 99dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
         amount: 200
         type: TRANSFER
@@ -2950,7 +2622,7 @@ components:
       discriminator:
         propertyName: type
       example:
-        userId: 36dbe68f-2747-41c6-8748-559588fd3248
+        id: 36dbe68f-2747-41c6-8748-559588fd3248
         type: PERSON
         dateOfBirth: '1988-09-28'
         name:
@@ -3285,6 +2957,31 @@ components:
       required:
         - id
         - type
+      example:
+        id: 36dbe68f-2747-41c6-8748-559588fd3248
+        type: PERSON
+        dateOfBirth: '1988-09-28'
+        name:
+          firstName: test
+          lastName: test
+          middleName: cucumber
+        emails:
+          - address: johnsmith@test.com
+            default: true
+        phones:
+          - number: '12345678901'
+            type: WORK
+            default: true
+        addresses:
+          - streetAddress: '1, main street'
+            city: New Hampshire
+            postalCode: '10005'
+            stateCode: US-NH
+            country: US
+            default: true
+        sourceOfFunds: Creator earnings
+
+
       properties:
         id:
           type: string
@@ -3819,6 +3516,74 @@ components:
           subtotal:
             amount: 100
             currency: USD
+    userPage:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/page'
+      properties:
+        content:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/oneOfUserSubTypes'
+    page:
+      type: object
+      additionalProperties: false
+      properties:
+        totalPages:
+          type: integer
+          minimum: 0
+          maximum: 9999999
+        size:
+          type: integer
+          minimum: 1
+          maximum: 100
+        totalElements:
+          type: integer
+          minimum: 0
+          maximum: 99999999
+        last:
+          type: boolean
+        numberOfElements:
+          type: integer
+          minimum: 0
+          maximum: 99999999
+        pageable:
+          $ref: '#/components/schemas/pageable'
+        sort:
+          type: object
+          additionalProperties: false
+          properties:
+            sorted:
+              type: boolean
+            unsorted:
+              type: boolean
+            empty:
+              type: boolean
+        first:
+          type: boolean
+        empty:
+          type: boolean
+    pageable:
+      type: object
+      additionalProperties: false
+      properties:
+        pageNumber:
+          type: integer
+          minimum: 0
+          maximum: 9999999
+        pageSize:
+          type: integer
+          minimum: 1
+          maximum: 100
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 9999999
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
     objectReferencePage:
       type: object
       additionalProperties: false
@@ -3979,25 +3744,32 @@ components:
         $ref: '#/components/schemas/uuidLikeStr'
       in: header
       required: false
-    pageSizeHeaderParam:
-      name: page-size
+    pageSizeParam:
+      name: size
       description: 'Page size for pagination. If not specified, the default value is 20.'
       schema:
         type: integer
         minimum: 0
         maximum: 100
         format: int32
-      in: header
+      in: query
       required: false
-    offsetHeaderParam:
-      name: offset
+    offsetParam:
+      name: page
       description: 'Offset for pagination. If not specified, the default value is 0.'
       schema:
         type: integer
         minimum: 0
         maximum: 9999999
         format: int32
-      in: header
+      in: query
+      required: false
+    sortByParam:
+      name: sortBy
+      description: 'Sort by field. If not specified, the default value is creation date.'
+      schema:
+        type: string
+      in: query
       required: false
     clientIdHeaderParam:
       name: x-pti-client-id
