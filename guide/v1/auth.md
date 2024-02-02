@@ -91,7 +91,7 @@ If you need your users or third parties to be able to call the PTI API on your b
 ### Generating a single-use JWT with permissions for a specific URL
 
 To generate a single-use token that can be used by one of your Users for a single request, you need to make a `POST` request to `/auth/jwt`. 
-You need to specify the URL on which the token is to grant permission, eg, `{"url": "/v1/transactions/deposit"}` and you will
+You need to specify the URL on which the token is to grant permission, eg, `{"url": "/transactions/deposit"}` and you will
 receive a JSON response containing `{"accessToken": "..."}`. The value of the `accessToken` field has to be included in the `x-pti-token` HTTP Header in the request made by your User.
 
 The call to the `/auth/jwt` endpoint must be done via a signed request, so this means that you will need to have an endpoint in your own backend to proxy the request that will generate the auth token.
