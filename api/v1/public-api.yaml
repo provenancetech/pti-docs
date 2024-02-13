@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1.0.144'
+  version: '1.0.146'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -11,8 +11,8 @@ servers:
   - url: 'https://apistaging.pticlient.com/v1'
   - url: 'https://api.pticlient.com/v1'
 security:
-  - signature: []
-  - userToken: []
+  - signature: [ ]
+  - userToken: [ ]
 paths:
   /auth/jwt:
     parameters:
@@ -233,6 +233,178 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/oneOfUserSubTypes'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+  /users/{userId}/payment-information:
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+      - name: userId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+    get:
+      operationId: getUserPaymentInformations
+      parameters:
+        - $ref: '#/components/parameters/externalPaymentInformationTypeParam'
+      summary: Get all payment information for a specific user.
+      description: >-
+        This endpoint is used to get the payment information for a specific user. The
+        information returned is the information that was collected for the user.
+        You can filter by payment information type
+      tags:
+        - Collect User Data
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 100
+                items:
+                  $ref: '#/components/schemas/oneOfExternalPaymentInformation'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+    post:
+      operationId: addUserPaymentInformation
+      summary: Add a payment information for a specific user.
+      description: >-
+        This endpoint is used to add a payment information for a specific user.
+      tags:
+        - Collect User Data
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/oneOfExternalPaymentInformation'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/oneOfExternalPaymentInformation'
+  /users/{userId}/payment-information/{paymentInformationId}:
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+      - name: userId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+      - name: paymentInformationId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+    get:
+      operationId: getUserPaymentInformation
+      summary: Get a payment information for a specific user.
+      description: >-
+        This endpoint is used to get a payment information for a specific user.
+      tags:
+        - Collect User Data
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/oneOfExternalPaymentInformation'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+    delete:
+      operationId: deleteUserPaymentInformations
+      summary: Delete a payment information for a specific user.
+      description: >-
+        This endpoint is used to delete a payment information for a specific user.
+      tags:
+        - Collect User Data
+      responses:
+        '204':
+          description: NO CONTENT
         '401':
           description: unauthorized
           content:
@@ -1299,12 +1471,8 @@ paths:
       tags:
         - Execute Transaction
       responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/oneOfTransactionSubTypes'
+        '204':
+          description: NO CONTENT
         '401':
           description: unauthorized
           content:
@@ -1870,7 +2038,7 @@ components:
       allOf:
         - $ref: '#/components/schemas/externalPaymentInformation'
       properties:
-        cseInformations:
+        encryptedInformation:
           type: object
           additionalProperties:
             maxLength: 1024
@@ -1893,10 +2061,11 @@ components:
           maxLength: 8
           type: string
           pattern: '\d{6,8}'
-        creditCardNumberHash:
+        creditCardReference:
           type: string
           maxLength: 2048
           pattern: '^[ -~]*$'
+          description: 'Reference to the credit card in our system'
         cardHolderFirstName:
           description: first name of card holder
           pattern: '^[ -~]*$'
@@ -2105,15 +2274,15 @@ components:
 
 
     unmanagedError:
-        type: object
-        required:
-            - error
-        additionalProperties: true
-        properties:
-            error:
-              type: string
-              pattern: '^[ -~]*$'
-              maxLength: 100
+      type: object
+      required:
+        - error
+      additionalProperties: true
+      properties:
+        error:
+          type: string
+          pattern: '^[ -~]*$'
+          maxLength: 100
 
 
     transactionUpdate:
@@ -2175,9 +2344,9 @@ components:
             creditCardBin: '123412'
             expirationMonth: '12'
             expirationYear: '2022'
-            cseInformations:
+            encryptedInformation:
               A: hello123
-            creditCardNumberHash: feead9c948a4b3393498cf17816fb289c2d4d80d4ffb5b11a7171c5f6c48f573
+            creditCardReference: feead9c948a4b3393498cf17816fb289c2d4d80d4ffb5b11a7171c5f6c48f573
             statementMessage: pti
             billingEmail: billing@email.com
             cardHolderFirstName: John
@@ -2513,18 +2682,38 @@ components:
         - ENCRYPTED_CREDIT_CARD
         - TOKEN
         - WALLET
-    oneOfPaymentInformation:
+    externalPaymentInformationType:
+      type: string
+      enum:
+        - BANK_ACCOUNT
+        - ENCRYPTED_CREDIT_CARD
+        - TOKEN
+    oneOfExternalPaymentInformation:
       required:
         - type
       properties:
         type:
-          $ref: '#/components/schemas/paymentInformationType'
+          $ref: '#/components/schemas/externalPaymentInformationType'
       oneOf:
         - $ref: '#/components/schemas/encryptedCreditCardPaymentInformation'
         - $ref: '#/components/schemas/bankAccountPaymentInformation'
         - $ref: '#/components/schemas/tokenPaymentInformation'
       discriminator:
         propertyName: type
+      example: {
+        "id": "36dbe68f-2747-41c6-8748-559588fd3248",
+        "type": "ENCRYPTED_CREDIT_CARD",
+        "creditCardLast4": "1234",
+        "creditCardBin": "123456",
+        "creditCardReference": "reference",
+        "creditCardAddress": {
+          "streetAddress": "123 main st",
+          "city": "New York",
+          "stateCode": "US-NY",
+          "country": "US",
+          "postalCode": "10005"
+        },
+      }
     oneOfFiatPaymentInformation:
       required:
         - type
@@ -2647,6 +2836,12 @@ components:
     externalPaymentInformation:
       type: object
       properties:
+        id:
+          type: string
+          pattern: '^[a-z0-9_-]{3,40}$'
+          maxLength: 40
+          description: 'Unique identifier for the payment information, must be used to refer to a payment information for a payment'
+
         billingEmail:
           type: string
           pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'
@@ -3003,9 +3198,11 @@ components:
         statusReason:
           $ref: '#/components/schemas/userStatusReason'
         tags:
-          enum:
-            - CREATOR
-          type: string
+          type: array
+          maxItems: 100
+          items:
+            enum:
+              - CREATOR
           description: >-
             Tag that characterizes the user. Used for internal classification
             purposes.
@@ -3013,7 +3210,7 @@ components:
           type: array
           maxItems: 100
           items:
-            $ref: '#/components/schemas/oneOfPaymentInformation'
+            $ref: '#/components/schemas/oneOfExternalPaymentInformation'
         sourceOfFunds:
           type: string
           pattern: '^[ -~]*$'
@@ -3131,6 +3328,7 @@ components:
       example:
         walletId: MyUSDWallet
         currency: USD
+        type: WALLET
         reference: '0x16Df97AB64d9eb5FF393F9f52F9290566857B07C'
         createDateTime: '2021-09-28T12:00:00Z'
         balance: 1000
@@ -3752,6 +3950,15 @@ components:
         minimum: 0
         maximum: 100
         format: int32
+      in: query
+      required: false
+    externalPaymentInformationTypeParam:
+      name: type
+      description: >-
+        Type of external payment information. If not specified, the default value is
+        ENCRYPTED_CREDIT_CARD. This is used to filter the external payment information by type.
+      schema:
+        $ref: '#/components/schemas/externalPaymentInformationType'
       in: query
       required: false
     offsetParam:

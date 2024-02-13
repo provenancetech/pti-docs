@@ -7,7 +7,7 @@
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1.0.144"
+    "version" : "1.0.146"
   },
   "servers" : [ {
     "url" : "https://apidev.pticlient.com/v1"
@@ -442,6 +442,341 @@
                 }
               }
             }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/payment-information" : {
+      "get" : {
+        "tags" : [ "Collect User Data" ],
+        "summary" : "Get all payment information for a specific user.",
+        "description" : "This endpoint is used to get the payment information for a specific user. The information returned is the information that was collected for the user. You can filter by payment information type",
+        "operationId" : "getUserPaymentInformations",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        }, {
+          "name" : "type",
+          "in" : "query",
+          "description" : "Type of external payment information. If not specified, the default value is ENCRYPTED_CREDIT_CARD. This is used to filter the external payment information by type.",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/externalPaymentInformationType"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "maxItems" : 100,
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/oneOfExternalPaymentInformation"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Collect User Data" ],
+        "summary" : "Add a payment information for a specific user.",
+        "description" : "This endpoint is used to add a payment information for a specific user.",
+        "operationId" : "addUserPaymentInformation",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/oneOfExternalPaymentInformation"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "CREATED",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/oneOfExternalPaymentInformation"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/payment-information/{paymentInformationId}" : {
+      "get" : {
+        "tags" : [ "Collect User Data" ],
+        "summary" : "Get a payment information for a specific user.",
+        "description" : "This endpoint is used to get a payment information for a specific user.",
+        "operationId" : "getUserPaymentInformation",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        }, {
+          "name" : "paymentInformationId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/oneOfExternalPaymentInformation"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Collect User Data" ],
+        "summary" : "Delete a payment information for a specific user.",
+        "description" : "This endpoint is used to delete a payment information for a specific user.",
+        "operationId" : "deleteUserPaymentInformations",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        }, {
+          "name" : "paymentInformationId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "NO CONTENT"
           },
           "401" : {
             "description" : "unauthorized",
@@ -2625,15 +2960,8 @@
           }
         } ],
         "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/oneOfTransactionSubTypes"
-                }
-              }
-            }
+          "204" : {
+            "description" : "NO CONTENT"
           },
           "401" : {
             "description" : "unauthorized",
@@ -3548,7 +3876,7 @@
       "encryptedCreditCardPaymentInformation" : {
         "type" : "object",
         "properties" : {
-          "cseInformations" : {
+          "encryptedInformation" : {
             "type" : "object",
             "additionalProperties" : {
               "maxLength" : 1024,
@@ -3576,10 +3904,11 @@
             "pattern" : "\\d{6,8}",
             "type" : "string"
           },
-          "creditCardNumberHash" : {
+          "creditCardReference" : {
             "maxLength" : 2048,
             "pattern" : "^[ -~]*$",
-            "type" : "string"
+            "type" : "string",
+            "description" : "Reference to the credit card in our system"
           },
           "cardHolderFirstName" : {
             "maxLength" : 255,
@@ -3888,10 +4217,10 @@
               "creditCardBin" : "123412",
               "expirationMonth" : "12",
               "expirationYear" : "2022",
-              "cseInformations" : {
+              "encryptedInformation" : {
                 "A" : "hello123"
               },
-              "creditCardNumberHash" : "feead9c948a4b3393498cf17816fb289c2d4d80d4ffb5b11a7171c5f6c48f573",
+              "creditCardReference" : "feead9c948a4b3393498cf17816fb289c2d4d80d4ffb5b11a7171c5f6c48f573",
               "statementMessage" : "pti",
               "billingEmail" : "billing@email.com",
               "cardHolderFirstName" : "John",
@@ -4307,11 +4636,29 @@
         "type" : "string",
         "enum" : [ "BANK_ACCOUNT", "ENCRYPTED_CREDIT_CARD", "TOKEN", "WALLET" ]
       },
-      "oneOfPaymentInformation" : {
+      "externalPaymentInformationType" : {
+        "type" : "string",
+        "enum" : [ "BANK_ACCOUNT", "ENCRYPTED_CREDIT_CARD", "TOKEN" ]
+      },
+      "oneOfExternalPaymentInformation" : {
         "required" : [ "type" ],
         "properties" : {
           "type" : {
-            "$ref" : "#/components/schemas/paymentInformationType"
+            "$ref" : "#/components/schemas/externalPaymentInformationType"
+          }
+        },
+        "example" : {
+          "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
+          "type" : "ENCRYPTED_CREDIT_CARD",
+          "creditCardLast4" : "1234",
+          "creditCardBin" : "123456",
+          "creditCardReference" : "reference",
+          "creditCardAddress" : {
+            "streetAddress" : "123 main st",
+            "city" : "New York",
+            "stateCode" : "US-NY",
+            "country" : "US",
+            "postalCode" : "10005"
           }
         },
         "discriminator" : {
@@ -4494,6 +4841,12 @@
       "externalPaymentInformation" : {
         "type" : "object",
         "properties" : {
+          "id" : {
+            "maxLength" : 40,
+            "pattern" : "^[a-z0-9_-]{3,40}$",
+            "type" : "string",
+            "description" : "Unique identifier for the payment information, must be used to refer to a payment information for a payment"
+          },
           "billingEmail" : {
             "maxLength" : 320,
             "pattern" : "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
@@ -4880,15 +5233,19 @@
             "$ref" : "#/components/schemas/userStatusReason"
           },
           "tags" : {
-            "type" : "string",
+            "maxItems" : 100,
+            "type" : "array",
             "description" : "Tag that characterizes the user. Used for internal classification purposes.",
-            "enum" : [ "CREATOR" ]
+            "items" : {
+              "type" : "string",
+              "enum" : [ "CREATOR" ]
+            }
           },
           "paymentInformation" : {
             "maxItems" : 100,
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/oneOfPaymentInformation"
+              "$ref" : "#/components/schemas/oneOfExternalPaymentInformation"
             }
           },
           "sourceOfFunds" : {
@@ -5048,6 +5405,7 @@
         "example" : {
           "walletId" : "MyUSDWallet",
           "currency" : "USD",
+          "type" : "WALLET",
           "reference" : "0x16Df97AB64d9eb5FF393F9f52F9290566857B07C",
           "createDateTime" : "2021-09-28T12:00:00Z",
           "balance" : 1000
@@ -5776,6 +6134,17 @@
           "minimum" : 0,
           "type" : "integer",
           "format" : "int32"
+        }
+      },
+      "externalPaymentInformationTypeParam" : {
+        "name" : "type",
+        "in" : "query",
+        "description" : "Type of external payment information. If not specified, the default value is ENCRYPTED_CREDIT_CARD. This is used to filter the external payment information by type.",
+        "required" : false,
+        "style" : "form",
+        "explode" : true,
+        "schema" : {
+          "$ref" : "#/components/schemas/externalPaymentInformationType"
         }
       },
       "offsetParam" : {
