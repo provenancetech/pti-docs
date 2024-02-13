@@ -27,7 +27,7 @@ const generateTransactionLogPayload = (transactionType, paymentInformationType, 
         currency: "USD",
         paymentInformation: {
           creditCardAddress: {},
-          creditCardNumberHash: "feead9c948a4b3393498cf17816fb289c2d4d80d4ffb5b11a7171c5f6c48f573",
+          creditCardReference: "feead9c948a4b3393498cf17816fb289c2d4d80d4ffb5b11a7171c5f6c48f573",
           type: "ENCRYPTED_CREDIT_CARD",
         },
         paymentMethodType: "FIAT",
