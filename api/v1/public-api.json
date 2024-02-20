@@ -7,7 +7,7 @@
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1.0.146"
+    "version" : "1"
   },
   "servers" : [ {
     "url" : "https://apidev.pticlient.com/v1"
@@ -4244,6 +4244,20 @@
             }
           },
           "amount" : 200,
+          "transactionTotal" : {
+            "subtotal" : {
+              "amount" : 200,
+              "currency" : "USD"
+            },
+            "fee" : {
+              "amount" : 0,
+              "currency" : "USD"
+            },
+            "total" : {
+              "amount" : 200,
+              "currency" : "USD"
+            }
+          },
           "type" : "DEPOSIT"
         },
         "allOf" : [ {
@@ -5053,7 +5067,7 @@
         "additionalProperties" : true
       },
       "transaction" : {
-        "required" : [ "amount", "date", "initiator", "usdValue" ],
+        "required" : [ "amount", "date", "initiator", "transactionTotal", "usdValue" ],
         "type" : "object",
         "properties" : {
           "transactionGroupId" : {
@@ -5061,6 +5075,9 @@
           },
           "subClientId" : {
             "$ref" : "#/components/schemas/uuidLikeStrSubClient"
+          },
+          "transactionTotal" : {
+            "$ref" : "#/components/schemas/total"
           },
           "usdValue" : {
             "maximum" : 999999,
@@ -5356,7 +5373,7 @@
             "type" : "string"
           },
           "currency" : {
-            "maxLength" : 3,
+            "maxLength" : 5,
             "pattern" : "^([A-Za-z]{3})$",
             "type" : "string"
           }
@@ -5379,7 +5396,7 @@
             "type" : "string"
           },
           "currency" : {
-            "maxLength" : 3,
+            "maxLength" : 5,
             "pattern" : "^([A-Za-z]{3})$",
             "type" : "string"
           },

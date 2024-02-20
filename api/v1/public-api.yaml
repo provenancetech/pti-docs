@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1.0.146'
+  version: '1'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -2365,6 +2365,20 @@ components:
             type: WALLET
             walletId: MyUSDWallet
         amount: 200
+        transactionTotal: {
+          subtotal:{
+            amount: 200,
+            currency: USD
+          },
+          fee:{
+            amount: 0,
+            currency: USD
+          },
+          total:{
+            amount: 200,
+            currency: USD
+          }
+        }
         type: DEPOSIT
     executeTransferTransaction:
       type: object
@@ -3012,11 +3026,14 @@ components:
         - amount
         - initiator
         - usdValue
+        - transactionTotal
       properties:
         transactionGroupId:
           $ref: '#/components/schemas/uuidLikeStrTransactionGroup'
         subClientId:
           $ref: '#/components/schemas/uuidLikeStrSubClient'
+        transactionTotal:
+          $ref: '#/components/schemas/total'
         usdValue:
           type: number
           minimum: 1
@@ -3289,7 +3306,7 @@ components:
         currency:
           type: string
           pattern: '^([A-Za-z]{3})$'
-          maxLength: 3
+          maxLength: 5
       example:
         walletId: MyUSDWallet
         currency: USD
@@ -3306,7 +3323,7 @@ components:
         currency:
           type: string
           pattern: '^([A-Za-z]{3})$'
-          maxLength: 3
+          maxLength: 5
         balance:
           type: number
           minimum: 0
