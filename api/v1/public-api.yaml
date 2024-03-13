@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1'
+  version: '1.0.151'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -43,6 +43,10 @@ paths:
                 $ref: '#/components/schemas/invalidRequestError'
         '401':
           description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
         '403':
           description: forbidden
         '429':
@@ -74,6 +78,10 @@ paths:
                 $ref: '#/components/schemas/userPage'
         '401':
           description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
         '429':
           description: Too many requests
         default:
@@ -121,6 +129,10 @@ paths:
                 $ref: '#/components/schemas/invalidRequestError'
         '401':
           description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
         '409':
           description: User already exist
           content:
@@ -161,6 +173,10 @@ paths:
                 $ref: '#/components/schemas/invalidRequestError'
         '401':
           description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User not found
         '429':
@@ -197,6 +213,10 @@ paths:
                 $ref: '#/components/schemas/invalidRequestError'
         '401':
           description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
         '404':
           description: User not found
         '429':
@@ -2288,12 +2308,28 @@ components:
     transactionUpdate:
       description: Set of possible transaction feedbacks
       type: object
+      required:
+        - providerName
+        - feedback
       additionalProperties: false
       properties:
+        payload:
+          format: escaped_json
+          type: string
+          example: "{\"status\":\"SETTLED\",\"paymentTotal\":{\"subtotal\":{\"amount\":30}},\"providerName\":\"CHECKOUT\"}"
+        providerName:
+          enum:
+            - CHECKOUT
+            - ADMIN
+            - CIRCLE
+            - COINBASE
+            - FORTE
+            - UNKNOWN
+          type: string
         feedback:
           enum:
-            - ACCEPTED
             - SETTLED
+            - ACCEPTED
             - CANCELLED
             - REJECTED
             - REFUNDED
@@ -2435,6 +2471,11 @@ components:
           $ref: '#/components/schemas/oneOfPaymentMethod'
         seller:
           $ref: '#/components/schemas/oneOfUserSubTypes'
+        feeRecipients:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/feeRecipient'
       example:
         initiator:
           id: 36dbe68f-2747-41c6-8748-559588fd3248
@@ -2455,6 +2496,12 @@ components:
         amount: 200
         usdValue: 200
         type: BUY
+        feeRecipients:
+          - feeRecipientId: 3d85a4fc-b98f-4ab7-96fe-4cc1779fc9c2
+            walletId: USDCreatorWallet
+            currency: USD
+            feeRecipientType: COMMISSION
+            amount: 2.50
     executeSellTransaction:
       type: object
       required:
@@ -2472,6 +2519,11 @@ components:
           $ref: '#/components/schemas/oneOfPaymentMethod'
         buyer:
           $ref: '#/components/schemas/oneOfUserSubTypes'
+        feeRecipients:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/feeRecipient'
       example:
         initiator:
           id: 36dbe68f-2747-41c6-8748-559588fd3248
@@ -2491,6 +2543,12 @@ components:
           type: PERSON
         amount: 200
         usdValue: 200
+        feeRecipients:
+          - feeRecipientId: 3d85a4fc-b98f-4ab7-96fe-4cc1779fc9c2
+            walletId: USDCreatorWallet
+            currency: USD
+            feeRecipientType: COMMISSION
+            amount: 2.50
         type: SELL
     executeWithdrawalTransaction:
       type: object
@@ -2861,12 +2919,6 @@ components:
           pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'
           format: email
           maxLength: 320
-      allOf:
-        - $ref: '#/components/schemas/paymentInformation'
-    paymentInformation:
-      type: string
-      maxLength: 50
-      pattern: '^[A-Z]+(?:_[A-Z]+)*$'
     person:
       type: object
       allOf:
@@ -3193,7 +3245,6 @@ components:
             default: true
         sourceOfFunds: Creator earnings
 
-
       properties:
         id:
           type: string
@@ -3218,8 +3269,7 @@ components:
           type: array
           maxItems: 100
           items:
-            enum:
-              - CREATOR
+            $ref: '#/components/schemas/tagsType'
           description: >-
             Tag that characterizes the user. Used for internal classification
             purposes.
@@ -3293,8 +3343,6 @@ components:
           pattern: ^(GET|POST|PUT|PATCH|DELETE|OPTIONS|CONNECT)$
     walletCreation:
       type: object
-      allOf:
-        - $ref: '#/components/schemas/paymentInformation'
       required:
         - walletId
         - currency
@@ -3313,8 +3361,6 @@ components:
         reference: '0x16Df97AB64d9eb5FF393F9f52F9290566857B07C'
     wallet:
       type: object
-      allOf:
-        - $ref: '#/components/schemas/paymentInformation'
       properties:
         walletId:
           type: string
@@ -3426,6 +3472,14 @@ components:
       anyOf:
         - $ref: '#/components/schemas/oneOfUserSubTypes'
       properties:
+        intendedTransactionUsdValue:
+          type: number
+          minimum: 1
+          maximum: 999999
+          format: double
+          description: >-
+            The value of the transaction that the user is intending to perform
+            in USD
         ptiMeta:
           additionalProperties: false
           type: object
@@ -3452,6 +3506,44 @@ components:
       description: >-
         If your system performs transactions that are together part of an
         overall transaction group, use this to tie them together
+    feeRecipient:
+      type: object
+      additionalProperties: false
+      required:
+        - feeRecipientId
+        - walletId
+        - currency
+        - amount
+        - feeRecipientType
+      properties:
+        feeRecipientId:
+          type: string
+          description: >-
+            User ID of the Commission Recipient
+        walletId:
+          type: string
+          maxLength: 255
+          pattern: '^[A-Z]+(?:_[A-Z]+)*$'
+        currency:
+          type: string
+          pattern: '^([A-Za-z]{3})$'
+          maxLength: 5
+        amount:
+          type: number
+          minimum: 1
+          maximum: 999999
+        feeRecipientType:
+          type: string
+          additionalProperties: false
+          enum:
+            - COMMISSION
+            - BUSINESS
+      example:
+        feeRecipientId: MyUserId
+        walletId: MyWalletId
+        currency: USD
+        amount: 100
+        feeRecipientType: COMMISSION
     digitalItem:
       type: object
       additionalProperties: false
@@ -3632,6 +3724,10 @@ components:
         additionalInfos:
           type: object
           description: key/value map of extra information
+    tagsType:
+      type: string
+      enum:
+        - CREATOR
     complianceProviderResponseCode:
       type: string
       enum:
