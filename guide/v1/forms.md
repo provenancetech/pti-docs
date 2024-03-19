@@ -74,10 +74,36 @@ The `translation` config is a JSON object with language code as keys, and custom
 Contact us if you need custom translations for your front-facing forms and we'll provide the necessary
 configuration for you.
 
-
 ## Scenarios
 
 In addition to the client configuration, scenarios are another way to use Forms to its full extent.
 Scenarios dictate whether some form fields should be made `readOnly` or `secret`. They also dictate if
 existing values of a form field should be filled with the existing value, be made read-only, secret, editable, or
 simply be hidden. Contact us if you need to use custom scenarios, and we will work out the configuration you need.
+
+
+## End of Flow Events
+
+Synchronous messages via `window.postMessage are dispatched upon completion of each supported flow within our PTI Forms service.
+
+### Message names
+- Payment: `UserTransactionCompleted`
+- Assessment: `UserAssessmentCompleted`
+- User onboarding: `UserOnboardingCompleted`
+
+Upon receiving these messages, consider implementing actions such as removing the iframe or displaying a spinner to provide a seamless user experience.
+
+Implementation Example:
+```typescript
+window.addEventListener("message", handleMessage);
+
+const handleMessage = (event: MessageEvent) => {
+    if (event.data === "UserAssessmentCompleted") {
+        setTimeout(() => onMessageReceived(), 3000);
+    }
+};
+
+const onMessageReceived = () => {
+    // Remove iframe or show spinner
+};
+```
