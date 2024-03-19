@@ -7,7 +7,7 @@
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1"
+    "version" : "1.0.151"
   },
   "servers" : [ {
     "url" : "https://apidev.pticlient.com/v1"
@@ -70,7 +70,14 @@
             }
           },
           "401" : {
-            "description" : "unauthorized"
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
           },
           "403" : {
             "description" : "forbidden"
@@ -155,7 +162,14 @@
             }
           },
           "401" : {
-            "description" : "unauthorized"
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
           },
           "429" : {
             "description" : "Too many requests"
@@ -219,7 +233,14 @@
             }
           },
           "401" : {
-            "description" : "unauthorized"
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
           },
           "404" : {
             "description" : "User not found"
@@ -286,7 +307,14 @@
             }
           },
           "401" : {
-            "description" : "unauthorized"
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
           },
           "409" : {
             "description" : "User already exist",
@@ -383,7 +411,14 @@
             }
           },
           "401" : {
-            "description" : "unauthorized"
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
           },
           "404" : {
             "description" : "User not found"
@@ -4167,11 +4202,21 @@
         "additionalProperties" : true
       },
       "transactionUpdate" : {
+        "required" : [ "feedback", "providerName" ],
         "type" : "object",
         "properties" : {
+          "payload" : {
+            "type" : "string",
+            "format" : "escaped_json",
+            "example" : "{\"status\":\"SETTLED\",\"paymentTotal\":{\"subtotal\":{\"amount\":30}},\"providerName\":\"CHECKOUT\"}"
+          },
+          "providerName" : {
+            "type" : "string",
+            "enum" : [ "CHECKOUT", "ADMIN", "CIRCLE", "COINBASE", "FORTE", "UNKNOWN" ]
+          },
           "feedback" : {
             "type" : "string",
-            "enum" : [ "ACCEPTED", "SETTLED", "CANCELLED", "REJECTED", "REFUNDED", "CHARGED_BACK", "ERROR" ]
+            "enum" : [ "SETTLED", "ACCEPTED", "CANCELLED", "REJECTED", "REFUNDED", "CHARGED_BACK", "ERROR" ]
           },
           "transactionId" : {
             "maxLength" : 256,
@@ -4321,6 +4366,13 @@
           },
           "seller" : {
             "$ref" : "#/components/schemas/oneOfUserSubTypes"
+          },
+          "feeRecipients" : {
+            "maxItems" : 100,
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/feeRecipient"
+            }
           }
         },
         "description" : "Buy digital item in the platform. SourceMethod: wallet, token, fiat. DigitalItem: NFT or OTHER.",
@@ -4348,7 +4400,14 @@
           },
           "amount" : 200,
           "usdValue" : 200,
-          "type" : "BUY"
+          "type" : "BUY",
+          "feeRecipients" : [ {
+            "feeRecipientId" : "3d85a4fc-b98f-4ab7-96fe-4cc1779fc9c2",
+            "walletId" : "USDCreatorWallet",
+            "currency" : "USD",
+            "feeRecipientType" : "COMMISSION",
+            "amount" : 2.5
+          } ]
         },
         "allOf" : [ {
           "$ref" : "#/components/schemas/transactionType"
@@ -4366,6 +4425,13 @@
           },
           "buyer" : {
             "$ref" : "#/components/schemas/oneOfUserSubTypes"
+          },
+          "feeRecipients" : {
+            "maxItems" : 100,
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/feeRecipient"
+            }
           }
         },
         "description" : "Sell digital item in the platform. DestinationMethod: wallet, fiat, token. DigitalItem: NFT, OTHER.",
@@ -4393,6 +4459,13 @@
           },
           "amount" : 200,
           "usdValue" : 200,
+          "feeRecipients" : [ {
+            "feeRecipientId" : "3d85a4fc-b98f-4ab7-96fe-4cc1779fc9c2",
+            "walletId" : "USDCreatorWallet",
+            "currency" : "USD",
+            "feeRecipientType" : "COMMISSION",
+            "amount" : 2.5
+          } ],
           "type" : "SELL"
         },
         "allOf" : [ {
@@ -4867,15 +4940,7 @@
             "type" : "string",
             "format" : "email"
           }
-        },
-        "allOf" : [ {
-          "$ref" : "#/components/schemas/paymentInformation"
-        } ]
-      },
-      "paymentInformation" : {
-        "maxLength" : 50,
-        "pattern" : "^[A-Z]+(?:_[A-Z]+)*$",
-        "type" : "string"
+        }
       },
       "person" : {
         "type" : "object",
@@ -5254,8 +5319,7 @@
             "type" : "array",
             "description" : "Tag that characterizes the user. Used for internal classification purposes.",
             "items" : {
-              "type" : "string",
-              "enum" : [ "CREATOR" ]
+              "$ref" : "#/components/schemas/tagsType"
             }
           },
           "paymentInformation" : {
@@ -5382,10 +5446,7 @@
           "walletId" : "MyUSDWallet",
           "currency" : "USD",
           "reference" : "0x16Df97AB64d9eb5FF393F9f52F9290566857B07C"
-        },
-        "allOf" : [ {
-          "$ref" : "#/components/schemas/paymentInformation"
-        } ]
+        }
       },
       "wallet" : {
         "type" : "object",
@@ -5426,10 +5487,7 @@
           "reference" : "0x16Df97AB64d9eb5FF393F9f52F9290566857B07C",
           "createDateTime" : "2021-09-28T12:00:00Z",
           "balance" : 1000
-        },
-        "allOf" : [ {
-          "$ref" : "#/components/schemas/paymentInformation"
-        } ]
+        }
       },
       "withdrawalTransaction" : {
         "type" : "object",
@@ -5508,6 +5566,13 @@
       },
       "kycRequest" : {
         "properties" : {
+          "intendedTransactionUsdValue" : {
+            "maximum" : 999999,
+            "minimum" : 1,
+            "type" : "number",
+            "description" : "The value of the transaction that the user is intending to perform in USD",
+            "format" : "double"
+          },
           "ptiMeta" : {
             "type" : "object",
             "additionalProperties" : false,
@@ -5539,6 +5604,44 @@
         "pattern" : "^[a-z0-9_-]{3,64}$",
         "type" : "string",
         "description" : "If your system performs transactions that are together part of an overall transaction group, use this to tie them together"
+      },
+      "feeRecipient" : {
+        "required" : [ "amount", "currency", "feeRecipientId", "feeRecipientType", "walletId" ],
+        "type" : "object",
+        "properties" : {
+          "feeRecipientId" : {
+            "type" : "string",
+            "description" : "User ID of the Commission Recipient"
+          },
+          "walletId" : {
+            "maxLength" : 255,
+            "pattern" : "^[A-Z]+(?:_[A-Z]+)*$",
+            "type" : "string"
+          },
+          "currency" : {
+            "maxLength" : 5,
+            "pattern" : "^([A-Za-z]{3})$",
+            "type" : "string"
+          },
+          "amount" : {
+            "maximum" : 999999,
+            "minimum" : 1,
+            "type" : "number"
+          },
+          "feeRecipientType" : {
+            "type" : "string",
+            "additionalProperties" : false,
+            "enum" : [ "COMMISSION", "BUSINESS" ]
+          }
+        },
+        "additionalProperties" : false,
+        "example" : {
+          "feeRecipientId" : "MyUserId",
+          "walletId" : "MyWalletId",
+          "currency" : "USD",
+          "amount" : 100,
+          "feeRecipientType" : "COMMISSION"
+        }
       },
       "digitalItem" : {
         "type" : "object",
@@ -5717,6 +5820,10 @@
         "allOf" : [ {
           "$ref" : "#/components/schemas/actionStatus"
         } ]
+      },
+      "tagsType" : {
+        "type" : "string",
+        "enum" : [ "CREATOR" ]
       },
       "complianceProviderResponseCode" : {
         "type" : "string",
