@@ -9,7 +9,7 @@ cryptography==42.0.4
 distlib==0.3.0
 distro==1.4.0
 html5lib==1.0.1
-idna==2.9
+idna==3.7
 jwcrypto==1.5.6
 lockfile==0.12.2
 msgpack==0.6.2
