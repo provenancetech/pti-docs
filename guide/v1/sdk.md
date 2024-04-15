@@ -68,6 +68,7 @@ render the forms on your web application.
     requestId: "REQUEST_ID",
     userId: "USER_ID",
     scenarioId: "SCENARIO_ID",
+    usdValue:"100",
     parentElement: document.getElementById("kyc_form"),
     lang: "en",
   });
