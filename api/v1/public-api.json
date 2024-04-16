@@ -7,7 +7,7 @@
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1.0.151"
+    "version" : "1.0.154"
   },
   "servers" : [ {
     "url" : "https://apidev.pticlient.com/v1"
@@ -3933,6 +3933,16 @@
             "description" : "Deprecated, use bin instead",
             "deprecated" : true
           },
+          "expirationYear" : {
+            "pattern" : "^([0-9]){4}$",
+            "type" : "string",
+            "description" : "4 digits"
+          },
+          "expirationMonth" : {
+            "pattern" : "^([0-9]){2}$",
+            "type" : "string",
+            "description" : "2 digits"
+          },
           "creditCardBin" : {
             "maxLength" : 8,
             "minLength" : 6,
@@ -4208,7 +4218,7 @@
           "payload" : {
             "type" : "string",
             "format" : "escaped_json",
-            "example" : "{\"status\":\"SETTLED\",\"paymentTotal\":{\"subtotal\":{\"amount\":30}},\"providerName\":\"CHECKOUT\"}"
+            "example" : "{\"status\":\"SETTLED\",\"exchangeInfo\":{\"amountDebited\":150.0,\"amountCredited\":1.5},\"providerName\":\"CLIENT_MANAGED_SERVICE\"}"
           },
           "providerName" : {
             "type" : "string",
@@ -4399,6 +4409,20 @@
             "type" : "PERSON"
           },
           "amount" : 200,
+          "transactionTotal" : {
+            "subtotal" : {
+              "amount" : 200,
+              "currency" : "USD"
+            },
+            "fee" : {
+              "amount" : 0,
+              "currency" : "USD"
+            },
+            "total" : {
+              "amount" : 200,
+              "currency" : "USD"
+            }
+          },
           "usdValue" : 200,
           "type" : "BUY",
           "feeRecipients" : [ {
@@ -5132,7 +5156,7 @@
         "additionalProperties" : true
       },
       "transaction" : {
-        "required" : [ "amount", "date", "initiator", "transactionTotal", "usdValue" ],
+        "required" : [ "amount", "date", "initiator", "usdValue" ],
         "type" : "object",
         "properties" : {
           "transactionGroupId" : {
@@ -5146,13 +5170,13 @@
           },
           "usdValue" : {
             "maximum" : 999999,
-            "minimum" : 1,
+            "minimum" : 0,
             "type" : "number",
             "format" : "double"
           },
           "amount" : {
             "maximum" : 999999,
-            "minimum" : 1,
+            "minimum" : 0,
             "type" : "number",
             "format" : "double"
           },
@@ -5175,7 +5199,8 @@
             "additionalProperties" : false,
             "description" : "key/value map of extra meta data for this request (used by Client)"
           }
-        }
+        },
+        "description" : "The `transactionTotal` field will be assumed to be all zeroes if not provided. If no currency has been provided `USD` will be used. If no amount has been provided `0` will be used"
       },
       "transferTransaction" : {
         "type" : "object",
@@ -5414,6 +5439,12 @@
             "pattern" : "^([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/\\.~+#-])?$",
             "type" : "string"
           },
+          "metaInformation" : {
+            "maxLength" : 1024,
+            "minLength" : 1,
+            "pattern" : "^[ -~]*$",
+            "type" : "string"
+          },
           "method" : {
             "maxLength" : 6,
             "minLength" : 3,
@@ -5568,7 +5599,7 @@
         "properties" : {
           "intendedTransactionUsdValue" : {
             "maximum" : 999999,
-            "minimum" : 1,
+            "minimum" : 0,
             "type" : "number",
             "description" : "The value of the transaction that the user is intending to perform in USD",
             "format" : "double"
@@ -5625,7 +5656,7 @@
           },
           "amount" : {
             "maximum" : 999999,
-            "minimum" : 1,
+            "minimum" : 0,
             "type" : "number"
           },
           "feeRecipientType" : {
@@ -5761,7 +5792,7 @@
           },
           "amount" : {
             "maximum" : 999999,
-            "minimum" : 1,
+            "minimum" : 0,
             "type" : "number"
           },
           "billingEmail" : {
@@ -5868,7 +5899,7 @@
           },
           "amount" : {
             "maximum" : 999999,
-            "minimum" : 1,
+            "minimum" : 0,
             "type" : "number"
           },
           "transactionType" : {
@@ -6124,7 +6155,7 @@
         "properties" : {
           "amount" : {
             "maximum" : 999999,
-            "minimum" : 1,
+            "minimum" : 0,
             "type" : "number"
           },
           "currency" : {
