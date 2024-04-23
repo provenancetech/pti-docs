@@ -1,4 +1,5 @@
 export const actionType = {
+  addCC: "ADD_CC",
   funding: "FIAT_FUNDING",
   kyc: "KYC",
   onboarding: "ONBOARDING",

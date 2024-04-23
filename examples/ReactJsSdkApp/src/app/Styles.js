@@ -9,6 +9,7 @@ export const ContainerGrid = styled(Container)`
     "informations payment"
     "informations kyc"
     "informations onboarding"
+    "informations add-cc"
     "transaction transaction"
     "feedback feedback";
 `;

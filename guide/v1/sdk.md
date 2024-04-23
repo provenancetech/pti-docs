@@ -9,7 +9,7 @@ You should include and initialize the library from our CDN on your front end pag
 Normally there should only be one call to the `PTI.init` function.
 
 ```js
- <script async defer src="https://sdk.pearsurge.io/0.0.18/index.js"></script>
+ <script async defer src="https://sdk.pearsurge.io/0.0.20/index.js"></script>
     <script>
       window.ptiAsyncInit = function() {
         PTI.init({
@@ -92,14 +92,50 @@ render the forms on your web application.
 </script>
 ```
 
-The value of the `type` parameter will determine which form will be displayed. (`FIAT_FUNDING` for the payment form and `KYC` for the KYC form )
+#### Display the Onboarding form
+
+```html
+<div id="onboarding_form"></div>
+<script>
+  PTI.form({
+    type: "ONBOARDING",
+    requestId: "REQUEST_ID",
+    userId: "USER_ID",
+    scenarioId: "SCENARIO_ID",
+    parentElement: document.getElementById("onboarding_form"),
+    lang: "en",
+  });
+</script>
+```
+
+#### Display the "Add a credit card" form
+
+```html
+<div id="add_cc_form"></div>
+<script>
+  PTI.form({
+    type: "ADD_CC",
+    requestId: "REQUEST_ID",
+    userId: "USER_ID",
+    parentElement: document.getElementById("add_cc_form"),
+    lang: "en",
+  });
+</script>
+```
+
+The value of the `type` parameter will determine which form will be displayed.
+There are various forms available:
+-  `KYC` will display the KYC form
+- `FIAT_FUNDING` will display the Payment form
+- `ONBOARDING` will display the Onboarding form
+- `ADD_CC` will display the "Add a credit card" form
 
 The value of `REQUEST_ID` is under your control. You should provide a UUID that you will store on your side to be able to correlate to a specific
 transaction or KYC check. If you ever have to report a problem to PTI, you must provide the `REQUEST_ID` associated to it to allow PTI to investigate.
 The `REQUEST_ID` UUID should be unique. Trying to complete 2 transactions or KYCs with the same `REQUEST_ID` will generate an error.
 
 The value of `USER_ID` is also under your control. It corresponds to the value you passed in the `id` field in the body of the [create user](https://provenancetech.github.io/pti-docs/api/v1/#/default/post_users) API call.
-You must store the this value at user creation time to make sure you can associate your users with users in the PTI platform.
+You must store the `this` value at user creation time to make sure you can associate your users with users in the PTI platform.
 
 The value of `SCENARIO_ID` will select the scenario under which the transaction or KYC will be made.
 The scenario must have been configured previously as explained [here](kyc.md).

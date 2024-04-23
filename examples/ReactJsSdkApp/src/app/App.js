@@ -177,6 +177,21 @@ const App = () => {
         </Button>
       </Section>
 
+      <Section style={{ gridArea: "add-cc" }}>
+        <Header>
+          <SailingOutlinedIcon />
+          Add Credit Card
+        </Header>
+        <Button
+          endIcon={<OpenInNewOutlinedIcon />}
+          fullWidth={true}
+          onClick={() => openSimpleDialog(actionType.addCC, userId, requestId, amount, scenarioId, lang)}
+          variant="contained"
+        >
+          Open Add Credit Card Form
+        </Button>
+      </Section>
+
       <Section style={{ gridArea: "transaction" }}>
         <Header>
           <PaidOutlinedIcon />
