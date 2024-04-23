@@ -1,8 +1,8 @@
 export const actionType = {
+  addCC: "ADD_CC",
   funding: "FIAT_FUNDING",
   kyc: "KYC",
   onboarding: "ONBOARDING",
-  addCC: "ADD-CC",
 };
 
 export const transactionTypes = {
