@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1.0.154'
+  version: '1.0.157'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -2637,6 +2637,27 @@ components:
         amount: 200
         usdValue: 200
         type: SWAP
+    executeSubscriptionTransaction:
+      type: object
+      required:
+        - sourceMethod
+      description: >-
+        Collect subscription fee from the initiator, the beneficiary is the client platform's 
+        subscription wallet "client_subscriptions".
+      allOf:
+        - $ref: '#/components/schemas/transactionType'  
+      example: 
+        initiator:
+          id: 36dbe68f-2747-41c6-8748-559588fd3248
+          type: PERSON
+        sourceMethod:
+          paymentMethodType: WALLET
+          paymentInformation:
+            type: WALLET
+            walletId: MyUSDWallet
+        amount: 200
+        usdValue: 200
+        type: SUBSCRIPTION
     executeMintTransaction:
       type: object
       required:
@@ -2670,7 +2691,7 @@ components:
       properties:
         currency:
           type: string
-          pattern: '^([A-Za-z]{3})$'
+          pattern: '^([A-Za-z]{10})$'
           maxLength: 3
         paymentInformation:
           $ref: '#/components/schemas/oneOfFiatPaymentInformation'
@@ -3171,11 +3192,23 @@ components:
           $ref: '#/components/schemas/digitalItem'
         seller:
           $ref: '#/components/schemas/oneOfUserSubTypes'
+    subscriptionTransaction:
+      description: >-
+        The action of subscription, often this is not initiated by a user itself, 
+        rather done by the client's platform subscription service.
+        The destination will be the client's platform wallet "client_subscriptions".
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/transactionType'
+      properties:
+        sourceMethod:
+          $ref: '#/components/schemas/oneOfPaymentMethod'
+    
     mintTransaction:
       description: >-
-        The action of minting, often this is not itiated by a user itself, so
-        the initiator property is optional. The destination is the benefeciary
-        of the minting action. You can sepecify the target wallet in the
+        The action of minting, often this is not initiated by a user itself, so
+        the initiator property is optional. The destination is the beneficiary
+        of the minting action. You can specify the target wallet in the
         destination method if available.
       type: object
       allOf:
@@ -3226,6 +3259,7 @@ components:
       enum:
         - FRAUD_SUSPICION
         - BUSINESS_CO_OWNER
+        - COMPLIANCE_FLAG
     userStatus:
       enum:
         - ACTIVE
@@ -3360,7 +3394,7 @@ components:
           pattern: '^([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/\.~+#-])?$'
         metaInformation:
           type: string
-          minLength: 1
+          minLength: 0
           maxLength: 1024
           pattern: '^[ -~]*$'
         method:
@@ -3380,7 +3414,7 @@ components:
           pattern: '^[A-Z]+(?:_[A-Z]+)*$'
         currency:
           type: string
-          pattern: '^([A-Za-z]{3})$'
+          pattern: '^([A-Za-z]{10})$'
           maxLength: 5
       example:
         walletId: MyUSDWallet
@@ -3395,7 +3429,7 @@ components:
           pattern: '^[A-Z]+(?:_[A-Z]+)*$'
         currency:
           type: string
-          pattern: '^([A-Za-z]{3})$'
+          pattern: '^([A-Za-z]{10})$'
           maxLength: 5
         balance:
           type: number
@@ -3553,7 +3587,7 @@ components:
           pattern: '^[A-Z]+(?:_[A-Z]+)*$'
         currency:
           type: string
-          pattern: '^([A-Za-z]{3})$'
+          pattern: '^([A-Za-z]{10})$'
           maxLength: 5
         amount:
           type: number
@@ -3746,7 +3780,7 @@ components:
           $ref: '#/components/schemas/total'
         currency:
           type: string
-          pattern: '^([A-Za-z]{3})$'
+          pattern: '^([A-Za-z]{10})$'
           maxLength: 3
         additionalInfos:
           type: object
@@ -4019,7 +4053,7 @@ components:
           maximum: 999999
         currency:
           type: string
-          pattern: '^([A-Za-z]{3})$'
+          pattern: '^([A-Za-z]{10})$'
           maxLength: 3
     total:
       type: object

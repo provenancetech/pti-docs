@@ -7,7 +7,7 @@
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1.0.154"
+    "version" : "1.0.157"
   },
   "servers" : [ {
     "url" : "https://apidev.pticlient.com/v1"
@@ -4576,6 +4576,30 @@
           "$ref" : "#/components/schemas/transactionType"
         } ]
       },
+      "executeSubscriptionTransaction" : {
+        "required" : [ "sourceMethod" ],
+        "type" : "object",
+        "description" : "Collect subscription fee from the initiator, the beneficiary is the client platform's  subscription wallet \"client_subscriptions\".",
+        "example" : {
+          "initiator" : {
+            "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
+            "type" : "PERSON"
+          },
+          "sourceMethod" : {
+            "paymentMethodType" : "WALLET",
+            "paymentInformation" : {
+              "type" : "WALLET",
+              "walletId" : "MyUSDWallet"
+            }
+          },
+          "amount" : 200,
+          "usdValue" : 200,
+          "type" : "SUBSCRIPTION"
+        },
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/transactionType"
+        } ]
+      },
       "executeMintTransaction" : {
         "required" : [ "destination", "destinationMethod" ],
         "type" : "object",
@@ -4613,7 +4637,7 @@
         "properties" : {
           "currency" : {
             "maxLength" : 3,
-            "pattern" : "^([A-Za-z]{3})$",
+            "pattern" : "^([A-Za-z]{10})$",
             "type" : "string"
           },
           "paymentInformation" : {
@@ -5259,6 +5283,18 @@
           "$ref" : "#/components/schemas/transactionType"
         } ]
       },
+      "subscriptionTransaction" : {
+        "type" : "object",
+        "properties" : {
+          "sourceMethod" : {
+            "$ref" : "#/components/schemas/oneOfPaymentMethod"
+          }
+        },
+        "description" : "The action of subscription, often this is not initiated by a user itself,  rather done by the client's platform subscription service. The destination will be the client's platform wallet \"client_subscriptions\".",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/transactionType"
+        } ]
+      },
       "mintTransaction" : {
         "type" : "object",
         "properties" : {
@@ -5269,7 +5305,7 @@
             "$ref" : "#/components/schemas/tokenPaymentMethod"
           }
         },
-        "description" : "The action of minting, often this is not itiated by a user itself, so the initiator property is optional. The destination is the benefeciary of the minting action. You can sepecify the target wallet in the destination method if available.",
+        "description" : "The action of minting, often this is not initiated by a user itself, so the initiator property is optional. The destination is the beneficiary of the minting action. You can specify the target wallet in the destination method if available.",
         "allOf" : [ {
           "$ref" : "#/components/schemas/transactionType"
         } ]
@@ -5311,7 +5347,7 @@
       "userStatusReason" : {
         "type" : "string",
         "description" : "Reason explaining why the status is BLOCKED or INACTIVE. Same rules as the `status` field apply.",
-        "enum" : [ "FRAUD_SUSPICION", "BUSINESS_CO_OWNER" ]
+        "enum" : [ "FRAUD_SUSPICION", "BUSINESS_CO_OWNER", "COMPLIANCE_FLAG" ]
       },
       "userStatus" : {
         "type" : "string",
@@ -5441,7 +5477,7 @@
           },
           "metaInformation" : {
             "maxLength" : 1024,
-            "minLength" : 1,
+            "minLength" : 0,
             "pattern" : "^[ -~]*$",
             "type" : "string"
           },
@@ -5469,7 +5505,7 @@
           },
           "currency" : {
             "maxLength" : 5,
-            "pattern" : "^([A-Za-z]{3})$",
+            "pattern" : "^([A-Za-z]{10})$",
             "type" : "string"
           }
         },
@@ -5489,7 +5525,7 @@
           },
           "currency" : {
             "maxLength" : 5,
-            "pattern" : "^([A-Za-z]{3})$",
+            "pattern" : "^([A-Za-z]{10})$",
             "type" : "string"
           },
           "balance" : {
@@ -5651,7 +5687,7 @@
           },
           "currency" : {
             "maxLength" : 5,
-            "pattern" : "^([A-Za-z]{3})$",
+            "pattern" : "^([A-Za-z]{10})$",
             "type" : "string"
           },
           "amount" : {
@@ -5806,7 +5842,7 @@
           },
           "currency" : {
             "maxLength" : 3,
-            "pattern" : "^([A-Za-z]{3})$",
+            "pattern" : "^([A-Za-z]{10})$",
             "type" : "string"
           },
           "additionalInfos" : {
@@ -6160,7 +6196,7 @@
           },
           "currency" : {
             "maxLength" : 3,
-            "pattern" : "^([A-Za-z]{3})$",
+            "pattern" : "^([A-Za-z]{10})$",
             "type" : "string"
           }
         },
