@@ -96,9 +96,9 @@ const generateTransactionLogPayload = (transactionType, paymentInformationType, 
         sourceMethod: paymentInformation,
         type: "BUY",
         usdValue: amount,
-        asset: {
-          transactedAssetType: "COIN",
-          transactedAssetReference: "https://coinmarketcap.com/currencies/rally/",
+        digitalItem: {
+          digitalItemType: "NFT",
+          itemReference: "itemReference",
         },
       };
       break;
@@ -110,9 +110,9 @@ const generateTransactionLogPayload = (transactionType, paymentInformationType, 
         destinationMethod: paymentInformation,
         type: "SELL",
         usdValue: amount,
-        asset: {
-          transactedAssetType: "COIN",
-          transactedAssetReference: "https://coinmarketcap.com/currencies/rally/",
+        digitalItem: {
+         digitalItemType: "NFT",
+         itemReference: "itemReference",
         },
       };
       break;
