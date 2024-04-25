@@ -7,7 +7,7 @@
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1.0.157"
+    "version" : "1.0.158"
   },
   "servers" : [ {
     "url" : "https://apidev.pticlient.com/v1"
@@ -4576,10 +4576,10 @@
           "$ref" : "#/components/schemas/transactionType"
         } ]
       },
-      "executeSubscriptionTransaction" : {
+      "executePaymentTransaction" : {
         "required" : [ "sourceMethod" ],
         "type" : "object",
-        "description" : "Collect subscription fee from the initiator, the beneficiary is the client platform's  subscription wallet \"client_subscriptions\".",
+        "description" : "Collect payment from the initiator, the beneficiary is the client platform's  specified wallet in the destinationMethod(if specified).",
         "example" : {
           "initiator" : {
             "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
@@ -4592,9 +4592,16 @@
               "walletId" : "MyUSDWallet"
             }
           },
+          "destinationMethod" : {
+            "paymentMethodType" : "WALLET",
+            "paymentInformation" : {
+              "type" : "WALLET",
+              "walletId" : "client_subscriptions"
+            }
+          },
           "amount" : 200,
           "usdValue" : 200,
-          "type" : "SUBSCRIPTION"
+          "type" : "PAYMENT"
         },
         "allOf" : [ {
           "$ref" : "#/components/schemas/transactionType"
@@ -5283,14 +5290,14 @@
           "$ref" : "#/components/schemas/transactionType"
         } ]
       },
-      "subscriptionTransaction" : {
+      "paymentTransaction" : {
         "type" : "object",
         "properties" : {
           "sourceMethod" : {
             "$ref" : "#/components/schemas/oneOfPaymentMethod"
           }
         },
-        "description" : "The action of subscription, often this is not initiated by a user itself,  rather done by the client's platform subscription service. The destination will be the client's platform wallet \"client_subscriptions\".",
+        "description" : "Payment transaction, often this is not initiated by a user itself The destination can be specified, and needs to belong to the root user.",
         "allOf" : [ {
           "$ref" : "#/components/schemas/transactionType"
         } ]

@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1.0.157'
+  version: '1.0.158'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -2410,15 +2410,15 @@ components:
             walletId: MyUSDWallet
         amount: 200
         transactionTotal: {
-          subtotal:{
+          subtotal: {
             amount: 200,
             currency: USD
           },
-          fee:{
+          fee: {
             amount: 0,
             currency: USD
           },
-          total:{
+          total: {
             amount: 200,
             currency: USD
           }
@@ -2637,16 +2637,16 @@ components:
         amount: 200
         usdValue: 200
         type: SWAP
-    executeSubscriptionTransaction:
+    executePaymentTransaction:
       type: object
       required:
         - sourceMethod
       description: >-
-        Collect subscription fee from the initiator, the beneficiary is the client platform's 
-        subscription wallet "client_subscriptions".
+        Collect payment from the initiator, the beneficiary is the client platform's 
+        specified wallet in the destinationMethod(if specified).
       allOf:
-        - $ref: '#/components/schemas/transactionType'  
-      example: 
+        - $ref: '#/components/schemas/transactionType'
+      example:
         initiator:
           id: 36dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
@@ -2655,9 +2655,14 @@ components:
           paymentInformation:
             type: WALLET
             walletId: MyUSDWallet
+        destinationMethod:
+          paymentMethodType: WALLET
+          paymentInformation:
+            type: WALLET
+            walletId: client_subscriptions
         amount: 200
         usdValue: 200
-        type: SUBSCRIPTION
+        type: PAYMENT
     executeMintTransaction:
       type: object
       required:
@@ -3192,11 +3197,10 @@ components:
           $ref: '#/components/schemas/digitalItem'
         seller:
           $ref: '#/components/schemas/oneOfUserSubTypes'
-    subscriptionTransaction:
+    paymentTransaction:
       description: >-
-        The action of subscription, often this is not initiated by a user itself, 
-        rather done by the client's platform subscription service.
-        The destination will be the client's platform wallet "client_subscriptions".
+        Payment transaction, often this is not initiated by a user itself
+        The destination can be specified, and needs to belong to the root user.
       type: object
       allOf:
         - $ref: '#/components/schemas/transactionType'
