@@ -7,7 +7,7 @@
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1.0.158"
+    "version" : "1.0.159"
   },
   "servers" : [ {
     "url" : "https://apidev.pticlient.com/v1"
@@ -2263,6 +2263,183 @@
             "application/json" : {
               "schema" : {
                 "$ref" : "#/components/schemas/executeWithdrawalTransaction"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Successfully initiated the transaction",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/objectReference"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid fields on Transaction",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/invalidRequestError"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Forbidden. Happens when the targeted user is not active.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "422" : {
+            "description" : "One of these 2 cases: More information about the User is needed in order to approve the transaction. There is no approved assessment for this user that enables him to perform the operation.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/oneOfTransactionValidationError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        },
+        "callbacks" : {
+          "transactionUpdate" : {
+            "${yourWebhookAddress}" : {
+              "post" : {
+                "requestBody" : {
+                  "content" : {
+                    "application/json" : {
+                      "schema" : {
+                        "$ref" : "#/components/schemas/transactionStatusObject"
+                      }
+                    }
+                  },
+                  "required" : true
+                },
+                "responses" : {
+                  "200" : {
+                    "description" : "Your server returns this code if it accepts the callback"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions/payments" : {
+      "post" : {
+        "tags" : [ "Execute Transaction" ],
+        "summary" : "Execute a generic payment of fiat of crypto",
+        "description" : "This endpoint is used to execute a generic payment of fiat or crypto transaction for a user. The transaction assessment and user information requirement are evaluated before the transaction is executed.",
+        "operationId" : "payment",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-request-id",
+          "in" : "header",
+          "description" : "Unique identifier of the request. This ID must be provided and stored by the client of this API at the creation of a transaction. This ID is attached to all PTI internal operations as well as the webhook calls. This ID is required to post feedback about a transaction and get support from PTI for a problem on a transaction. Creating two transactions having the same requestId is not allowed.\n",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-scenario-id",
+          "in" : "header",
+          "description" : "Represents a user action under which transaction amounts will accumulated and will control the User assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-session-id",
+          "in" : "header",
+          "description" : "Session ID associated to a UI session for a specific user. Should match the value passed to the PTI SDK at initialization.",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-disable-webhook",
+          "in" : "header",
+          "description" : "Set to true to disable webhook calls for this request.",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        }, {
+          "name" : "x-pti-provider-name",
+          "in" : "header",
+          "description" : "Used to specify which provider is responsible for handling the given operation. Ignored if the client configuration is not set for passive mode.\n",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/providerName"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/executePaymentTransaction"
               }
             }
           },
@@ -5507,12 +5684,12 @@
         "properties" : {
           "walletId" : {
             "maxLength" : 255,
-            "pattern" : "^[A-Z]+(?:_[A-Z]+)*$",
+            "pattern" : "^[A-Za-z]+(?:_[A-Za-z]+)*$",
             "type" : "string"
           },
           "currency" : {
-            "maxLength" : 5,
-            "pattern" : "^([A-Za-z]{10})$",
+            "maxLength" : 10,
+            "pattern" : "^([A-Za-z]{1,10})$",
             "type" : "string"
           }
         },
@@ -5527,12 +5704,12 @@
         "properties" : {
           "walletId" : {
             "maxLength" : 255,
-            "pattern" : "^[A-Z]+(?:_[A-Z]+)*$",
+            "pattern" : "^[A-Za-z]+(?:_[A-Za-z]+)*$",
             "type" : "string"
           },
           "currency" : {
-            "maxLength" : 5,
-            "pattern" : "^([A-Za-z]{10})$",
+            "maxLength" : 10,
+            "pattern" : "^([A-Za-z]{1,10})$",
             "type" : "string"
           },
           "balance" : {
@@ -5689,12 +5866,12 @@
           },
           "walletId" : {
             "maxLength" : 255,
-            "pattern" : "^[A-Z]+(?:_[A-Z]+)*$",
+            "pattern" : "^[A-Za-z]+(?:_[A-Za-z]+)*$",
             "type" : "string"
           },
           "currency" : {
-            "maxLength" : 5,
-            "pattern" : "^([A-Za-z]{10})$",
+            "maxLength" : 10,
+            "pattern" : "^([A-Za-z]{1,10})$",
             "type" : "string"
           },
           "amount" : {
@@ -5726,11 +5903,17 @@
             "type" : "string",
             "description" : "Reference information about the item, for example could be the contract address of an NFT item."
           },
-          "itemDetails" : {
+          "itemTitle" : {
             "maxLength" : 1024,
             "pattern" : "^[ -~]*$",
             "type" : "string",
-            "description" : "Details about the item, for example could be the name of an NFT item"
+            "description" : "The name of the item, for example: ShaggyDog#2"
+          },
+          "itemDescription" : {
+            "maxLength" : 1024,
+            "pattern" : "^[ -~]*$",
+            "type" : "string",
+            "description" : "Description about the item, for example: Shaggy Dog Collection is an NFT for Dog lovers. It is a manually generated NFT created on the Ethereum network."
           },
           "digitalItemType" : {
             "$ref" : "#/components/schemas/digitalItemType"
@@ -5838,6 +6021,9 @@
             "minimum" : 0,
             "type" : "number"
           },
+          "transactionGroupId" : {
+            "$ref" : "#/components/schemas/uuidLikeStrTransactionGroup"
+          },
           "billingEmail" : {
             "maxLength" : 320,
             "pattern" : "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
@@ -5849,7 +6035,7 @@
           },
           "currency" : {
             "maxLength" : 3,
-            "pattern" : "^([A-Za-z]{10})$",
+            "pattern" : "^([A-Za-z]{3,10})$",
             "type" : "string"
           },
           "additionalInfos" : {
@@ -5863,6 +6049,7 @@
           "resourceType" : "TRANSACTION_STATUS",
           "clientId" : "4121df47-7a05-4b42-9db3-d1ff8a29abf0",
           "userId" : "5121df47-7a05-4b42-9db3-d1ff8a29abf0",
+          "transactionGroupId" : "4121df47-7a05-4b42-9db3-d1ff8a29abf0",
           "requestId" : "3121df47-7a05-4b42-9db3-d1ff8a29abf0",
           "status" : "REFUSED",
           "date" : "2021-09-01T00:00:00.000Z",
@@ -5948,6 +6135,9 @@
           "transactionType" : {
             "$ref" : "#/components/schemas/transactionTypeEnum"
           },
+          "transactionGroupId" : {
+            "$ref" : "#/components/schemas/uuidLikeStrTransactionGroup"
+          },
           "meta" : {
             "type" : "object",
             "description" : "key/value map of extra information"
@@ -5964,6 +6154,7 @@
           "clientId" : "4121df47-7a05-4b42-9db3-d1ff8a29abf0",
           "userId" : "5121df47-7a05-4b42-9db3-d1ff8a29abf0",
           "requestId" : "3121df47-7a05-4b42-9db3-d1ff8a29abf0",
+          "transactionGroupId" : "4121df47-7a05-4b42-9db3-d1ff8a29abf0",
           "assessment" : "STOP",
           "risk" : "HIGH_RISK",
           "amount" : 100,

@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1.0.158'
+  version: '1.0.159'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -1189,6 +1189,91 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
+  /transactions/payments:
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+    post:
+      operationId: payment
+      summary: Execute a generic payment of fiat of crypto
+      tags:
+        - Execute Transaction
+      description: >-
+        This endpoint is used to execute a generic payment of fiat or crypto
+        transaction for a user. The transaction assessment and user information
+        requirement are evaluated before the transaction is executed.
+      parameters:
+        - $ref: '#/components/parameters/requestIdHeaderParam'
+        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
+        - $ref: '#/components/parameters/sessionIdHeaderParam'
+        - $ref: '#/components/parameters/disableWebhookHeaderParam'
+        - $ref: '#/components/parameters/providerNameHeaderParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/executePaymentTransaction'
+      callbacks:
+        transactionUpdate:
+          '${yourWebhookAddress}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/transactionStatusObject'
+              responses:
+                '200':
+                  description: Your server returns this code if it accepts the callback
+      responses:
+        '201':
+          description: Successfully initiated the transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/objectReference'
+        '400':
+          description: Invalid fields on Transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidRequestError'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '403':
+          description: Forbidden. Happens when the targeted user is not active.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '422':
+          description: >-
+            One of these 2 cases: More information about the User is needed in
+            order to approve the transaction. There is no approved assessment
+            for this user that enables him to perform the operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/oneOfTransactionValidationError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'              
   /transactions/transfers:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -3415,11 +3500,11 @@ components:
         walletId:
           type: string
           maxLength: 255
-          pattern: '^[A-Z]+(?:_[A-Z]+)*$'
+          pattern: '^[A-Za-z]+(?:_[A-Za-z]+)*$'
         currency:
           type: string
-          pattern: '^([A-Za-z]{10})$'
-          maxLength: 5
+          pattern: '^([A-Za-z]{1,10})$'
+          maxLength: 10
       example:
         walletId: MyUSDWallet
         currency: USD
@@ -3430,11 +3515,11 @@ components:
         walletId:
           type: string
           maxLength: 255
-          pattern: '^[A-Z]+(?:_[A-Z]+)*$'
+          pattern: '^[A-Za-z]+(?:_[A-Za-z]+)*$'
         currency:
           type: string
-          pattern: '^([A-Za-z]{10})$'
-          maxLength: 5
+          pattern: '^([A-Za-z]{1,10})$'
+          maxLength: 10
         balance:
           type: number
           minimum: 0
@@ -3588,11 +3673,11 @@ components:
         walletId:
           type: string
           maxLength: 255
-          pattern: '^[A-Z]+(?:_[A-Z]+)*$'
+          pattern: '^[A-Za-z]+(?:_[A-Za-z]+)*$'
         currency:
           type: string
-          pattern: '^([A-Za-z]{10})$'
-          maxLength: 5
+          pattern: '^([A-Za-z]{1,10})$'
+          maxLength: 10
         amount:
           type: number
           minimum: 0
@@ -3620,9 +3705,14 @@ components:
             contract address of an NFT item.
           maxLength: 128
           pattern: '^[ -~]*$'
-        itemDetails:
+        itemTitle:
           type: string
-          description: 'Details about the item, for example could be the name of an NFT item'
+          description: 'The name of the item, for example: ShaggyDog#2'
+          maxLength: 1024
+          pattern: '^[ -~]*$'
+        itemDescription:
+          type: string
+          description: 'Description about the item, for example: Shaggy Dog Collection is an NFT for Dog lovers. It is a manually generated NFT created on the Ethereum network.'
           maxLength: 1024
           pattern: '^[ -~]*$'
         digitalItemType:
@@ -3741,6 +3831,7 @@ components:
         resourceType: TRANSACTION_STATUS
         clientId: 4121df47-7a05-4b42-9db3-d1ff8a29abf0
         userId: 5121df47-7a05-4b42-9db3-d1ff8a29abf0
+        transactionGroupId: 4121df47-7a05-4b42-9db3-d1ff8a29abf0
         requestId: 3121df47-7a05-4b42-9db3-d1ff8a29abf0
         status: REFUSED
         date: '2021-09-01T00:00:00.000Z'
@@ -3775,6 +3866,8 @@ components:
           type: number
           minimum: 0
           maximum: 999999
+        transactionGroupId:
+          $ref: '#/components/schemas/uuidLikeStrTransactionGroup'  
         billingEmail:
           type: string
           pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'
@@ -3784,7 +3877,7 @@ components:
           $ref: '#/components/schemas/total'
         currency:
           type: string
-          pattern: '^([A-Za-z]{10})$'
+          pattern: '^([A-Za-z]{3,10})$'
           maxLength: 3
         additionalInfos:
           type: object
@@ -3843,6 +3936,8 @@ components:
           maximum: 999999
         transactionType:
           $ref: '#/components/schemas/transactionTypeEnum'
+        transactionGroupId:
+          $ref: '#/components/schemas/uuidLikeStrTransactionGroup'
         meta:
           type: object
           description: key/value map of extra information
@@ -3858,6 +3953,7 @@ components:
         clientId: 4121df47-7a05-4b42-9db3-d1ff8a29abf0
         userId: 5121df47-7a05-4b42-9db3-d1ff8a29abf0
         requestId: 3121df47-7a05-4b42-9db3-d1ff8a29abf0
+        transactionGroupId: 4121df47-7a05-4b42-9db3-d1ff8a29abf0
         assessment: STOP
         risk: HIGH_RISK
         amount: 100
