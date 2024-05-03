@@ -7,7 +7,7 @@
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1.0.160"
+    "version" : "1.0.161"
   },
   "servers" : [ {
     "url" : "https://apidev.pticlient.com/v1"
@@ -4274,6 +4274,17 @@
             "pattern" : "\\d{4}",
             "type" : "string"
           },
+          "cvv" : {
+            "pattern" : "^([0-9]){3,4}$",
+            "type" : "string",
+            "description" : "3 or 4 digits"
+          },
+          "creditCardType" : {
+            "maxLength" : 50,
+            "pattern" : "^[\\w\\-\\s]+$",
+            "type" : "string",
+            "description" : "VISA, MASTERCARD etc"
+          },
           "creditCardFirst6" : {
             "maxLength" : 6,
             "minLength" : 6,
@@ -4339,78 +4350,9 @@
             "type" : "string",
             "description" : "cc statement msg"
           },
-          "cvv" : {
-            "pattern" : "^([0-9]){3,4}$",
-            "type" : "string",
-            "description" : "cvv security code"
-          }
-        },
-        "allOf" : [ {
-          "$ref" : "#/components/schemas/externalPaymentInformation"
-        } ]
-      },
-      "creditCardPaymentInformation" : {
-        "required" : [ "cardHolderFirstName", "cardHolderLastName", "creditCardNumber", "cvc", "expirationMonth", "expirationYear" ],
-        "type" : "object",
-        "properties" : {
-          "creditCardType" : {
-            "maxLength" : 50,
-            "pattern" : "^[\\w\\-\\s]+$",
-            "type" : "string"
-          },
-          "creditCardNumber" : {
-            "pattern" : "^(([0-9])([- ]?)){15,16}$",
-            "type" : "string"
-          },
-          "expirationYear" : {
-            "pattern" : "^([0-9]){2,4}$",
-            "type" : "string",
-            "description" : "2 or 4 digits"
-          },
-          "expirationMonth" : {
-            "pattern" : "^([0-9]){2}$",
-            "type" : "string",
-            "description" : "2 digits"
-          },
-          "cvc" : {
-            "pattern" : "^([0-9]){3,4}$",
-            "type" : "string",
-            "description" : "3 or 4 digits"
-          },
-          "cardHolderFirstName" : {
-            "maxLength" : 255,
-            "minLength" : 3,
-            "pattern" : ".*",
-            "type" : "string",
-            "description" : "first name of card holder"
-          },
-          "cardHolderLastName" : {
-            "maxLength" : 255,
-            "minLength" : 3,
-            "pattern" : ".*",
-            "type" : "string",
-            "description" : "first name of card holder"
-          },
-          "statementMessage" : {
-            "maxLength" : 50,
-            "minLength" : 3,
-            "pattern" : ".*",
-            "type" : "string",
-            "description" : "cc statement msg"
-          },
-          "transactionDescription" : {
-            "maxLength" : 1000,
-            "minLength" : 3,
-            "pattern" : ".*",
-            "type" : "string",
-            "description" : "cc transaction description"
-          },
-          "creditCardAddress" : {
+          "meta" : {
             "type" : "object",
-            "description" : "cc address",
-            "allOf" : [ {
-              "$ref" : "#/components/schemas/address"
-            } ]
+            "description" : "key/value map of extra meta data for this credit card"
           }
         },
         "allOf" : [ {

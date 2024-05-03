@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1.0.160'
+  version: '1.0.161'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -2241,6 +2241,15 @@ components:
           minLength: 4
           maxLength: 4
           pattern: '\d{4}'
+        cvv:
+          description: 3 or 4 digits
+          type: string
+          pattern: '^([0-9]){3,4}$'
+        creditCardType:
+          type: string
+          pattern: '^[\w\-\s]+$'
+          maxLength: 50
+          description: VISA, MASTERCARD etc
         creditCardFirst6:
           deprecated: true
           description: 'Deprecated, use bin instead'
@@ -2295,70 +2304,10 @@ components:
           type: string
           minLength: 3
           maxLength: 50
-        cvv:
-          description: cvv security code
-          type: string
-          pattern: '^([0-9]){3,4}$'
-    creditCardPaymentInformation:
-      type: object
-      required:
-        - creditCardNumber
-        - expirationYear
-        - expirationMonth
-        - cvc
-        - cardHolderFirstName
-        - cardHolderLastName
-      allOf:
-        - $ref: '#/components/schemas/externalPaymentInformation'
-      properties:
-        creditCardType:
-          type: string
-          pattern: '^[\w\-\s]+$'
-          maxLength: 50
-        creditCardNumber:
-          type: string
-          pattern: '^(([0-9])([- ]?)){15,16}$'
-        expirationYear:
-          type: string
-          description: 2 or 4 digits
-          pattern: '^([0-9]){2,4}$'
-        expirationMonth:
-          description: 2 digits
-          type: string
-          pattern: '^([0-9]){2}$'
-        cvc:
-          description: 3 or 4 digits
-          type: string
-          pattern: '^([0-9]){3,4}$'
-        cardHolderFirstName:
-          description: first name of card holder
-          pattern: .*
-          minLength: 3
-          maxLength: 255
-          type: string
-        cardHolderLastName:
-          description: first name of card holder
-          pattern: .*
-          type: string
-          minLength: 3
-          maxLength: 255
-        statementMessage:
-          description: cc statement msg
-          pattern: .*
-          type: string
-          minLength: 3
-          maxLength: 50
-        transactionDescription:
-          description: cc transaction description
-          pattern: .*
-          type: string
-          minLength: 3
-          maxLength: 1000
-        creditCardAddress:
-          description: cc address
+        meta:
           type: object
-          allOf:
-            - $ref: '#/components/schemas/address'
+          description: key/value map of extra meta data for this credit card
+
     ein:
       type: object
       allOf:
