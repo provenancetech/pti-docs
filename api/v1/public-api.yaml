@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1.0.162'
+  version: '1.0.163'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -2333,7 +2333,7 @@ components:
           maxLength: 320
     device:
       required:
-        - fingerprint
+        - fingerPrint
         - providerName
       type: object
       additionalProperties: false
