@@ -7,7 +7,7 @@
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1.0.161"
+    "version" : "1.0.162"
   },
   "servers" : [ {
     "url" : "https://apidev.pticlient.com/v1"
@@ -4393,7 +4393,7 @@
         "required" : [ "fingerprint", "providerName" ],
         "type" : "object",
         "properties" : {
-          "fingerprint" : {
+          "fingerPrint" : {
             "pattern" : "^[ -~]*$",
             "type" : "string"
           },
@@ -4402,10 +4402,8 @@
             "enum" : [ "SARDINE", "UNKNOWN" ]
           },
           "deviceData" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
+            "pattern" : "^[ -~]*$",
+            "type" : "string"
           }
         },
         "additionalProperties" : false

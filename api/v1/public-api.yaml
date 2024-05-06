@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1.0.161'
+  version: '1.0.162'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -2338,7 +2338,7 @@ components:
       type: object
       additionalProperties: false
       properties:
-        fingerprint:
+        fingerPrint:
           type: string
           pattern: '^[ -~]*$'
         providerName:
@@ -2347,9 +2347,8 @@ components:
             - SARDINE
             - UNKNOWN
         deviceData:
-          type: object
-          additionalProperties:
-            type: string
+          type: string
+          pattern: '^[ -~]*$'
     errorType:
       type: string
       enum:
