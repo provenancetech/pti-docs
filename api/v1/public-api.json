@@ -7,7 +7,7 @@
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1.0.159"
+    "version" : "1.0.161"
   },
   "servers" : [ {
     "url" : "https://apidev.pticlient.com/v1"
@@ -3369,6 +3369,81 @@
             }
           }
         }
+      },
+      "delete" : {
+        "tags" : [ "Marketplace" ],
+        "summary" : "Delete a digital item",
+        "operationId" : "deleteDigitalItem",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "digitalItemId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Forbidden. Happens when the targeted digital item has been bought or sold.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Digital Item not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/users/{userId}/digital-items" : {
@@ -3385,6 +3460,17 @@
           "explode" : false,
           "schema" : {
             "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
           }
         }, {
           "name" : "page",
@@ -3422,6 +3508,67 @@
           "schema" : {
             "type" : "string"
           }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/objectReferencePage"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Marketplace" ],
+        "summary" : "Create a list of digital items for the user",
+        "operationId" : "createDigitalItems",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
         }, {
           "name" : "userId",
           "in" : "path",
@@ -3434,13 +3581,31 @@
             "type" : "string"
           }
         } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "maxItems" : 100,
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/digitalItem"
+                }
+              }
+            }
+          },
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "description" : "OK",
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/objectReferencePage"
+                  "maxItems" : 100,
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/objectReference"
+                  }
                 }
               }
             }
@@ -3932,9 +4097,12 @@
         "additionalProperties" : false
       },
       "bankAccountPaymentInformation" : {
-        "required" : [ "bankAccountNumber" ],
+        "required" : [ "bankAccountNumber", "type" ],
         "type" : "object",
         "properties" : {
+          "type" : {
+            "$ref" : "#/components/schemas/externalPaymentInformationType"
+          },
           "bankAccountNumber" : {
             "maxLength" : 64,
             "pattern" : "^[ -~]*$",
@@ -4086,8 +4254,12 @@
         "additionalProperties" : false
       },
       "encryptedCreditCardPaymentInformation" : {
+        "required" : [ "creditCardReference", "type" ],
         "type" : "object",
         "properties" : {
+          "type" : {
+            "$ref" : "#/components/schemas/externalPaymentInformationType"
+          },
           "encryptedInformation" : {
             "type" : "object",
             "additionalProperties" : {
@@ -4101,6 +4273,17 @@
             "minLength" : 4,
             "pattern" : "\\d{4}",
             "type" : "string"
+          },
+          "cvv" : {
+            "pattern" : "^([0-9]){3,4}$",
+            "type" : "string",
+            "description" : "3 or 4 digits"
+          },
+          "creditCardType" : {
+            "maxLength" : 50,
+            "pattern" : "^[\\w\\-\\s]+$",
+            "type" : "string",
+            "description" : "VISA, MASTERCARD etc"
           },
           "creditCardFirst6" : {
             "maxLength" : 6,
@@ -4166,74 +4349,10 @@
             "pattern" : "^[ -~]*$",
             "type" : "string",
             "description" : "cc statement msg"
-          }
-        },
-        "allOf" : [ {
-          "$ref" : "#/components/schemas/externalPaymentInformation"
-        } ]
-      },
-      "creditCardPaymentInformation" : {
-        "required" : [ "cardHolderFirstName", "cardHolderLastName", "creditCardNumber", "cvc", "expirationMonth", "expirationYear" ],
-        "type" : "object",
-        "properties" : {
-          "creditCardType" : {
-            "maxLength" : 50,
-            "pattern" : "^[\\w\\-\\s]+$",
-            "type" : "string"
           },
-          "creditCardNumber" : {
-            "pattern" : "^(([0-9])([- ]?)){15,16}$",
-            "type" : "string"
-          },
-          "expirationYear" : {
-            "pattern" : "^([0-9]){2,4}$",
-            "type" : "string",
-            "description" : "2 or 4 digits"
-          },
-          "expirationMonth" : {
-            "pattern" : "^([0-9]){2}$",
-            "type" : "string",
-            "description" : "2 digits"
-          },
-          "cvc" : {
-            "pattern" : "^([0-9]){3,4}$",
-            "type" : "string",
-            "description" : "3 or 4 digits"
-          },
-          "cardHolderFirstName" : {
-            "maxLength" : 255,
-            "minLength" : 3,
-            "pattern" : ".*",
-            "type" : "string",
-            "description" : "first name of card holder"
-          },
-          "cardHolderLastName" : {
-            "maxLength" : 255,
-            "minLength" : 3,
-            "pattern" : ".*",
-            "type" : "string",
-            "description" : "first name of card holder"
-          },
-          "statementMessage" : {
-            "maxLength" : 50,
-            "minLength" : 3,
-            "pattern" : ".*",
-            "type" : "string",
-            "description" : "cc statement msg"
-          },
-          "transactionDescription" : {
-            "maxLength" : 1000,
-            "minLength" : 3,
-            "pattern" : ".*",
-            "type" : "string",
-            "description" : "cc transaction description"
-          },
-          "creditCardAddress" : {
+          "meta" : {
             "type" : "object",
-            "description" : "cc address",
-            "allOf" : [ {
-              "$ref" : "#/components/schemas/address"
-            } ]
+            "description" : "key/value map of extra meta data for this credit card"
           }
         },
         "allOf" : [ {
@@ -4293,7 +4412,7 @@
       },
       "errorType" : {
         "type" : "string",
-        "enum" : [ "INVALID_REQUEST", "MISSING_INFORMATION", "INVALID_USER_ASSESSMENT" ]
+        "enum" : [ "INVALID_REQUEST", "MISSING_INFORMATION", "INVALID_USER_ASSESSMENT", "ALREADY_IN_PROGRESS", "NO_ERROR" ]
       },
       "oneOfTransactionValidationError" : {
         "example" : {
@@ -4304,6 +4423,24 @@
           "$ref" : "#/components/schemas/missingInformationError"
         }, {
           "$ref" : "#/components/schemas/invalidUserAssessmentError"
+        }, {
+          "$ref" : "#/components/schemas/noAssessmentError"
+        } ]
+      },
+      "noAssessmentError" : {
+        "required" : [ "assessment" ],
+        "type" : "object",
+        "properties" : {
+          "assessment" : {
+            "type" : "object"
+          }
+        },
+        "additionalProperties" : false,
+        "example" : {
+          "type" : "NO_ERROR"
+        },
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/managedError"
         } ]
       },
       "invalidUserAssessmentError" : {
@@ -4756,6 +4893,14 @@
       "executePaymentTransaction" : {
         "required" : [ "sourceMethod" ],
         "type" : "object",
+        "properties" : {
+          "sourceMethod" : {
+            "$ref" : "#/components/schemas/oneOfPaymentMethod"
+          },
+          "destinationMethod" : {
+            "$ref" : "#/components/schemas/walletPaymentMethod"
+          }
+        },
         "description" : "Collect payment from the initiator, the beneficiary is the client platform's  specified wallet in the destinationMethod(if specified).",
         "example" : {
           "initiator" : {
@@ -4817,11 +4962,17 @@
         } ]
       },
       "fiatPaymentMethod" : {
+        "required" : [ "paymentMethodType" ],
         "type" : "object",
         "properties" : {
+          "paymentMethodType" : {
+            "maxLength" : 50,
+            "pattern" : "^[A-Z]+(?:_[A-Z]+)*$",
+            "type" : "string"
+          },
           "currency" : {
             "maxLength" : 3,
-            "pattern" : "^([A-Za-z]{10})$",
+            "pattern" : "^([A-Za-z]{1,10})$",
             "type" : "string"
           },
           "paymentInformation" : {
@@ -4831,8 +4982,14 @@
         "additionalProperties" : true
       },
       "walletPaymentMethod" : {
+        "required" : [ "paymentMethodType" ],
         "type" : "object",
         "properties" : {
+          "paymentMethodType" : {
+            "maxLength" : 50,
+            "pattern" : "^[A-Z]+(?:_[A-Z]+)*$",
+            "type" : "string"
+          },
           "paymentInformation" : {
             "$ref" : "#/components/schemas/wallet"
           }
@@ -4960,12 +5117,6 @@
         "enum" : [ "BANK_ACCOUNT", "ENCRYPTED_CREDIT_CARD", "TOKEN" ]
       },
       "oneOfExternalPaymentInformation" : {
-        "required" : [ "type" ],
-        "properties" : {
-          "type" : {
-            "$ref" : "#/components/schemas/externalPaymentInformationType"
-          }
-        },
         "example" : {
           "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
           "type" : "ENCRYPTED_CREDIT_CARD",
@@ -4981,7 +5132,12 @@
           }
         },
         "discriminator" : {
-          "propertyName" : "type"
+          "propertyName" : "type",
+          "mapping" : {
+            "BANK_ACCOUNT" : "#/components/schemas/bankAccountPaymentInformation",
+            "ENCRYPTED_CREDIT_CARD" : "#/components/schemas/encryptedCreditCardPaymentInformation",
+            "TOKEN" : "#/components/schemas/tokenPaymentInformation"
+          }
         },
         "oneOf" : [ {
           "$ref" : "#/components/schemas/encryptedCreditCardPaymentInformation"
@@ -4992,16 +5148,12 @@
         } ]
       },
       "oneOfFiatPaymentInformation" : {
-        "required" : [ "type" ],
-        "properties" : {
-          "type" : {
-            "maxLength" : 50,
-            "pattern" : "^[A-Z]+(?:_[A-Z]+)*$",
-            "type" : "string"
-          }
-        },
         "discriminator" : {
-          "propertyName" : "type"
+          "propertyName" : "type",
+          "mapping" : {
+            "ENCRYPTED_CREDIT_CARD" : "#/components/schemas/encryptedCreditCardPaymentInformation",
+            "BANK_ACCOUNT" : "#/components/schemas/bankAccountPaymentInformation"
+          }
         },
         "oneOf" : [ {
           "$ref" : "#/components/schemas/encryptedCreditCardPaymentInformation"
@@ -5010,16 +5162,12 @@
         } ]
       },
       "oneOfExternalPaymentMethod" : {
-        "required" : [ "paymentMethodType" ],
-        "properties" : {
-          "paymentMethodType" : {
-            "maxLength" : 50,
-            "pattern" : "^[A-Z]+(?:_[A-Z]+)*$",
-            "type" : "string"
-          }
-        },
         "discriminator" : {
-          "propertyName" : "paymentMethodType"
+          "propertyName" : "paymentMethodType",
+          "mapping" : {
+            "FIAT" : "#/components/schemas/fiatPaymentMethod",
+            "TOKEN" : "#/components/schemas/tokenPaymentMethod"
+          }
         },
         "oneOf" : [ {
           "$ref" : "#/components/schemas/tokenPaymentMethod"
@@ -5028,16 +5176,13 @@
         } ]
       },
       "oneOfPaymentMethod" : {
-        "required" : [ "paymentMethodType" ],
-        "properties" : {
-          "paymentMethodType" : {
-            "maxLength" : 50,
-            "pattern" : "^[A-Z]+(?:_[A-Z]+)*$",
-            "type" : "string"
-          }
-        },
         "discriminator" : {
-          "propertyName" : "paymentMethodType"
+          "propertyName" : "paymentMethodType",
+          "mapping" : {
+            "FIAT" : "#/components/schemas/fiatPaymentMethod",
+            "WALLET" : "#/components/schemas/walletPaymentMethod",
+            "TOKEN" : "#/components/schemas/tokenPaymentMethod"
+          }
         },
         "oneOf" : [ {
           "$ref" : "#/components/schemas/tokenPaymentMethod"
@@ -5300,9 +5445,12 @@
         "additionalProperties" : false
       },
       "tokenPaymentInformation" : {
-        "required" : [ "blockchain", "tokenAddress", "tokenType" ],
+        "required" : [ "blockchain", "tokenAddress", "tokenType", "type" ],
         "type" : "object",
         "properties" : {
+          "type" : {
+            "$ref" : "#/components/schemas/externalPaymentInformationType"
+          },
           "tokenAddress" : {
             "maxLength" : 1050,
             "pattern" : "^[ -~]*$",
@@ -5355,8 +5503,14 @@
         "description" : "The source payment method of the swap(wallet), if available"
       },
       "tokenPaymentMethod" : {
+        "required" : [ "paymentMethodType" ],
         "type" : "object",
         "properties" : {
+          "paymentMethodType" : {
+            "maxLength" : 50,
+            "pattern" : "^[A-Z]+(?:_[A-Z]+)*$",
+            "type" : "string"
+          },
           "paymentInformation" : {
             "$ref" : "#/components/schemas/tokenPaymentInformation"
           }
@@ -5511,7 +5665,7 @@
       },
       "transactionTypeEnum" : {
         "type" : "string",
-        "enum" : [ "DEPOSIT", "WITHDRAWAL", "TRANSFER", "SELL", "BUY", "MINT", "SWAP" ]
+        "enum" : [ "DEPOSIT", "WITHDRAWAL", "PAYMENT", "TRANSFER", "SELL", "BUY", "MINT", "SWAP" ]
       },
       "transactionType" : {
         "required" : [ "type" ],
@@ -5691,6 +5845,16 @@
             "maxLength" : 10,
             "pattern" : "^([A-Za-z]{1,10})$",
             "type" : "string"
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "WALLET" ]
+          },
+          "createDateTime" : {
+            "maxLength" : 40,
+            "pattern" : "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z|[+-][01]\\d:?[0-5]\\d)",
+            "type" : "string",
+            "nullable" : true
           }
         },
         "example" : {
@@ -5726,7 +5890,7 @@
           },
           "createDateTime" : {
             "maxLength" : 40,
-            "pattern" : "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z|[+-][01]\\d:[0-5]\\d)",
+            "pattern" : "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z|[+-][01]\\d:?[0-5]\\d)",
             "type" : "string",
             "nullable" : true
           }
@@ -5922,7 +6086,8 @@
         "additionalProperties" : false,
         "example" : {
           "itemReference" : "0x16Df97AB64d9eb5FF393F9f52F9290566857B07C",
-          "itemDetails" : "John Doe rookie card #3345",
+          "itemTitle" : "ShaggyDog#2",
+          "itemDescription" : "Shaggy Dog Collection is an NFT for Dog lovers. It is a manually generated NFT created on the Ethereum network.",
           "itemType" : "NFT"
         }
       },
@@ -5953,7 +6118,7 @@
       "transactionStatus" : {
         "type" : "string",
         "additionalProperties" : false,
-        "enum" : [ "PENDING", "ERROR", "MANUAL_REVIEW", "REFUSED", "AUTHORIZED", "SETTLED", "CAPTURED", "CHARGED_BACK", "CHARGED_BACK_REVERSED", "CANCELED", "REFUNDED" ]
+        "enum" : [ "PENDING", "ERROR", "MANUAL_REVIEW", "REFUSED", "AUTHORIZED", "BAD_REQUEST", "SETTLED", "CAPTURED", "CHARGED_BACK", "CHARGED_BACK_REVERSED", "CANCELED", "REFUNDED" ]
       },
       "actionStatus" : {
         "type" : "object",
@@ -6393,8 +6558,8 @@
             "type" : "number"
           },
           "currency" : {
-            "maxLength" : 3,
-            "pattern" : "^([A-Za-z]{10})$",
+            "maxLength" : 10,
+            "pattern" : "^([A-Za-z]{1,10})$",
             "type" : "string"
           }
         },
