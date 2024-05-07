@@ -7,7 +7,7 @@
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1.0.163"
+    "version" : "1.0.164"
   },
   "servers" : [ {
     "url" : "https://apidev.pticlient.com/v1"
@@ -4148,9 +4148,12 @@
         }
       },
       "business" : {
-        "required" : [ "mainRepresentative" ],
+        "required" : [ "mainRepresentative", "type" ],
         "type" : "object",
         "properties" : {
+          "type" : {
+            "$ref" : "#/components/schemas/userType"
+          },
           "biis" : {
             "maxItems" : 100,
             "type" : "array",
@@ -5292,7 +5295,11 @@
           "sourceOfFunds" : "Creator earnings"
         },
         "discriminator" : {
-          "propertyName" : "type"
+          "propertyName" : "type",
+          "mapping" : {
+            "PERSON" : "#/components/schemas/person",
+            "BUSINESS" : "#/components/schemas/business"
+          }
         },
         "oneOf" : [ {
           "$ref" : "#/components/schemas/person"
@@ -5318,8 +5325,12 @@
         }
       },
       "person" : {
+        "required" : [ "type" ],
         "type" : "object",
         "properties" : {
+          "type" : {
+            "$ref" : "#/components/schemas/userType"
+          },
           "addresses" : {
             "maxItems" : 100,
             "type" : "array",
@@ -5701,9 +5712,7 @@
             "description" : "Unique identifier for this user. This value MUST be chosen and stored at user creation time."
           },
           "type" : {
-            "type" : "string",
-            "description" : "Type of user which represents the legal entity involved in the API action",
-            "enum" : [ "PERSON", "BUSINESS" ]
+            "$ref" : "#/components/schemas/userType"
           },
           "status" : {
             "$ref" : "#/components/schemas/userStatus"
@@ -5777,6 +5786,11 @@
         "discriminator" : {
           "propertyName" : "type"
         }
+      },
+      "userType" : {
+        "type" : "string",
+        "description" : "Type of user which represents the legal entity involved in the API action",
+        "enum" : [ "PERSON", "BUSINESS" ]
       },
       "userToken" : {
         "required" : [ "accessToken", "expiresAt", "tokenType" ],
@@ -5988,17 +6002,26 @@
           },
           "ptiMeta" : {
             "type" : "object",
-            "additionalProperties" : false,
+            "additionalProperties" : true,
             "description" : "key/value map of extra meta data for this request (used by PTI)"
           },
           "clientMeta" : {
             "type" : "object",
-            "additionalProperties" : false,
+            "additionalProperties" : true,
             "description" : "key/value map of extra meta data for this request (used by Client)"
           }
         },
-        "anyOf" : [ {
-          "$ref" : "#/components/schemas/oneOfUserSubTypes"
+        "discriminator" : {
+          "propertyName" : "type",
+          "mapping" : {
+            "PERSON" : "#/components/schemas/person",
+            "BUSINESS" : "#/components/schemas/business"
+          }
+        },
+        "oneOf" : [ {
+          "$ref" : "#/components/schemas/person"
+        }, {
+          "$ref" : "#/components/schemas/business"
         } ]
       },
       "uuidLikeStr" : {

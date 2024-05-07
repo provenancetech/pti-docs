@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1.0.163'
+  version: '1.0.164'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -2141,9 +2141,12 @@ components:
       type: object
       required:
         - mainRepresentative
+        - type
       allOf:
         - $ref: '#/components/schemas/user'
       properties:
+        type:
+          $ref: '#/components/schemas/userType'
         biis:
           type: array
           maxItems: 100
@@ -3074,6 +3077,9 @@ components:
         - $ref: '#/components/schemas/business'
       discriminator:
         propertyName: type
+        mapping:
+          PERSON: '#/components/schemas/person'
+          BUSINESS: '#/components/schemas/business'
       example:
         id: 36dbe68f-2747-41c6-8748-559588fd3248
         type: PERSON
@@ -3115,7 +3121,11 @@ components:
       type: object
       allOf:
         - $ref: '#/components/schemas/user'
+      required:
+        - type
       properties:
+        type:
+          $ref: '#/components/schemas/userType'
         addresses:
           type: array
           maxItems: 100
@@ -3467,13 +3477,7 @@ components:
             Unique identifier for this user. This value MUST be chosen and
             stored at user creation time.
         type:
-          enum:
-            - PERSON
-            - BUSINESS
-          type: string
-          description: >-
-            Type of user which represents the legal entity involved in the API
-            action
+          $ref: '#/components/schemas/userType'
         status:
           $ref: '#/components/schemas/userStatus'
         statusReason:
@@ -3512,6 +3516,14 @@ components:
           description: key/value map of extra meta data for this request (used by Client)
       discriminator:
         propertyName: type
+    userType:
+      type: string
+      enum:
+        - PERSON
+        - BUSINESS
+      description: >-
+        Type of user which represents the legal entity involved in the API
+        action
     userToken:
       required:
         - accessToken
@@ -3697,8 +3709,14 @@ components:
           - NATIONALITY
           - EXPIRY_DATE
     kycRequest:
-      anyOf:
-        - $ref: '#/components/schemas/oneOfUserSubTypes'
+      oneOf:
+        - $ref: '#/components/schemas/person'
+        - $ref: '#/components/schemas/business'
+      discriminator:
+        propertyName: type
+        mapping:
+          PERSON: '#/components/schemas/person'
+          BUSINESS: '#/components/schemas/business'
       properties:
         intendedTransactionUsdValue:
           type: number
@@ -3709,11 +3727,11 @@ components:
             The value of the transaction that the user is intending to perform
             in USD
         ptiMeta:
-          additionalProperties: false
+          additionalProperties: true
           type: object
           description: key/value map of extra meta data for this request (used by PTI)
         clientMeta:
-          additionalProperties: false
+          additionalProperties: true
           type: object
           description: key/value map of extra meta data for this request (used by Client)
     uuidLikeStr:
