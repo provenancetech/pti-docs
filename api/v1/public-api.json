@@ -7,7 +7,7 @@
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1.0.164"
+    "version" : "1.0.165"
   },
   "servers" : [ {
     "url" : "https://apidev.pticlient.com/v1"
@@ -4148,7 +4148,7 @@
         }
       },
       "business" : {
-        "required" : [ "mainRepresentative", "type" ],
+        "required" : [ "mainRepresentative" ],
         "type" : "object",
         "properties" : {
           "type" : {
@@ -4537,7 +4537,7 @@
           },
           "providerName" : {
             "type" : "string",
-            "enum" : [ "CHECKOUT", "ADMIN", "CIRCLE", "COINBASE", "FORTE", "UNKNOWN" ]
+            "enum" : [ "CHECKOUT", "ADMIN", "CIRCLE", "COINBASE", "FORTE", "PTI_LEDGER", "UNKNOWN" ]
           },
           "feedback" : {
             "type" : "string",
@@ -5325,7 +5325,6 @@
         }
       },
       "person" : {
-        "required" : [ "type" ],
         "type" : "object",
         "properties" : {
           "type" : {
@@ -5702,7 +5701,7 @@
         "enum" : [ "ACTIVE", "INACTIVE", "BLOCKED" ]
       },
       "user" : {
-        "required" : [ "id", "type" ],
+        "required" : [ "id" ],
         "type" : "object",
         "properties" : {
           "id" : {
@@ -5710,9 +5709,6 @@
             "pattern" : "^[a-z0-9_-]{3,255}$",
             "type" : "string",
             "description" : "Unique identifier for this user. This value MUST be chosen and stored at user creation time."
-          },
-          "type" : {
-            "$ref" : "#/components/schemas/userType"
           },
           "status" : {
             "$ref" : "#/components/schemas/userStatus"
@@ -5757,7 +5753,6 @@
         },
         "example" : {
           "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
-          "type" : "PERSON",
           "dateOfBirth" : "1988-09-28",
           "name" : {
             "firstName" : "test",
@@ -5905,6 +5900,10 @@
             "pattern" : "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z|[+-][01]\\d:?[0-5]\\d)",
             "type" : "string",
             "nullable" : true
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "WALLET" ]
           }
         },
         "example" : {
@@ -6139,7 +6138,7 @@
       "transactionStatus" : {
         "type" : "string",
         "additionalProperties" : false,
-        "enum" : [ "PENDING", "ERROR", "MANUAL_REVIEW", "REFUSED", "AUTHORIZED", "BAD_REQUEST", "SETTLED", "CAPTURED", "CHARGED_BACK", "CHARGED_BACK_REVERSED", "CANCELED", "REFUNDED" ]
+        "enum" : [ "PENDING", "ERROR", "MANUAL_REVIEW", "REFUSED", "AUTHORIZED", "ACCEPTED", "BAD_REQUEST", "SETTLED", "CAPTURED", "CHARGED_BACK", "CHARGED_BACK_REVERSED", "CANCELED", "REFUNDED" ]
       },
       "actionStatus" : {
         "type" : "object",

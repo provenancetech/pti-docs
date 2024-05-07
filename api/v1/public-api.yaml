@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1.0.164'
+  version: '1.0.165'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -2141,7 +2141,6 @@ components:
       type: object
       required:
         - mainRepresentative
-        - type
       allOf:
         - $ref: '#/components/schemas/user'
       properties:
@@ -2474,6 +2473,7 @@ components:
             - CIRCLE
             - COINBASE
             - FORTE
+            - PTI_LEDGER
             - UNKNOWN
           type: string
         feedback:
@@ -3121,8 +3121,6 @@ components:
       type: object
       allOf:
         - $ref: '#/components/schemas/user'
-      required:
-        - type
       properties:
         type:
           $ref: '#/components/schemas/userType'
@@ -3443,10 +3441,8 @@ components:
       type: object
       required:
         - id
-        - type
       example:
         id: 36dbe68f-2747-41c6-8748-559588fd3248
-        type: PERSON
         dateOfBirth: '1988-09-28'
         name:
           firstName: test
@@ -3476,8 +3472,6 @@ components:
           description: >-
             Unique identifier for this user. This value MUST be chosen and
             stored at user creation time.
-        type:
-          $ref: '#/components/schemas/userType'
         status:
           $ref: '#/components/schemas/userStatus'
         statusReason:
@@ -3628,6 +3622,10 @@ components:
             ^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,9})?(?:Z|[+-][01]\d:?[0-5]\d)
           maxLength: 40
           nullable: true
+        type:
+          type: string
+          enum:
+            - WALLET
       example:
         walletId: MyUSDWallet
         currency: USD
@@ -3865,6 +3863,7 @@ components:
         - MANUAL_REVIEW
         - REFUSED
         - AUTHORIZED
+        - ACCEPTED
         - BAD_REQUEST
         - SETTLED
         - CAPTURED
