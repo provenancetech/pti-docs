@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1.0.165'
+  version: '1.0.166'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -3791,6 +3791,11 @@ components:
     digitalItem:
       type: object
       additionalProperties: false
+      required:
+        - itemReference
+        - itemTitle
+        - itemDescription
+        - digitalItemType
       properties:
         itemReference:
           type: string
@@ -4278,7 +4283,10 @@ components:
       name: x-pti-disable-webhook
       description: Set to true to disable webhook calls for this request.
       schema:
-        type: boolean
+        type: string
+        enum:
+          - true
+          - false
       in: header
       required: false
     providerNameHeaderParam:
