@@ -7,7 +7,7 @@
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1.0.166"
+    "version" : "1.0.167"
   },
   "servers" : [ {
     "url" : "https://apidev.pticlient.com/v1"
@@ -4269,7 +4269,7 @@
         "additionalProperties" : false
       },
       "encryptedCreditCardPaymentInformation" : {
-        "required" : [ "creditCardReference", "type" ],
+        "required" : [ "type" ],
         "type" : "object",
         "properties" : {
           "type" : {
@@ -4328,7 +4328,7 @@
             "maxLength" : 2048,
             "pattern" : "^[ -~]*$",
             "type" : "string",
-            "description" : "Reference to the credit card in our system"
+            "description" : "Reference to the credit card in our system, this must be set when you create a credit card"
           },
           "cardHolderFirstName" : {
             "maxLength" : 255,

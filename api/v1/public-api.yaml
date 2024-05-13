@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1.0.166'
+  version: '1.0.167'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -2226,7 +2226,6 @@ components:
       type: object
       required:
         - type
-        - creditCardReference
       allOf:
         - $ref: '#/components/schemas/externalPaymentInformation'
       properties:
@@ -2276,7 +2275,7 @@ components:
           type: string
           maxLength: 2048
           pattern: '^[ -~]*$'
-          description: 'Reference to the credit card in our system'
+          description: 'Reference to the credit card in our system, this must be set when you create a credit card'
         cardHolderFirstName:
           description: first name of card holder
           pattern: '^[ -~]*$'
