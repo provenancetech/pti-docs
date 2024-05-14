@@ -60,7 +60,7 @@ const App = () => {
 
   return (
     <ContainerGrid>
-      <Title>PTI SDK Example</Title>
+      <Title>Fiant SDK Example</Title>
       <Section style={{ gridArea: "informations" }}>
         <Header>
           <TuneOutlinedIcon />
