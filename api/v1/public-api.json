@@ -7,7 +7,7 @@
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1.0.167"
+    "version" : "1.0.168"
   },
   "servers" : [ {
     "url" : "https://apidev.pticlient.com/v1"
