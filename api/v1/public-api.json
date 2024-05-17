@@ -7,7 +7,7 @@
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1.0.168"
+    "version" : "1.0.169"
   },
   "servers" : [ {
     "url" : "https://apidev.pticlient.com/v1"
@@ -922,7 +922,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/oneOfTransactionValidationError"
+                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
                 }
               }
             }
@@ -1068,6 +1068,16 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "422" : {
+            "description" : "One of these 2 cases: More information about the User is needed in order to approve the transaction. There is no approved assessment for this user that enables him to perform the operation.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
                 }
               }
             }
@@ -1309,7 +1319,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/oneOfTransactionValidationError"
+                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
                 }
               }
             }
@@ -1798,7 +1808,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/oneOfTransactionValidationError"
+                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
                 }
               }
             }
@@ -1976,7 +1986,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/oneOfTransactionValidationError"
+                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
                 }
               }
             }
@@ -2154,7 +2164,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/oneOfTransactionValidationError"
+                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
                 }
               }
             }
@@ -2332,7 +2342,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/oneOfTransactionValidationError"
+                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
                 }
               }
             }
@@ -2510,7 +2520,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/oneOfTransactionValidationError"
+                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
                 }
               }
             }
@@ -2688,7 +2698,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/oneOfTransactionValidationError"
+                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
                 }
               }
             }
@@ -2866,7 +2876,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/oneOfTransactionValidationError"
+                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
                 }
               }
             }
@@ -3044,7 +3054,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/oneOfTransactionValidationError"
+                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
                 }
               }
             }
@@ -4427,7 +4437,7 @@
         "type" : "string",
         "enum" : [ "INVALID_REQUEST", "MISSING_INFORMATION", "INVALID_USER_ASSESSMENT", "ALREADY_IN_PROGRESS", "NO_ERROR" ]
       },
-      "oneOfTransactionValidationError" : {
+      "oneOfAssessmentValidationError" : {
         "example" : {
           "type" : "MISSING_INFORMATION",
           "fields" : [ "FULL_NAME", "EMAIL_ADDRESS" ]
@@ -4441,7 +4451,6 @@
         } ]
       },
       "noAssessmentError" : {
-        "required" : [ "assessment" ],
         "type" : "object",
         "properties" : {
           "assessment" : {
@@ -6137,7 +6146,7 @@
       "transactionRiskAssessment" : {
         "type" : "string",
         "additionalProperties" : false,
-        "enum" : [ "LOW_RISK", "MEDIUM_RISK", "HIGH_RISK" ]
+        "enum" : [ "LOW", "MEDIUM", "HIGH" ]
       },
       "resourceType" : {
         "type" : "string",
@@ -6580,7 +6589,7 @@
       "informationFields" : {
         "type" : "string",
         "additionalProperties" : false,
-        "enum" : [ "FULL_NAME", "EMAIL_ADDRESS", "PHYSICAL_ADDRESS", "BIRTH_DATE", "PHONE_NUMBER", "TOKEN_ADDRESS", "US_CITIZENSHIP", "SOURCE_OF_FUNDS" ]
+        "enum" : [ "FULL_NAME", "EMAIL_ADDRESS", "PHYSICAL_ADDRESS", "BIRTH_DATE", "PHONE_NUMBER", "TOKEN_ADDRESS", "US_CITIZENSHIP", "ID_DOCUMENT", "SOURCE_OF_FUNDS" ]
       },
       "cost" : {
         "type" : "object",

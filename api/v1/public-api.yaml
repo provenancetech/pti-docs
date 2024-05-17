@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1.0.168'
+  version: '1.0.169'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -472,7 +472,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/oneOfTransactionValidationError'
+                $ref: '#/components/schemas/oneOfAssessmentValidationError'
         '401':
           description: unauthorized
           content:
@@ -560,6 +560,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
+        '422':
+          description: >-
+            One of these 2 cases: More information about the User is needed in
+            order to approve the transaction. There is no approved assessment
+            for this user that enables him to perform the operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/oneOfAssessmentValidationError'
         '429':
           description: Too many requests
         default:
@@ -688,7 +697,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/oneOfTransactionValidationError'
+                $ref: '#/components/schemas/oneOfAssessmentValidationError'
         '429':
           description: Too many requests
         default:
@@ -925,7 +934,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/oneOfTransactionValidationError'
+                $ref: '#/components/schemas/oneOfAssessmentValidationError'
         '429':
           description: Too many requests
         default:
@@ -1010,7 +1019,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/oneOfTransactionValidationError'
+                $ref: '#/components/schemas/oneOfAssessmentValidationError'
         '429':
           description: Too many requests
         default:
@@ -1095,7 +1104,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/oneOfTransactionValidationError'
+                $ref: '#/components/schemas/oneOfAssessmentValidationError'
         '429':
           description: Too many requests
         default:
@@ -1180,7 +1189,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/oneOfTransactionValidationError'
+                $ref: '#/components/schemas/oneOfAssessmentValidationError'
         '429':
           description: Too many requests
         default:
@@ -1265,7 +1274,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/oneOfTransactionValidationError'
+                $ref: '#/components/schemas/oneOfAssessmentValidationError'
         '429':
           description: Too many requests
         default:
@@ -1350,7 +1359,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/oneOfTransactionValidationError'
+                $ref: '#/components/schemas/oneOfAssessmentValidationError'
         '429':
           description: Too many requests
 
@@ -1436,7 +1445,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/oneOfTransactionValidationError'
+                $ref: '#/components/schemas/oneOfAssessmentValidationError'
         '429':
           description: Too many requests
         default:
@@ -1521,7 +1530,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/oneOfTransactionValidationError'
+                $ref: '#/components/schemas/oneOfAssessmentValidationError'
         '429':
           description: Too many requests
         default:
@@ -2358,7 +2367,7 @@ components:
         - INVALID_USER_ASSESSMENT
         - ALREADY_IN_PROGRESS
         - NO_ERROR
-    oneOfTransactionValidationError:
+    oneOfAssessmentValidationError:
       oneOf:
         - $ref: '#/components/schemas/missingInformationError'
         - $ref: '#/components/schemas/invalidUserAssessmentError'
@@ -2372,8 +2381,6 @@ components:
       type: object
       allOf:
         - $ref: '#/components/schemas/managedError'
-      required:
-        - assessment
       properties:
         assessment:
           type: object
@@ -3837,9 +3844,9 @@ components:
       type: string
       additionalProperties: false
       enum:
-        - LOW_RISK
-        - MEDIUM_RISK
-        - HIGH_RISK
+        - LOW
+        - MEDIUM
+        - HIGH
     resourceType:
       type: string
       enum:
@@ -4243,6 +4250,7 @@ components:
         - PHONE_NUMBER
         - TOKEN_ADDRESS
         - US_CITIZENSHIP
+        - ID_DOCUMENT
         - SOURCE_OF_FUNDS
     cost:
       type: object
