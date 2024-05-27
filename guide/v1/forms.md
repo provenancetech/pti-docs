@@ -90,7 +90,9 @@ Synchronous messages via `window.postMessage are dispatched upon completion of e
 - Payment: `UserTransactionCompleted`
 - Assessment: `UserAssessmentCompleted`
 - User onboarding: `UserOnboardingCompleted`
-- Add credit card: `AddCreditCardCompleted`
+- Add credit card: `AddCreditCardCompleted`, `AddPaymentMethodCompleted`
+- Add bank account: `AddBankAccountCompleted`, `AddPaymentMethodCompleted`
+- Add crypto wallet: `AddCryptoWalletCompleted`, `AddPaymentMethodCompleted`
 
 Upon receiving these messages, consider implementing actions such as removing the iframe or displaying a spinner to provide a seamless user experience.
 
