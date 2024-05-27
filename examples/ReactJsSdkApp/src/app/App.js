@@ -24,6 +24,7 @@ import { generateTransactionLogPayload, sendTransactionLog } from "../repository
 import { openSimpleDialog, SimpleDialog } from "../components/simpleDialog/SimpleDialog";
 import SnackAlert from "../components/snackAlert/SnackAlert";
 
+import AddCardIcon from "@mui/icons-material/AddCardOutlined";
 import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
 import ContactPageOutlinedIcon from "@mui/icons-material/ContactPageOutlined";
 import CreditCardOutlinedIcon from "@mui/icons-material/CreditCardOutlined";
@@ -179,8 +180,8 @@ const App = () => {
 
       <Section style={{ gridArea: "add-cc" }}>
         <Header>
-          <SailingOutlinedIcon />
-          Add Credit Card
+          <AddCardIcon />
+          Add Payment Methods
         </Header>
         <Button
           endIcon={<OpenInNewOutlinedIcon />}
@@ -190,6 +191,22 @@ const App = () => {
         >
           Open Add Credit Card Form
         </Button>
+      <Button
+          endIcon={<OpenInNewOutlinedIcon />}
+          fullWidth={true}
+          onClick={() => openSimpleDialog(actionType.addBankAccount, userId, requestId, amount, scenarioId, lang)}
+          variant="contained"
+      >
+          Open Add Bank Account Form
+      </Button>
+      <Button
+          endIcon={<OpenInNewOutlinedIcon />}
+          fullWidth={true}
+          onClick={() => openSimpleDialog(actionType.addCryptoWallet, userId, requestId, amount, scenarioId, lang)}
+          variant="contained"
+      >
+          Open Add Crypto Wallet Form
+      </Button>
       </Section>
 
       <Section style={{ gridArea: "transaction" }}>
