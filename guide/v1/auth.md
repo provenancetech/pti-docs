@@ -80,7 +80,7 @@ You can use the [signed_request_maker.py](https://github.com/provenancetech/pti-
 For example:
 
 ```shell
-python signed_request_maker.py --clientId "00000000-0000-0000-0000-000000000000" --http-method 'POST' --data '{"name": "Jane Doe", "id": "my_internal_id-12345678"}' -k private_key.jwk --debug https//pti.apistaging.pticlient.com
+python signed_request_maker.py --clientId "00000000-0000-0000-0000-000000000000" --http-method 'POST' --data '{"name": "Jane Doe", "id": "my_internal_id-12345678"}' -k private_key.jwk --debug https//api.staging.fiant.io
 ```
 
 

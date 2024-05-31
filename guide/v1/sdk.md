@@ -9,7 +9,7 @@ You should include and initialize the library from our CDN on your front end pag
 Normally there should only be one call to the `PTI.init` function.
 
 ```js
- <script async defer src="https://sdk.pearsurge.io/0.0.20/index.js"></script>
+ <script async defer src="https://sdk.fiant.io/0.0.21/index.js"></script>
     <script>
       window.ptiAsyncInit = function() {
         PTI.init({

@@ -92,7 +92,7 @@ this would lead to a KYC check with a KYC tier of 2. A transaction request that 
 
 ```js
 const callTransactionLog = (accessToken) => {
-        const baseUrl = 'https://pti.apistaging.pticlient.com/v1';
+        const baseUrl = 'https://api.staging.fiant.io/v1';
         const url = baseUrl + '/users/' + userId + '/transactionLogs';
         const date = new Date().toISOString();
         const headers = {

@@ -10,7 +10,7 @@ export default function Home() {
         <script
           async
           defer
-          src="https://sdk.apidev.pticlient.com/0.0.21/index.js"
+          src="https://sdk.dev.fiant.io/0.0.21/index.js"
         ></script>
       </Head>
 
