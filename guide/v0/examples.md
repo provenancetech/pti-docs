@@ -33,7 +33,7 @@ Funding transactions are used to bring in crypto assets in the client ecosystem.
 
 ```js
 const callTransactionLog = (accessToken) => {
-        const baseUrl = 'https://api.pearsurge.io/v0';
+        const baseUrl = 'https://api.fiant.io/v0';
         const url = baseUrl + '/users/' + USER_ID + '/transactionLogs';
         const date = new Date().toISOString();
         const headers = {
@@ -83,7 +83,7 @@ const callTransactionLog = (accessToken) => {
 Transfers are used to exchange crypto assets within the ecosystem.
 ```js
 const callTransactionLog = (accessToken) => {
-        const baseUrl = 'https://api.pearsurge.io/v0';
+        const baseUrl = 'https://api.fiant.io/v0';
         const url = baseUrl + '/users/' + userId + '/transactionLogs';
         const date = new Date().toISOString();
         const headers = {
@@ -146,7 +146,7 @@ Withdrawals are used to take assets out of the ecosystem.
 
 ```js
     const callTransactionLog = (accessToken) => {
-        const baseUrl = 'https://api.pearsurge.io/v0';
+        const baseUrl = 'https://api.fiant.io/v0';
         const url = baseUrl + '/users/' + userId + '/transactionLogs';
         const date = new Date().toISOString();
         const headers = {

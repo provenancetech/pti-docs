@@ -33,7 +33,7 @@ Deposit transactions are used to bring in assets in the client ecosystem.
 
 ```js
 const callAssessment = (accessToken) => {
-        const baseUrl = 'https://apistaging.pticlient.com/v1';
+        const baseUrl = 'https://api.fiant.io/v1';
         const url = baseUrl + '/transactions/assessments';
         const date = new Date().toISOString();
         const headers = {
@@ -83,7 +83,7 @@ const callAssessment = (accessToken) => {
 Swaps are used to exchange assets within the ecosystem.
 ```js
 const callAssessment = (accessToken) => {
-        const baseUrl = 'https://apistaging.pticlient.com/v1';
+        const baseUrl = 'https://api.fiant.io/v1';
         const url = baseUrl + '/transactions/assessments';
         const date = new Date().toISOString();
         const headers = {
@@ -142,7 +142,7 @@ Withdrawals are used to take assets out of the ecosystem.
 
 ```js
     const callTransactionLog = (accessToken) => {
-        const baseUrl = 'https://apistaging.pticlient.com/v1';
+        const baseUrl = 'https://api.fiant.io/v1';
         const url = baseUrl + '/transactions/assessments';
         const date = new Date().toISOString();
         const headers = {

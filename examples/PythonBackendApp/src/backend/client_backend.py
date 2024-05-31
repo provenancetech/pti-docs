@@ -16,7 +16,7 @@ p.add_argument('-sk', '--private-key', help='Path to the private/secret key', ty
                **environ_or_required('PRIVATE_KEY_PATH'))
 p.add_argument('-c', '--client-id', help='PTI Client ID', **environ_or_required('CLIENT_ID'))
 p.add_argument('-u', '--pti-api-base-url', help='PTI API base URL',
-               **environ_or_default('PTI_API_BASE_URL', 'https://pti.apidev.pticlient.com/v1'))
+               **environ_or_default('PTI_API_BASE_URL', 'https://api.dev.fiant.io/v1'))
 args = p.parse_args()
 set_logging_level(args.log_level)
 
