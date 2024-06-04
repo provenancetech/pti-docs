@@ -7,14 +7,14 @@
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1.0.169"
+    "version" : "1.0.172"
   },
   "servers" : [ {
-    "url" : "https://apidev.pticlient.com/v1"
+    "url" : "https://api.dev.fiant.io/v1"
   }, {
-    "url" : "https://apistaging.pticlient.com/v1"
+    "url" : "https://api.staging.fiant.io/v1"
   }, {
-    "url" : "https://api.pticlient.com/v1"
+    "url" : "https://api.fiant.io/v1"
   } ],
   "security" : [ {
     "signature" : [ ]
@@ -4635,6 +4635,7 @@
             }
           },
           "amount" : 200,
+          "date" : "2024-06-03T08:30:00.000Z",
           "transactionTotal" : {
             "subtotal" : {
               "amount" : 200,
@@ -4649,6 +4650,7 @@
               "currency" : "USD"
             }
           },
+          "usdValue" : 200,
           "type" : "DEPOSIT"
         },
         "allOf" : [ {
@@ -4694,6 +4696,8 @@
             "type" : "PERSON"
           },
           "amount" : 200,
+          "date" : "2024-06-03T08:30:00.000Z",
+          "usdValue" : 200,
           "type" : "TRANSFER"
         },
         "allOf" : [ {
@@ -4745,6 +4749,7 @@
             "type" : "PERSON"
           },
           "amount" : 200,
+          "date" : "2024-06-03T08:30:00.000Z",
           "transactionTotal" : {
             "subtotal" : {
               "amount" : 200,

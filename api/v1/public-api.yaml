@@ -1,15 +1,15 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1.0.169'
+  version: '1.0.172'
   description: Provenance technologies institutional API specification
   license:
     name: Private
     url: 'https://provenancetech.io'
 servers:
-  - url: 'https://apidev.pticlient.com/v1'
-  - url: 'https://apistaging.pticlient.com/v1'
-  - url: 'https://api.pticlient.com/v1'
+  - url: 'https://api.dev.fiant.io/v1'
+  - url: 'https://api.staging.fiant.io/v1'
+  - url: 'https://api.fiant.io/v1'
 security:
   - signature: [ ]
   - userToken: [ ]
@@ -2557,6 +2557,7 @@ components:
             type: WALLET
             walletId: MyUSDWallet
         amount: 200
+        date: '2024-06-03T08:30:00.000Z'
         transactionTotal: {
           subtotal: {
             amount: 200,
@@ -2571,6 +2572,7 @@ components:
             currency: USD
           }
         }
+        usdValue: 200
         type: DEPOSIT
     executeTransferTransaction:
       type: object
@@ -2602,6 +2604,8 @@ components:
           id: 99dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
         amount: 200
+        date: '2024-06-03T08:30:00.000Z'
+        usdValue: 200
         type: TRANSFER
       properties:
         sourceTransferMethod:
@@ -2650,6 +2654,7 @@ components:
           id: 99dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
         amount: 200
+        date: '2024-06-03T08:30:00.000Z'
         transactionTotal: {
           subtotal: {
             amount: 200,
