@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1.0.172'
+  version: '1.0.174'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -2028,6 +2028,12 @@ paths:
 
         | `CANCELLED`  | The transaction was accepted but cancelled prior to
         being settled |
+        
+        | `AWAITING_PAYMENT` | A deposit transaction is being processed and is in
+        a state where it is waiting for the user to complete the payment by funding
+        the target address provided or making a deposit using the specified payment
+        method.
+        |
 
         | `REJECTED` | The transaction was declined by the processor |
 
@@ -3878,6 +3884,7 @@ components:
         - ERROR
         - MANUAL_REVIEW
         - REFUSED
+        - AWAITING_PAYMENT
         - AUTHORIZED
         - ACCEPTED
         - BAD_REQUEST

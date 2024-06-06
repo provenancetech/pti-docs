@@ -7,7 +7,7 @@
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1.0.172"
+    "version" : "1.0.174"
   },
   "servers" : [ {
     "url" : "https://api.dev.fiant.io/v1"
@@ -3994,7 +3994,7 @@
       "post" : {
         "tags" : [ "Execute Transaction" ],
         "summary" : "Update status on existing transaction",
-        "description" : "This endpoint allows adding feedback information to an existing transaction. Here are the possible feedback values with their meaning:\n\n| Feedback | Meaning |\n|----------|---------|\n| `ACCEPTED` | The transaction was accepted by the processor and is deemed to be in a pending state. This feedback is not a final state and should be followed by antoher feedback such as `SETTLED` or `CANCELLED` |\n| `SETTLED`  | The transaction was accepted and fully finalized by the processor. The transfer of value has occured. |\n| `CANCELLED`  | The transaction was accepted but cancelled prior to being settled |\n| `REJECTED` | The transaction was declined by the processor |\n| `REFUNDED` | An intentional, settled transaction was refunded |\n| `CHARGED_BACK` | A settled transaction was disputed and refunded |\n| `ERROR` | The processor returned an error, the transaction is assumed to be non existent from the processor standpoint |\n",
+        "description" : "This endpoint allows adding feedback information to an existing transaction. Here are the possible feedback values with their meaning:\n\n| Feedback | Meaning |\n|----------|---------|\n| `ACCEPTED` | The transaction was accepted by the processor and is deemed to be in a pending state. This feedback is not a final state and should be followed by antoher feedback such as `SETTLED` or `CANCELLED` |\n| `SETTLED`  | The transaction was accepted and fully finalized by the processor. The transfer of value has occured. |\n| `CANCELLED`  | The transaction was accepted but cancelled prior to being settled |\n| `AWAITING_PAYMENT` | A deposit transaction is being processed and is in a state where it is waiting for the user to complete the payment by funding the target address provided or making a deposit using the specified payment method. |\n| `REJECTED` | The transaction was declined by the processor |\n| `REFUNDED` | An intentional, settled transaction was refunded |\n| `CHARGED_BACK` | A settled transaction was disputed and refunded |\n| `ERROR` | The processor returned an error, the transaction is assumed to be non existent from the processor standpoint |\n",
         "operationId" : "provideFeedback",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -6165,7 +6165,7 @@
       "transactionStatus" : {
         "type" : "string",
         "additionalProperties" : false,
-        "enum" : [ "PENDING", "ERROR", "MANUAL_REVIEW", "REFUSED", "AUTHORIZED", "ACCEPTED", "BAD_REQUEST", "SETTLED", "CAPTURED", "CHARGED_BACK", "CHARGED_BACK_REVERSED", "CANCELED", "REFUNDED" ]
+        "enum" : [ "PENDING", "ERROR", "MANUAL_REVIEW", "REFUSED", "AWAITING_PAYMENT", "AUTHORIZED", "ACCEPTED", "BAD_REQUEST", "SETTLED", "CAPTURED", "CHARGED_BACK", "CHARGED_BACK_REVERSED", "CANCELED", "REFUNDED" ]
       },
       "actionStatus" : {
         "type" : "object",
