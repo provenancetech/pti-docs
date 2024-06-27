@@ -59,21 +59,20 @@ def sign_payload(client_id, key, payload, compact=True):
 def get_signature(client_id, private_key, url, method, data, date):
     payload = method + "\n"
     if method in ["POST", "PUT", "PATCH"]:
-        payload = payload + get_content_sha256(data.encode('UTF-8')) + "\n"
-        payload = payload + "content-type:application/json" + "\n"
+        payload += get_content_sha256(data.encode('UTF-8')) + "\n"
+        payload += "content-type:application/json" + "\n"
     else:
         payload += "\n\n"
 
-    payload = payload + 'date:' + date + '\n'
-    payload = payload + f'x-pti-client-id:{client_id}' + '\n'
-    payload = payload + urllib.parse.urlparse(url).path
+    payload += 'date:' + date + '\n'
+    payload += f'x-pti-client-id:{client_id}' + '\n'
+    payload += urllib.parse.urlparse(url).path
     signature = sign_payload(client_id, private_key, payload.encode('UTF-8'))
 
     return signature
 
 
-def make_signed_request(client_id, request_id, key, url, method: str, data=None):
-    date = get_http_gmt()
+def make_signed_request(client_id, request_id, key, url, date, method: str, data=None):
     signature = get_signature(client_id, key, url, method, data, date)
     headers = {"Date": date, "x-pti-signature": signature, "x-pti-client-id": client_id, "x-pti-request-id": request_id}
     if method in ["POST", "PATCH", "PUT"]:

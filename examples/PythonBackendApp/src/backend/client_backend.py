@@ -3,15 +3,17 @@ import logging
 import json
 import uuid
 
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_socketio import SocketIO
 
-from pti_tools import make_signed_request, environ_or_default, environ_or_required, set_logging_level, JWKType, decrypt_verify_and_get_payload
+from pti_tools import (get_http_gmt, get_signature, make_signed_request, environ_or_default, environ_or_required, \
+                       set_logging_level, JWKType, decrypt_verify_and_get_payload)
 
 p = argparse.ArgumentParser()
 p.add_argument('-l', '--log-level', help='Output debug information to stderr',
                **environ_or_default('LOG_LEVEL', 'DEBUG'))
-p.add_argument('-pk', '--public-key', help='Path to PTI\'s public key', type=JWKType(), **environ_or_required('PUBLIC_KEY_PATH'))
+p.add_argument('-pk', '--public-key', help='Path to PTI\'s public key', type=JWKType(),
+               **environ_or_required('PUBLIC_KEY_PATH'))
 p.add_argument('-sk', '--private-key', help='Path to the private/secret key', type=JWKType(),
                **environ_or_required('PRIVATE_KEY_PATH'))
 p.add_argument('-c', '--client-id', help='PTI Client ID', **environ_or_required('CLIENT_ID'))
@@ -23,16 +25,35 @@ set_logging_level(args.log_level)
 app = Flask('example_backend', static_url_path='')
 socketio = SocketIO(app, cors_allowed_origins='*')
 
+
+@app.route('/generateSignature', methods=['POST'])
+def generate_signature():
+    date = get_http_gmt()
+    payload = request.get_json()
+    method = payload['method']
+    url = payload['url']
+    data = json.dumps(payload['data'])
+    signature = get_signature(args.client_id, args.private_key, url, method, data, date)
+    response = {
+        "date": date,
+        "signature": signature
+    }
+    return jsonify(response)
+
+
 @app.route('/generateToken', methods=['POST'])
 def generate_token():
+    date = get_http_gmt()
     payload = request.get_json()
     json_data = json.dumps(payload['x-pti-token-payload'])
-    response = make_signed_request(args.client_id, str(uuid.uuid4()), args.private_key, f'{args.pti_api_base_url}/auth/jwt',
-                                   method="POST", data=json_data)
+    response = make_signed_request(args.client_id, str(uuid.uuid4()), args.private_key,
+                                   f'{args.pti_api_base_url}/auth/jwt',
+                                   date, method="POST", data=json_data)
     if response.status_code != 200:
         return '', response.status_code
 
     return response.json()
+
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -49,8 +70,10 @@ def webhook():
     socketio.emit(json_payload['requestId'], json_payload)
     return '', 204
 
+
 def run_server():
     socketio.run(app, host='::', port=5100, allow_unsafe_werkzeug=True)
+
 
 if __name__ == "__main__":
     run_server()
