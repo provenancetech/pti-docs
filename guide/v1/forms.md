@@ -86,6 +86,14 @@ simply be hidden. Contact us if you need to use custom scenarios, and we will wo
 
 Synchronous messages via `window.postMessage are dispatched upon completion of each supported flow within our PTI Forms service.
 
+These messages are js objects containing a message's event name, followed by the ID of the freshly created entity (in this case, the credit card payment information ID).
+```json
+{
+    "name": "AddCreditCardCompleted",
+    "createdId": "7bfd8ea0-5aa4-472c-a35c-2a6d34c1e8c3"
+}
+```
+
 ### Message names
 - Payment: `UserTransactionCompleted`
 - Assessment: `UserAssessmentCompleted`
@@ -100,9 +108,10 @@ Implementation Example:
 ```typescript
 window.addEventListener("message", handleMessage);
 
-const handleMessage = (event: MessageEvent) => {
-    if (event.data === "UserAssessmentCompleted") {
+const handleMessage = (message: MessageEvent) => {
+    if (message.data.name === "AddCreditCardCompleted") {
         setTimeout(() => onMessageReceived(), 3000);
+        console.log("ID of the created credit card payment information", message.data.createdId);
     }
 };
 
