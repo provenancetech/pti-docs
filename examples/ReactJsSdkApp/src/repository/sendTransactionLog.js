@@ -99,6 +99,8 @@ const generateTransactionLogPayload = (transactionType, paymentInformationType, 
         digitalItem: {
           digitalItemType: "NFT",
           itemReference: "itemReference",
+          itemTitle: "ShaggyDog",
+          itemDescription: "Shaggy Dog Collection is an NFT for Dog lovers."
         },
       };
       break;
@@ -111,8 +113,10 @@ const generateTransactionLogPayload = (transactionType, paymentInformationType, 
         type: "SELL",
         usdValue: amount,
         digitalItem: {
-         digitalItemType: "NFT",
-         itemReference: "itemReference",
+          digitalItemType: "NFT",
+          itemReference: "itemReference",
+          itemTitle: "ShaggyDog",
+          itemDescription: "Shaggy Dog Collection is an NFT for Dog lovers."
         },
       };
       break;
