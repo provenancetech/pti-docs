@@ -71,6 +71,7 @@ const SimpleDialog = () => {
         parentElement: document.getElementById(event.id),
         requestId,
         userId,
+        usdValue: amount,
       };
 
       if (scenarioId) {
