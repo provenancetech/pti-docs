@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1.0.174'
+  version: '1.0.179'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -9,7 +9,7 @@ info:
 servers:
   - url: 'https://api.dev.fiant.io/v1'
   - url: 'https://api.staging.fiant.io/v1'
-  - url: 'https://api.fiant.io/v1'
+  - url: 'https://api.platform.fiant.io/v1'
 security:
   - signature: [ ]
   - userToken: [ ]
@@ -2112,7 +2112,6 @@ components:
     bankAccountPaymentInformation:
       type: object
       required:
-        - bankAccountNumber
         - type
       allOf:
         - $ref: '#/components/schemas/externalPaymentInformation'
@@ -2122,29 +2121,30 @@ components:
         bankAccountNumber:
           type: string
           maxLength: 64
+          description: 'Valid bank account number, Required for ACH and WIRE'
           pattern: '^[ -~]*$'
         bankSwiftCode:
           type: string
           maxLength: 11
-          description: Valid bank swift code
+          description: Valid bank swift code, Required for International WIRE
           pattern: '[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?'
         bankRoutingNumber:
           type: string
           minLength: 7
           maxLength: 12
-          description: 'Valid bank routing number, between 7 and 12 digits'
+          description: 'Valid bank routing number, between 7 and 12 digits, Required for ACH and WIRE'
           pattern: '^[0-9]{7,12}$'
         bankRoutingCheckDigit:
           type: string
           minLength: 1
           maxLength: 1
-          description: 'Valid bank routing check digit, 1 digit'
+          description: 'Valid bank routing check digit, 1 digit, Required for ACH and WIRE'
           pattern: '^[0-9]{1}$'
-        bankAccountTransactionType:
+        accountBankName:
           type: string
-          enum:
-            - WIRE
-            - ACH
+          maxLength: 1024
+          description: 'Name of the bank of the account, Required for OUTGOING WIRE transactions, persisted as part of the payment information'
+          pattern: '^[ -~]*$'
     bii:
       type: object
       properties:
@@ -2624,7 +2624,6 @@ components:
       type: object
       required:
         - sourceMethod
-        - digitalItem
       description: >-
         Buy digital item in the platform. SourceMethod: wallet, token, fiat.
         DigitalItem: NFT or OTHER.
@@ -2633,6 +2632,12 @@ components:
       properties:
         digitalItem:
           $ref: '#/components/schemas/digitalItem'
+        digitalItems:
+          type: array
+          description: 'One of digitalItem or digitalItems is required.'
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/digitalItem'
         sourceMethod:
           $ref: '#/components/schemas/oneOfPaymentMethod'
         seller:
@@ -2651,6 +2656,7 @@ components:
           itemReference: 9c1661bc-5f8c-4d9c-b547-9d1f47459338
           itemDescription: Rare Elite Shaquille Leonard Level 2
           itemTitle: 'LB, Mint Condition, #4/7 From Core 22 Set'
+          itemUSDValue: 6.99
         sourceMethod:
           paymentMethodType: WALLET
           paymentInformation:
@@ -2687,7 +2693,6 @@ components:
       type: object
       required:
         - destinationMethod
-        - digitalItem
       description: >-
         Sell digital item in the platform. DestinationMethod: wallet, fiat,
         token. DigitalItem: NFT, OTHER.
@@ -2696,6 +2701,12 @@ components:
       properties:
         digitalItem:
           $ref: '#/components/schemas/digitalItem'
+        digitalItems:
+          type: array
+          description: 'One of digitalItem or digitalItems is required'
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/digitalItem'
         destinationMethod:
           $ref: '#/components/schemas/oneOfPaymentMethod'
         buyer:
@@ -2870,6 +2881,26 @@ components:
           maxLength: 3
         paymentInformation:
           $ref: '#/components/schemas/oneOfFiatPaymentInformation'
+    wirePaymentMethod:
+      type: object
+      additionalProperties: true
+      required:
+        - paymentMethodType
+      properties:
+        paymentMethodType:
+          type: string
+          maxLength: 50
+          pattern: '^[A-Z]+(?:_[A-Z]+)*$'
+        currency:
+          type: string
+          pattern: '^([A-Za-z]{1,10})$'
+          maxLength: 3
+        transactionDescription:
+          type: string
+          pattern: '^([A-Za-z]{1,10})$'
+          maxLength: 100
+        paymentInformation:
+          $ref: '#/components/schemas/oneOfFiatPaymentInformation'
     walletPaymentMethod:
       type: object
       additionalProperties: false
@@ -3022,20 +3053,28 @@ components:
       oneOf:
         - $ref: '#/components/schemas/tokenPaymentMethod'
         - $ref: '#/components/schemas/fiatPaymentMethod'
+        - $ref: '#/components/schemas/wirePaymentMethod'
       discriminator:
         propertyName: paymentMethodType
         mapping:
           FIAT: '#/components/schemas/fiatPaymentMethod'
+          ACH: '#/components/schemas/fiatPaymentMethod'
+          CREDIT_CARD: '#/components/schemas/fiatPaymentMethod'
+          WIRE: '#/components/schemas/wirePaymentMethod'
           TOKEN: '#/components/schemas/tokenPaymentMethod'
     oneOfPaymentMethod:
       oneOf:
         - $ref: '#/components/schemas/tokenPaymentMethod'
         - $ref: '#/components/schemas/fiatPaymentMethod'
         - $ref: '#/components/schemas/walletPaymentMethod'
+        - $ref: '#/components/schemas/wirePaymentMethod'
       discriminator:
         propertyName: paymentMethodType
         mapping:
           FIAT: '#/components/schemas/fiatPaymentMethod'
+          ACH: '#/components/schemas/fiatPaymentMethod'
+          CREDIT_CARD: '#/components/schemas/fiatPaymentMethod'
+          WIRE: '#/components/schemas/wirePaymentMethod'
           WALLET: '#/components/schemas/walletPaymentMethod'
           TOKEN: '#/components/schemas/tokenPaymentMethod'
     oneOfPiiSubTypes:
@@ -3587,6 +3626,7 @@ components:
       required:
         - walletId
         - currency
+        - type
       properties:
         walletId:
           type: string
@@ -3608,10 +3648,15 @@ components:
           nullable: true
       example:
         walletId: MyUSDWallet
+        type: WALLET
         currency: USD
         reference: '0x16Df97AB64d9eb5FF393F9f52F9290566857B07C'
     wallet:
       type: object
+      required:
+        - type
+        - walletId
+        - currency
       properties:
         walletId:
           type: string
@@ -3831,6 +3876,10 @@ components:
           description: 'Description about the item, for example: Shaggy Dog Collection is an NFT for Dog lovers. It is a manually generated NFT created on the Ethereum network.'
           maxLength: 1024
           pattern: '^[ -~]*$'
+        itemUSDValue:
+          type: number
+          format: double
+          description: 'Mandatory when more than one item is provided in the payload. The cost of the item being paid by the user, or the estimated value of the item in question.'
         digitalItemType:
           $ref: '#/components/schemas/digitalItemType'
       example:
@@ -3838,6 +3887,7 @@ components:
         itemTitle: 'ShaggyDog#2'
         itemDescription: 'Shaggy Dog Collection is an NFT for Dog lovers. It is a manually generated NFT created on the Ethereum network.'
         itemType: NFT
+        itemUSDValue: 6.99
     providerName:
       type: string
       maxLength: 64
