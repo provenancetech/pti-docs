@@ -5,8 +5,8 @@
     "ReactJsSdkApp"
   ],
   "resolutions": {
-    "glob-parent": "^6.0.0",
-    "nth-check": "^2.0.1",
-    "postcss": "^8.4.31"
+    "glob-parent": "^6.0.2",
+    "nth-check": "^2.1.1",
+    "postcss": "^8.4.44"
   }
 }
