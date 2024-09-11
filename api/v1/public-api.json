@@ -7,7 +7,7 @@
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1.0.179"
+    "version" : "1.0.180"
   },
   "servers" : [ {
     "url" : "https://api.dev.fiant.io/v1"
@@ -1435,79 +1435,7 @@
         }
       }
     },
-    "/transactions/swap/quotes/{requestId}" : {
-      "get" : {
-        "tags" : [ "Estimate Transaction Cost" ],
-        "summary" : "Get a transaction quote status",
-        "operationId" : "getTransactionQuote",
-        "parameters" : [ {
-          "name" : "x-pti-client-id",
-          "in" : "header",
-          "description" : "Client ID provided to you during onboarding.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "requestId",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/transactionQuoteStatusObject"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "unauthorized",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "User of Transaction Log not found",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "default" : {
-            "description" : "unexpected error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/transactions/swap/quotes" : {
+    "/transactions/swap/price-estimation" : {
       "post" : {
         "tags" : [ "Estimate Transaction Cost" ],
         "summary" : "Estimate a transaction cost",
@@ -1522,63 +1450,12 @@
           "schema" : {
             "$ref" : "#/components/schemas/uuidLikeStr"
           }
-        }, {
-          "name" : "x-pti-request-id",
-          "in" : "header",
-          "description" : "Unique identifier of the request. This ID must be provided and stored by the client of this API at the creation of a transaction. This ID is attached to all PTI internal operations as well as the webhook calls. This ID is required to post feedback about a transaction and get support from PTI for a problem on a transaction. Creating two transactions having the same requestId is not allowed.\n",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "x-pti-session-id",
-          "in" : "header",
-          "description" : "Session ID associated to a UI session for a specific user. Should match the value passed to the PTI SDK at initialization.",
-          "required" : false,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "x-pti-scenario-id",
-          "in" : "header",
-          "description" : "Represents a user action under which transaction amounts will accumulated and will control the User assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "x-pti-disable-webhook",
-          "in" : "header",
-          "description" : "Set to true to disable webhook calls for this request.",
-          "required" : false,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "type" : "string",
-            "enum" : [ "true", "false" ]
-          }
-        }, {
-          "name" : "x-pti-provider-name",
-          "in" : "header",
-          "description" : "Used to specify which provider is responsible for handling the given operation. Ignored if the client configuration is not set for passive mode.\n",
-          "required" : false,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/providerName"
-          }
         } ],
         "requestBody" : {
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/oneOfTransactionSubTypes"
+                "$ref" : "#/components/schemas/swapTransaction"
               }
             }
           },
@@ -4131,6 +4008,11 @@
             "type" : "string",
             "description" : "Valid bank account number, Required for ACH and WIRE"
           },
+          "bankAccountType" : {
+            "type" : "string",
+            "description" : "Type of bank account, Required for ACH and WIRE",
+            "enum" : [ "CHECKING", "SAVINGS" ]
+          },
           "bankSwiftCode" : {
             "maxLength" : 11,
             "pattern" : "[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?",
@@ -4438,11 +4320,12 @@
       },
       "errorType" : {
         "type" : "string",
-        "enum" : [ "INVALID_REQUEST", "MISSING_INFORMATION", "INVALID_USER_ASSESSMENT", "ALREADY_IN_PROGRESS", "NO_ERROR" ]
+        "enum" : [ "INVALID_REQUEST", "MIN_INFO_MISSING", "MIN_ASSESSMENT_MISSING", "ALREADY_IN_PROGRESS", "NO_ERROR", "MISSING_WALLET", "WALLETS_DIFFERENT_CURRENCY", "WALLETS_SAME_CURRENCY", "SOURCE_WALLET_DESTINATION_TOKEN_ONLY", "ITEM_USD_VALUE_REQUIRED_WHEN_MULTIPLE_ITEMS", "INVALID_USER_TAG", "MISSING_TRANSACTION_GROUP_ID", "DIFFERENT_BUY_SELL_AMOUNT", "DIFFERENT_BUY_SELL_CURRENCIES", "NO_INTER_CLIENTS_TRANSFERS", "CLIENT_CONFIGURATION_ERROR", "UNSUPPORTED_OPERATION", "COUNTRY_NOT_SUPPORTED", "NOT_ENOUGH_FUNDS", "INVALID_ASSET_OWNERSHIP", "FEES_WALLET_NOT_FOUND", "REVERT_ONLY_CHARGE_BACK", "MISSING_CORRESPONDING_BUY_TRANSACTION", "ALREADY_EXISTING_CORRESPONDING_TRANSACTION_PAIR", "BUY_TRANSACTION_NOT_SETTLED", "FIAT_ONLY", "SOURCE_DESTINATION_WALLET", "INVALID_SOURCE_CURRENCY", "INVALID_DESTINATION_CURRENCY", "USD_WALLET_ONLY", "BANK_ONLY", "MISSING_EMAIL_ADDRESS", "MISSING_BANK_ACCOUNT_INFORMATION", "MISSING_BANK_ACCOUNT_NUMBER_INFORMATION", "MISSING_BANK_ACCOUNT_TYPE", "MANDATORY_IP_ADDRESS", "MANDATORY_EMAIL_ADDRESS", "MISSING_CC_INFO", "CC_ONLY", "UNABLE_TO_PROVIDE_ESTIMATES", "FUNDING_FROM_CRYPTO_ONLY", "WITHDRAWAL_FROM_WALLET_TO_CRYPTO", "SOURCE_WALLET_CURRENCY_DIFFERENT_THAN_DESTINATION_TOKEN_CURRENCY" ]
       },
       "oneOfAssessmentValidationError" : {
         "example" : {
-          "type" : "MISSING_INFORMATION",
+          "type" : "MIN_INFO_MISSING",
+          "code" : 1001,
           "fields" : [ "FULL_NAME", "EMAIL_ADDRESS" ]
         },
         "oneOf" : [ {
@@ -4462,7 +4345,8 @@
         },
         "additionalProperties" : false,
         "example" : {
-          "type" : "NO_ERROR"
+          "type" : "NO_ERROR",
+          "code" : 0
         },
         "allOf" : [ {
           "$ref" : "#/components/schemas/managedError"
@@ -4478,7 +4362,8 @@
         },
         "additionalProperties" : false,
         "example" : {
-          "type" : "INVALID_USER_ASSESSMENT"
+          "type" : "MIN_ASSESSMENT_MISSING",
+          "code" : 1002
         },
         "allOf" : [ {
           "$ref" : "#/components/schemas/managedError"
@@ -4500,6 +4385,7 @@
         "additionalProperties" : false,
         "example" : {
           "type" : "INVALID_REQUEST",
+          "code" : 1000,
           "errors" : [ "Invalid field: 'amount' must be greater than or equal to 0" ]
         },
         "allOf" : [ {
@@ -4521,7 +4407,8 @@
         },
         "additionalProperties" : false,
         "example" : {
-          "type" : "MISSING_INFORMATION",
+          "type" : "MIN_INFO_MISSING",
+          "code" : 1001,
           "fields" : [ "FULL_NAME", "EMAIL_ADDRESS" ]
         },
         "allOf" : [ {
@@ -4529,11 +4416,18 @@
         } ]
       },
       "managedError" : {
-        "required" : [ "type" ],
+        "required" : [ "code", "type" ],
         "type" : "object",
         "properties" : {
           "type" : {
             "$ref" : "#/components/schemas/errorType"
+          },
+          "code" : {
+            "maximum" : 9999,
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "# Error codes descriptions\nNO_ERROR(0)\nINVALID_REQUEST(1000)\nMIN_INFO_MISSING(1001)\nMIN_ASSESSMENT_MISSING(1002)\nALREADY_IN_PROGRESS(1003)\nMISSING_WALLET(1004)\nWALLETS_DIFFERENT_CURRENCY(1005)\nWALLETS_SAME_CURRENCY(1006)\nSOURCE_WALLET_DESTINATION_TOKEN_ONLY(1007)\nITEM_USD_VALUE_REQUIRED_WHEN_MULTIPLE_ITEMS(1008)\nINVALID_USER_TAG(1009)\nMISSING_TRANSACTION_GROUP_ID(1010)\nDIFFERENT_BUY_SELL_AMOUNT(1011)\nDIFFERENT_BUY_SELL_CURRENCIES(1012)\nNO_INTER_CLIENTS_TRANSFERS(2000)\nCLIENT_CONFIGURATION_ERROR(2001)\nUNSUPPORTED_OPERATION(2002)\nCOUNTRY_NOT_SUPPORTED(2003)\nNOT_ENOUGH_FUNDS(3000)\nINVALID_ASSET_OWNERSHIP(3001)\nFEES_WALLET_NOT_FOUND(3002)\nREVERT_ONLY_CHARGE_BACK(3003)\nMISSING_CORRESPONDING_BUY_TRANSACTION(3004)\nALREADY_EXISTING_CORRESPONDING_TRANSACTION_PAIR(3005)\nBUY_TRANSACTION_NOT_SETTLED(3006)\nFIAT_ONLY(3007)\nSOURCE_DESTINATION_WALLET(3008)\nINVALID_SOURCE_CURRENCY(3009)\nINVALID_DESTINATION_CURRENCY(3010)\nUSD_WALLET_ONLY(3011)\nBANK_ONLY(4000)\nMISSING_EMAIL_ADDRESS(4001)\nMISSING_BANK_ACCOUNT_INFORMATION(4002)\nMISSING_BANK_ACCOUNT_NUMBER_INFORMATION(4003)\nMISSING_BANK_ACCOUNT_TYPE(4004)\nMANDATORY_IP_ADDRESS(5000)\nMANDATORY_EMAIL_ADDRESS(5001)\nMISSING_CC_INFO(5002)\nCC_ONLY(5003)\nUNABLE_TO_PROVIDE_ESTIMATES(6000)\nFUNDING_FROM_CRYPTO_ONLY(6001)\nWITHDRAWAL_FROM_WALLET_TO_CRYPTO(6002)\nSOURCE_WALLET_CURRENCY_DIFFERENT_THAN_DESTINATION_TOKEN_CURRENCY(6003)\n",
+            "format" : "int32"
           }
         },
         "additionalProperties" : true
@@ -4546,6 +4440,13 @@
             "maxLength" : 100,
             "pattern" : "^[ -~]*$",
             "type" : "string"
+          },
+          "code" : {
+            "maximum" : 9999,
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "error code",
+            "format" : "int32"
           }
         },
         "additionalProperties" : true
@@ -4628,7 +4529,7 @@
                 "postalCode" : "AAAA"
               }
             },
-            "paymentMethodType" : "FIAT"
+            "paymentMethodType" : "CREDIT_CARD"
           },
           "destinationMethod" : {
             "paymentMethodType" : "WALLET",
@@ -4672,6 +4573,10 @@
           },
           "destination" : {
             "$ref" : "#/components/schemas/oneOfUserSubTypes"
+          },
+          "destinationClientId" : {
+            "type" : "string",
+            "description" : "Only used for transfers between two different clients. Must be configured before using."
           }
         },
         "description" : "Transfer between two users. SourceMethod: wallet on the platform. DestinationMethod: wallet on the platform. Destination: destination user.",
@@ -4743,7 +4648,7 @@
             "type" : "PERSON"
           },
           "digitalItem" : {
-            "itemType" : "NFT",
+            "digitalItemType" : "NFT",
             "itemReference" : "9c1661bc-5f8c-4d9c-b547-9d1f47459338",
             "itemDescription" : "Rare Elite Shaquille Leonard Level 2",
             "itemTitle" : "LB, Mint Condition, #4/7 From Core 22 Set",
@@ -4826,7 +4731,7 @@
             "type" : "PERSON"
           },
           "digitalItem" : {
-            "itemType" : "NFT",
+            "digitalItemType" : "NFT",
             "itemReference" : "9c1661bc-5f8c-4d9c-b547-9d1f47459338",
             "itemDescription" : "Rare Elite Shaquille Leonard Level 2",
             "itemTitle" : "LB, Mint Condition, #4/7 From Core 22 Set"
@@ -5237,7 +5142,6 @@
         "discriminator" : {
           "propertyName" : "paymentMethodType",
           "mapping" : {
-            "FIAT" : "#/components/schemas/fiatPaymentMethod",
             "ACH" : "#/components/schemas/fiatPaymentMethod",
             "CREDIT_CARD" : "#/components/schemas/fiatPaymentMethod",
             "WIRE" : "#/components/schemas/wirePaymentMethod",
@@ -5256,7 +5160,6 @@
         "discriminator" : {
           "propertyName" : "paymentMethodType",
           "mapping" : {
-            "FIAT" : "#/components/schemas/fiatPaymentMethod",
             "ACH" : "#/components/schemas/fiatPaymentMethod",
             "CREDIT_CARD" : "#/components/schemas/fiatPaymentMethod",
             "WIRE" : "#/components/schemas/wirePaymentMethod",
@@ -5664,6 +5567,10 @@
           },
           "destination" : {
             "$ref" : "#/components/schemas/oneOfUserSubTypes"
+          },
+          "destinationClientId" : {
+            "type" : "string",
+            "description" : "Used only for transfers between two different clients. Must be configured before using."
           }
         },
         "allOf" : [ {
@@ -6197,7 +6104,7 @@
           "itemReference" : "0x16Df97AB64d9eb5FF393F9f52F9290566857B07C",
           "itemTitle" : "ShaggyDog#2",
           "itemDescription" : "Shaggy Dog Collection is an NFT for Dog lovers. It is a manually generated NFT created on the Ethereum network.",
-          "itemType" : "NFT",
+          "digitalItemType" : "NFT",
           "itemUSDValue" : 6.99
         }
       },

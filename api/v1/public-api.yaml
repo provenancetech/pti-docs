@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1.0.179'
+  version: '1.0.180'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -746,47 +746,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
-  '/transactions/swap/quotes/{requestId}':
-    parameters:
-      - $ref: '#/components/parameters/clientIdHeaderParam'
-      - name: requestId
-        schema:
-          $ref: '#/components/schemas/uuidLikeStr'
-        in: path
-        required: true
-    get:
-      operationId: getTransactionQuote
-      summary: Get a transaction quote status
-      tags:
-        - Estimate Transaction Cost
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/transactionQuoteStatusObject'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '404':
-          description: User of Transaction Log not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '429':
-          description: Too many requests
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-  /transactions/swap/quotes:
+  /transactions/swap/price-estimation:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
     post:
@@ -794,18 +754,12 @@ paths:
       tags:
         - Estimate Transaction Cost
       summary: Estimate a transaction cost
-      parameters:
-        - $ref: '#/components/parameters/requestIdHeaderParam'
-        - $ref: '#/components/parameters/sessionIdHeaderParam'
-        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
-        - $ref: '#/components/parameters/disableWebhookHeaderParam'
-        - $ref: '#/components/parameters/providerNameHeaderParam'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/oneOfTransactionSubTypes'
+              $ref: '#/components/schemas/swapTransaction'
       callbacks:
         transactionQuoteUpdate:
           '${yourWebhookAddress}':
@@ -2123,6 +2077,12 @@ components:
           maxLength: 64
           description: 'Valid bank account number, Required for ACH and WIRE'
           pattern: '^[ -~]*$'
+        bankAccountType:
+          type: string
+          enum:
+            - CHECKING
+            - SAVINGS
+          description: 'Type of bank account, Required for ACH and WIRE'         
         bankSwiftCode:
           type: string
           maxLength: 11
@@ -2369,17 +2329,57 @@ components:
       type: string
       enum:
         - INVALID_REQUEST
-        - MISSING_INFORMATION
-        - INVALID_USER_ASSESSMENT
+        - MIN_INFO_MISSING
+        - MIN_ASSESSMENT_MISSING
         - ALREADY_IN_PROGRESS
         - NO_ERROR
+        - MISSING_WALLET
+        - WALLETS_DIFFERENT_CURRENCY
+        - WALLETS_SAME_CURRENCY
+        - SOURCE_WALLET_DESTINATION_TOKEN_ONLY
+        - ITEM_USD_VALUE_REQUIRED_WHEN_MULTIPLE_ITEMS
+        - INVALID_USER_TAG
+        - MISSING_TRANSACTION_GROUP_ID
+        - DIFFERENT_BUY_SELL_AMOUNT
+        - DIFFERENT_BUY_SELL_CURRENCIES
+        - NO_INTER_CLIENTS_TRANSFERS
+        - CLIENT_CONFIGURATION_ERROR
+        - UNSUPPORTED_OPERATION
+        - COUNTRY_NOT_SUPPORTED
+        - NOT_ENOUGH_FUNDS
+        - INVALID_ASSET_OWNERSHIP
+        - FEES_WALLET_NOT_FOUND
+        - REVERT_ONLY_CHARGE_BACK
+        - MISSING_CORRESPONDING_BUY_TRANSACTION
+        - ALREADY_EXISTING_CORRESPONDING_TRANSACTION_PAIR
+        - BUY_TRANSACTION_NOT_SETTLED
+        - FIAT_ONLY
+        - SOURCE_DESTINATION_WALLET
+        - INVALID_SOURCE_CURRENCY
+        - INVALID_DESTINATION_CURRENCY
+        - USD_WALLET_ONLY
+        - BANK_ONLY
+        - MISSING_EMAIL_ADDRESS
+        - MISSING_BANK_ACCOUNT_INFORMATION
+        - MISSING_BANK_ACCOUNT_NUMBER_INFORMATION
+        - MISSING_BANK_ACCOUNT_TYPE
+        - MANDATORY_IP_ADDRESS
+        - MANDATORY_EMAIL_ADDRESS
+        - MISSING_CC_INFO
+        - CC_ONLY
+        - UNABLE_TO_PROVIDE_ESTIMATES
+        - FUNDING_FROM_CRYPTO_ONLY
+        - WITHDRAWAL_FROM_WALLET_TO_CRYPTO
+        - SOURCE_WALLET_CURRENCY_DIFFERENT_THAN_DESTINATION_TOKEN_CURRENCY
+        
     oneOfAssessmentValidationError:
       oneOf:
         - $ref: '#/components/schemas/missingInformationError'
         - $ref: '#/components/schemas/invalidUserAssessmentError'
         - $ref: '#/components/schemas/noAssessmentError'
       example:
-        type: MISSING_INFORMATION
+        type: MIN_INFO_MISSING
+        code: 1001
         fields:
           - FULL_NAME
           - EMAIL_ADDRESS
@@ -2393,6 +2393,7 @@ components:
       additionalProperties: false
       example:
         type: NO_ERROR
+        code: 0
     invalidUserAssessmentError:
       type: object
       allOf:
@@ -2404,7 +2405,8 @@ components:
           type: object
       additionalProperties: false
       example:
-        type: INVALID_USER_ASSESSMENT
+        type: MIN_ASSESSMENT_MISSING
+        code: 1002
     invalidRequestError:
       type: object
       allOf:
@@ -2421,6 +2423,7 @@ components:
       additionalProperties: false
       example:
         type: INVALID_REQUEST
+        code: 1000
         errors:
           - 'Invalid field: ''amount'' must be greater than or equal to 0'
     missingInformationError:
@@ -2440,7 +2443,8 @@ components:
             - FULL_NAME
             - EMAIL_ADDRESS
       example:
-        type: MISSING_INFORMATION
+        type: MIN_INFO_MISSING
+        code: 1001
         fields:
           - FULL_NAME
           - EMAIL_ADDRESS
@@ -2448,11 +2452,61 @@ components:
       type: object
       required:
         - type
+        - code
       additionalProperties: true
       properties:
         type:
           $ref: '#/components/schemas/errorType'
-
+        code:
+          type: integer
+          description: |
+            # Error codes descriptions
+            NO_ERROR(0)
+            INVALID_REQUEST(1000)
+            MIN_INFO_MISSING(1001)
+            MIN_ASSESSMENT_MISSING(1002)
+            ALREADY_IN_PROGRESS(1003)
+            MISSING_WALLET(1004)
+            WALLETS_DIFFERENT_CURRENCY(1005)
+            WALLETS_SAME_CURRENCY(1006)
+            SOURCE_WALLET_DESTINATION_TOKEN_ONLY(1007)
+            ITEM_USD_VALUE_REQUIRED_WHEN_MULTIPLE_ITEMS(1008)
+            INVALID_USER_TAG(1009)
+            MISSING_TRANSACTION_GROUP_ID(1010)
+            DIFFERENT_BUY_SELL_AMOUNT(1011)
+            DIFFERENT_BUY_SELL_CURRENCIES(1012)
+            NO_INTER_CLIENTS_TRANSFERS(2000)
+            CLIENT_CONFIGURATION_ERROR(2001)
+            UNSUPPORTED_OPERATION(2002)
+            COUNTRY_NOT_SUPPORTED(2003)
+            NOT_ENOUGH_FUNDS(3000)
+            INVALID_ASSET_OWNERSHIP(3001)
+            FEES_WALLET_NOT_FOUND(3002)
+            REVERT_ONLY_CHARGE_BACK(3003)
+            MISSING_CORRESPONDING_BUY_TRANSACTION(3004)
+            ALREADY_EXISTING_CORRESPONDING_TRANSACTION_PAIR(3005)
+            BUY_TRANSACTION_NOT_SETTLED(3006)
+            FIAT_ONLY(3007)
+            SOURCE_DESTINATION_WALLET(3008)
+            INVALID_SOURCE_CURRENCY(3009)
+            INVALID_DESTINATION_CURRENCY(3010)
+            USD_WALLET_ONLY(3011)
+            BANK_ONLY(4000)
+            MISSING_EMAIL_ADDRESS(4001)
+            MISSING_BANK_ACCOUNT_INFORMATION(4002)
+            MISSING_BANK_ACCOUNT_NUMBER_INFORMATION(4003)
+            MISSING_BANK_ACCOUNT_TYPE(4004)
+            MANDATORY_IP_ADDRESS(5000)
+            MANDATORY_EMAIL_ADDRESS(5001)
+            MISSING_CC_INFO(5002)
+            CC_ONLY(5003)
+            UNABLE_TO_PROVIDE_ESTIMATES(6000)
+            FUNDING_FROM_CRYPTO_ONLY(6001)
+            WITHDRAWAL_FROM_WALLET_TO_CRYPTO(6002)
+            SOURCE_WALLET_CURRENCY_DIFFERENT_THAN_DESTINATION_TOKEN_CURRENCY(6003)
+          minimum: 0
+          maximum: 9999
+          format: int32
 
     unmanagedError:
       type: object
@@ -2464,6 +2518,12 @@ components:
           type: string
           pattern: '^[ -~]*$'
           maxLength: 100
+        code:
+          type: integer
+          description: error code
+          minimum: 0
+          maximum: 9999
+          format: int32
 
 
     transactionUpdate:
@@ -2556,7 +2616,7 @@ components:
               stateCode: US-CA
               country: US
               postalCode: AAAA
-          paymentMethodType: FIAT
+          paymentMethodType: CREDIT_CARD
         destinationMethod:
           paymentMethodType: WALLET
           paymentInformation:
@@ -2620,6 +2680,9 @@ components:
           $ref: '#/components/schemas/walletPaymentMethod'
         destination:
           $ref: '#/components/schemas/oneOfUserSubTypes'
+        destinationClientId:
+          type: string
+          description: 'Only used for transfers between two different clients. Must be configured before using.'
     executeBuyTransaction:
       type: object
       required:
@@ -2652,7 +2715,7 @@ components:
           id: 36dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
         digitalItem:
-          itemType: NFT
+          digitalItemType: NFT
           itemReference: 9c1661bc-5f8c-4d9c-b547-9d1f47459338
           itemDescription: Rare Elite Shaquille Leonard Level 2
           itemTitle: 'LB, Mint Condition, #4/7 From Core 22 Set'
@@ -2721,7 +2784,7 @@ components:
           id: 36dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
         digitalItem:
-          itemType: NFT
+          digitalItemType: NFT
           itemReference: 9c1661bc-5f8c-4d9c-b547-9d1f47459338
           itemDescription: Rare Elite Shaquille Leonard Level 2
           itemTitle: 'LB, Mint Condition, #4/7 From Core 22 Set'
@@ -3057,7 +3120,6 @@ components:
       discriminator:
         propertyName: paymentMethodType
         mapping:
-          FIAT: '#/components/schemas/fiatPaymentMethod'
           ACH: '#/components/schemas/fiatPaymentMethod'
           CREDIT_CARD: '#/components/schemas/fiatPaymentMethod'
           WIRE: '#/components/schemas/wirePaymentMethod'
@@ -3071,7 +3133,6 @@ components:
       discriminator:
         propertyName: paymentMethodType
         mapping:
-          FIAT: '#/components/schemas/fiatPaymentMethod'
           ACH: '#/components/schemas/fiatPaymentMethod'
           CREDIT_CARD: '#/components/schemas/fiatPaymentMethod'
           WIRE: '#/components/schemas/wirePaymentMethod'
@@ -3388,6 +3449,9 @@ components:
           $ref: '#/components/schemas/oneOfPaymentMethod'
         destination:
           $ref: '#/components/schemas/oneOfUserSubTypes'
+        destinationClientId:
+          type: string
+          description: Used only for transfers between two different clients. Must be configured before using.
     sellTransaction:
       type: object
       allOf:
@@ -3886,7 +3950,7 @@ components:
         itemReference: '0x16Df97AB64d9eb5FF393F9f52F9290566857B07C'
         itemTitle: 'ShaggyDog#2'
         itemDescription: 'Shaggy Dog Collection is an NFT for Dog lovers. It is a manually generated NFT created on the Ethereum network.'
-        itemType: NFT
+        digitalItemType: NFT
         itemUSDValue: 6.99
     providerName:
       type: string
