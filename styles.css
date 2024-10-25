@@ -1,0 +1,92 @@
+:root {
+    --button-color: 0, 235, 190;
+    --button-text-color: 30, 30, 30;
+
+    /* Dark Theme colors */
+    --bg-color: 38, 42, 42;
+    --text-color: 255, 255, 255;
+    --alt-text-color: lightgray;
+
+    /* Light Theme colors */
+    --bg-color-light: 230, 242, 240;
+    --text-color-light: 30, 30, 30;
+    --alt-text-color-light: 59, 65, 81;
+}
+
+*,
+*:before,
+*:after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Jost, sans-serif;
+}
+
+html, body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: background-color 0.3s, color 0.3s;
+    /* Dark background by default */
+    background-color: rgb(var(--bg-color));
+    color: rgb(var(--text-color));
+}
+
+h1 {
+    font-size: 2.25rem;
+}
+
+a {
+    text-decoration: none;
+}
+
+#title {
+    align-items: center;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+#title img {
+    width: 2.25rem;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+.button {
+    background-color: rgb(var(--button-color));
+    color: rgb(var(--button-text-color));
+    display: block;
+    width: 300px;
+    padding: 15px 0;
+    margin: 10px 0;
+    font-size: 1.2rem;
+    text-align: center;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.button:hover {
+    transform: scale(1.05);
+}
+
+.button:active {
+    transform: scale(1);
+}
+
+@media (prefers-color-scheme: light) {
+    html, body {
+        background-color: rgb(var(--bg-color-light));
+        color: rgb(var(--text-color-light));
+    }
+}
