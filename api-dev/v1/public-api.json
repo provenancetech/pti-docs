@@ -98,6 +98,75 @@
         }
       }
     },
+    "/assets" : {
+      "get" : {
+        "tags" : [ "Wallets" ],
+        "summary" : "Get the list of the supported assets by the platform",
+        "operationId" : "getListOfAssets",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "maxItems" : 100,
+                  "type" : "array",
+                  "example" : [ {
+                    "currency" : "BTC",
+                    "networks" : [ "BITCOIN" ],
+                    "type" : "CRYPTO"
+                  }, {
+                    "currency" : "USDC",
+                    "networks" : [ "ETHEREUM", "POLYGON", "SOLANA" ],
+                    "type" : "CRYPTO"
+                  }, {
+                    "currency" : "USD",
+                    "type" : "FIAT"
+                  } ],
+                  "items" : {
+                    "$ref" : "#/components/schemas/currencyAsset"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/users" : {
       "get" : {
         "tags" : [ "Collect User Data" ],
@@ -6182,15 +6251,10 @@
             "type" : "string"
           },
           "currency" : {
-            "maxLength" : 10,
-            "pattern" : "^([A-Za-z]{1,10})$",
-            "type" : "string"
+            "$ref" : "#/components/schemas/currencyEnum"
           },
           "network" : {
-            "maxLength" : 255,
-            "pattern" : "^[A-Za-z]+(?:_[A-Za-z]+)*$",
-            "type" : "string",
-            "description" : "Network name, example ethereum, bitcoin, solana. Needs to be provided for crypto wallets"
+            "$ref" : "#/components/schemas/blockChainEnum"
           },
           "type" : {
             "type" : "string",
@@ -6220,9 +6284,10 @@
             "type" : "string"
           },
           "currency" : {
-            "maxLength" : 10,
-            "pattern" : "^([A-Za-z]{1,10})$",
-            "type" : "string"
+            "$ref" : "#/components/schemas/currencyEnum"
+          },
+          "network" : {
+            "$ref" : "#/components/schemas/blockChainEnum"
           },
           "balance" : {
             "maximum" : 999999,
@@ -6950,6 +7015,43 @@
           }
         },
         "additionalProperties" : false
+      },
+      "currencyEnum" : {
+        "type" : "object",
+        "additionalProperties" : false,
+        "enum" : [ "BTC", "ETH", "SOL", "POL", "USDC", "USD" ]
+      },
+      "blockChainEnum" : {
+        "type" : "object",
+        "additionalProperties" : false,
+        "enum" : [ "ETHEREUM", "BITCOIN", "SOLANA", "POLYGON" ]
+      },
+      "currencyType" : {
+        "type" : "object",
+        "additionalProperties" : false,
+        "enum" : [ "CRYPTO", "FIAT" ]
+      },
+      "currencyAsset" : {
+        "type" : "object",
+        "properties" : {
+          "type" : {
+            "$ref" : "#/components/schemas/currencyType"
+          },
+          "currency" : {
+            "$ref" : "#/components/schemas/currencyEnum"
+          },
+          "networks" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/blockChainEnum"
+            }
+          }
+        },
+        "additionalProperties" : false,
+        "example" : {
+          "currency" : "BTC",
+          "networks" : [ "BITCOIN" ]
+        }
       },
       "body" : {
         "type" : "object",
