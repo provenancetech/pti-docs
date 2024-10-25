@@ -1,18 +1,20 @@
 :root {
     /* Common colors */
-    --get-color: 36, 104, 239;
-    --post-color: 0, 189, 171;
-    --put-color: 0, 140, 200;
-    --patch-color: 136, 36, 224;
-    --delete-color: 330, 45, 92;
+    --get-color: 46, 107, 229;
+    --post-color: 20, 215, 177;
+    --put-color: 25, 150, 180;
+    --patch-color: 153, 79, 217;
+    --delete-color: 240, 60, 83;
 
     /* Dark Theme colors */
-    --bg-color: 16, 16, 52;
-    --required-color: orangered;
+    --bg-color: 38, 42, 42;
     --text-color: 255, 255, 255;
+    --required-color: orangered;
     --alt-text-color: lightgray;
 
     /* Light Theme colors */
+    --bg-color-light: 230, 242, 240;
+    --text-color-light: 30, 30, 30;
     --required-color-light: 255, 0, 0;
     --alt-text-color-light: 59, 65, 81;
 }
@@ -200,13 +202,12 @@ body {
 
 @media (prefers-color-scheme: light) {
     html {
-        /* Inherit default background for light theme */
-        background-color: inherit;
+        background-color: rgb(var(--bg-color-light));
     }
+
     .swagger-ui {
         background-color: inherit;
 
-        /* Inherit default text color for light theme */
         .info p,
         .info .main h2,
         .opblock .opblock-section-header h4,
@@ -239,7 +240,7 @@ body {
         .parameters-col_name .parameter__in,
         .response-control-media-type__accept-message,
         .prop .property.primitive {
-            color: inherit;
+            color: rgb(var(--text-color-light));
         }
 
         .markdown code, .renderedMarkdown code {
@@ -271,7 +272,7 @@ body {
 
         /* Background color for light mode on section headers */
         .opblock .opblock-section-header {
-            background-color: inherit;
+            background-color: rgb(var(--bg-color-light));
         }
 
         /* GET method light theme color */
