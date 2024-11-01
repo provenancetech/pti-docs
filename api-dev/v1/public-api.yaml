@@ -3057,12 +3057,12 @@ components:
           id: 36dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
         destinationMethod:
-          paymentMethodType: TOKEN
+          paymentMethodType: CRYPTO
           paymentInformation:
-            type: TOKEN
-            tokenAddress: '0xc0ffee254729296a45a3885639AC7E10F9d54979'
-            tokenType: ETH
-            blockchain: ETHEREUM
+            type: CRYPTO
+            walletAddress: '0xc0ffee254729296a45a3885639AC7E10F9d54979'
+            currency: ETH
+            network: ETHEREUM
         sourceMethod:
           paymentMethodType: WALLET
           paymentInformation:
@@ -3355,13 +3355,13 @@ components:
       oneOf:
         - $ref: '#/components/schemas/encryptedCreditCardPaymentInformation'
         - $ref: '#/components/schemas/bankAccountPaymentInformation'
-        - $ref: '#/components/schemas/tokenPaymentInformation'
+        - $ref: '#/components/schemas/cryptoPaymentInformation'
       discriminator:
         propertyName: type
         mapping:
           BANK_ACCOUNT: '#/components/schemas/bankAccountPaymentInformation'
           ENCRYPTED_CREDIT_CARD: '#/components/schemas/encryptedCreditCardPaymentInformation'
-          TOKEN: '#/components/schemas/tokenPaymentInformation'
+          TOKEN: '#/components/schemas/cryptoPaymentInformation'
       example: {
         "id": "36dbe68f-2747-41c6-8748-559588fd3248",
         "type": "ENCRYPTED_CREDIT_CARD",
@@ -3604,33 +3604,33 @@ components:
           maxLength: 5
           description: 'ISO 3166-2 state code, example US-CA'
           pattern: '^([A-Za-z]{2}-[A-Za-z0-9]{2})$'
-    tokenPaymentInformation:
+    cryptoPaymentInformation:
       type: object
       required:
-        - tokenAddress
-        - tokenType
-        - blockchain
+        - walletAddress
+        - currency
+        - network
         - type
       allOf:
         - $ref: '#/components/schemas/externalPaymentInformation'
       properties:
         type:
           $ref: '#/components/schemas/externalPaymentInformationType'
-        tokenAddress:
+        walletAddress:
           type: string
           pattern: '^[ -~]*$'
           maxLength: 1050
-          description: Blockchain address
-        tokenType:
+          description: Blockchain address for the wallet
+        currency:
           type: string
           pattern: '^([A-Za-z]{3})$'
           maxLength: 25
           description: Token symbol that your user is trading
-        blockchain:
+        network:
           type: string
           pattern: .*
           maxLength: 150
-          description: 'Blockchain name, example ethereum, bitcoin, solana'
+          description: 'Blockchain network name, example ethereum, bitcoin, solana'
           default: Ethereum
         privateBlockchain:
           type: boolean
@@ -3647,13 +3647,13 @@ components:
       description: 'The destination payment method of the trade(wallet), if available'
       properties:
         paymentInformation:
-          $ref: '#/components/schemas/tokenPaymentInformation'
+          $ref: '#/components/schemas/cryptoPaymentInformation'
     tokenPaymentMethodSource:
       type: object
       description: 'The source payment method of the trade(wallet), if available'
       properties:
         paymentInformation:
-          $ref: '#/components/schemas/tokenPaymentInformation'
+          $ref: '#/components/schemas/cryptoPaymentInformation'
     tokenPaymentMethod:
       type: object
       additionalProperties: true
@@ -3668,7 +3668,7 @@ components:
           format: email
           maxLength: 320
         paymentInformation:
-          $ref: '#/components/schemas/tokenPaymentInformation'
+          $ref: '#/components/schemas/cryptoPaymentInformation'
     transaction:
       description: The `transactionTotal` field will be assumed to be all zeroes if not provided. If no currency has been provided `USD` will be used. If no amount has been provided `0` will be used
       type: object

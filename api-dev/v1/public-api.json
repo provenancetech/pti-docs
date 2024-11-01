@@ -5142,12 +5142,12 @@
             "type" : "PERSON"
           },
           "destinationMethod" : {
-            "paymentMethodType" : "TOKEN",
+            "paymentMethodType" : "CRYPTO",
             "paymentInformation" : {
-              "type" : "TOKEN",
-              "tokenAddress" : "0xc0ffee254729296a45a3885639AC7E10F9d54979",
-              "tokenType" : "ETH",
-              "blockchain" : "ETHEREUM"
+              "type" : "CRYPTO",
+              "walletAddress" : "0xc0ffee254729296a45a3885639AC7E10F9d54979",
+              "currency" : "ETH",
+              "network" : "ETHEREUM"
             }
           },
           "sourceMethod" : {
@@ -5525,7 +5525,7 @@
           "mapping" : {
             "BANK_ACCOUNT" : "#/components/schemas/bankAccountPaymentInformation",
             "ENCRYPTED_CREDIT_CARD" : "#/components/schemas/encryptedCreditCardPaymentInformation",
-            "TOKEN" : "#/components/schemas/tokenPaymentInformation"
+            "TOKEN" : "#/components/schemas/cryptoPaymentInformation"
           }
         },
         "oneOf" : [ {
@@ -5533,7 +5533,7 @@
         }, {
           "$ref" : "#/components/schemas/bankAccountPaymentInformation"
         }, {
-          "$ref" : "#/components/schemas/tokenPaymentInformation"
+          "$ref" : "#/components/schemas/cryptoPaymentInformation"
         } ]
       },
       "oneOfFiatPaymentInformation" : {
@@ -5846,30 +5846,30 @@
         },
         "additionalProperties" : false
       },
-      "tokenPaymentInformation" : {
-        "required" : [ "blockchain", "tokenAddress", "tokenType", "type" ],
+      "cryptoPaymentInformation" : {
+        "required" : [ "currency", "network", "type", "walletAddress" ],
         "type" : "object",
         "properties" : {
           "type" : {
             "$ref" : "#/components/schemas/externalPaymentInformationType"
           },
-          "tokenAddress" : {
+          "walletAddress" : {
             "maxLength" : 1050,
             "pattern" : "^[ -~]*$",
             "type" : "string",
-            "description" : "Blockchain address"
+            "description" : "Blockchain address for the wallet"
           },
-          "tokenType" : {
+          "currency" : {
             "maxLength" : 25,
             "pattern" : "^([A-Za-z]{3})$",
             "type" : "string",
             "description" : "Token symbol that your user is trading"
           },
-          "blockchain" : {
+          "network" : {
             "maxLength" : 150,
             "pattern" : ".*",
             "type" : "string",
-            "description" : "Blockchain name, example ethereum, bitcoin, solana",
+            "description" : "Blockchain network name, example ethereum, bitcoin, solana",
             "default" : "Ethereum"
           },
           "privateBlockchain" : {
@@ -5890,7 +5890,7 @@
         "type" : "object",
         "properties" : {
           "paymentInformation" : {
-            "$ref" : "#/components/schemas/tokenPaymentInformation"
+            "$ref" : "#/components/schemas/cryptoPaymentInformation"
           }
         },
         "description" : "The destination payment method of the trade(wallet), if available"
@@ -5899,7 +5899,7 @@
         "type" : "object",
         "properties" : {
           "paymentInformation" : {
-            "$ref" : "#/components/schemas/tokenPaymentInformation"
+            "$ref" : "#/components/schemas/cryptoPaymentInformation"
           }
         },
         "description" : "The source payment method of the trade(wallet), if available"
@@ -5918,7 +5918,7 @@
             "format" : "email"
           },
           "paymentInformation" : {
-            "$ref" : "#/components/schemas/tokenPaymentInformation"
+            "$ref" : "#/components/schemas/cryptoPaymentInformation"
           }
         },
         "additionalProperties" : true
