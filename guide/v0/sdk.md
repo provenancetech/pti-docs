@@ -9,7 +9,7 @@ You should include and initialize the library from our CDN on your front end pag
 Normally there should only be one call to the `PTI.init` function.
 
 ```js
- <script async defer src="https://sdk.fiant.io/0.0.17/index.js"></script>
+ <script async defer src="https://sdk.fiant.io/latest/index.js"></script>
     <script>
       window.ptiAsyncInit = function() {
         PTI.init({
