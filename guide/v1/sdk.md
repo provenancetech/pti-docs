@@ -9,24 +9,25 @@ You should include and initialize the library from our CDN on your front end pag
 Normally there should only be one call to the `PTI.init` function.
 
 ```js
- <script async defer src="https://sdk.fiant.io/latest/index.js"></script>
-    <script>
-      window.ptiAsyncInit = function() {
-        PTI.init({
-          clientId: "CLIENT_ID",
-          generateTokenPath: "GENERATE_TOKEN_ENDPOINT",
-          ptiDomain: "PTI_DOMAIN",
-          sessionId: "SESSION_ID"
-        })
-      }
-    </script>
+  <script async defer src="https://sdk.{env}.fiant.io/latest/index.js"></script>
+  <script>
+    window.ptiAsyncInit = function() {
+      PTI.init({
+        clientId: "CLIENT_ID",
+        generateTokenPath: "GENERATE_TOKEN_ENDPOINT",
+        ptiDomain: "PTI_DOMAIN",
+        sessionId: "SESSION_ID"
+      })
+    }
+  </script>
 ```
+{env}: Set to dev, staging, or platform for development, staging, or production environments, respectively.
 
 The `CLIENT_ID` must be set to the UUID provided by PTI when you did the [onboarding](onboarding.md).
 
 The `GENERATE_TOKEN_ENDPOINT` should be set to the url of your backend that will proxy the generation of [single use tokens](auth.md#single-use-tokens)
 
-The `PTI_DOMAIN` is the domain where PTI forms are hosted. Use `ptiDomain` to specify one of the following:
+The `PTI_DOMAIN` is the domain hosting PTI forms, corresponding to {env}. Use the field `ptiDomain` to specify one of the following:
 - dev.fiant.io (development)
 - staging.fiant.io (staging)
 - platform.fiant.io (production)
