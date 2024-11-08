@@ -7,7 +7,7 @@
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1.0.180"
+    "version" : "1.0.184"
   },
   "servers" : [ {
     "url" : "https://api.dev.fiant.io/v1"
@@ -81,6 +81,75 @@
           },
           "403" : {
             "description" : "forbidden"
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets" : {
+      "get" : {
+        "tags" : [ "Wallets" ],
+        "summary" : "Get the list of the supported assets by the platform",
+        "operationId" : "getListOfAssets",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "maxItems" : 100,
+                  "type" : "array",
+                  "example" : [ {
+                    "currency" : "BTC",
+                    "networks" : [ "BITCOIN" ],
+                    "type" : "CRYPTO"
+                  }, {
+                    "currency" : "USDC",
+                    "networks" : [ "ETHEREUM", "POLYGON", "SOLANA" ],
+                    "type" : "CRYPTO"
+                  }, {
+                    "currency" : "USD",
+                    "type" : "FIAT"
+                  } ],
+                  "items" : {
+                    "$ref" : "#/components/schemas/currencyAsset"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
           },
           "429" : {
             "description" : "Too many requests"
@@ -1435,7 +1504,7 @@
         }
       }
     },
-    "/transactions/swap/price-estimation" : {
+    "/transactions/trade/price-estimation" : {
       "post" : {
         "tags" : [ "Estimate Transaction Cost" ],
         "summary" : "Estimate a transaction cost",
@@ -1455,7 +1524,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/swapTransaction"
+                "$ref" : "#/components/schemas/tradeTransaction"
               }
             }
           },
@@ -2619,12 +2688,12 @@
         }
       }
     },
-    "/transactions/swaps" : {
+    "/transactions/trades" : {
       "post" : {
         "tags" : [ "Execute Transaction" ],
-        "summary" : "Execute a swap of liquidity between wallets",
-        "description" : "This endpoint is used to execute a swap between currencies and crypto. The transaction assessment and user information requirement are evaluated before the transaction is executed.",
-        "operationId" : "swap",
+        "summary" : "Execute a trade of liquidity between wallets",
+        "description" : "This endpoint is used to execute a trade between currencies and crypto. The transaction assessment and user information requirement are evaluated before the transaction is executed.",
+        "operationId" : "trade",
         "parameters" : [ {
           "name" : "x-pti-client-id",
           "in" : "header",
@@ -2691,7 +2760,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/executeSwapTransaction"
+                "$ref" : "#/components/schemas/executeTradeTransaction"
               }
             }
           },
@@ -3867,6 +3936,296 @@
         }
       }
     },
+    "/users/{userId}/wallets/{walletId}/simulate-payment" : {
+      "post" : {
+        "tags" : [ "Wallets" ],
+        "summary" : "Simulate a payment to a wallet",
+        "operationId" : "simulateWalletPayment",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        }, {
+          "name" : "walletId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "amount of the payment and type of payment method",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/simulatePaymentRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Successfully created a simulated payment to the wallet."
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "forbidden"
+          },
+          "404" : {
+            "description" : "User or wallet not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/wallets/{walletId}/deposit-address" : {
+      "summary" : "Manage deposit address",
+      "post" : {
+        "tags" : [ "Wallets" ],
+        "summary" : "Create a crypto deposit address",
+        "operationId" : "createWalletDepositAddress",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        }, {
+          "name" : "walletId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Successfully created a crypto deposit address. The wallet with its deposit instruction is returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/wallet"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "forbidden"
+          },
+          "404" : {
+            "description" : "User or wallet not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/wallets/{walletId}/virtual-bank-account" : {
+      "summary" : "Manage deposit address",
+      "post" : {
+        "tags" : [ "Wallets" ],
+        "summary" : "Create a virtual bank account for a wallet",
+        "operationId" : "createWalletVirtualBankAccount",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        }, {
+          "name" : "walletId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Successfully created a wallet virtual bank account. The wallet with its deposit instruction is returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/wallet"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "forbidden"
+          },
+          "404" : {
+            "description" : "User or wallet not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/transactions/{requestId}/updates" : {
       "post" : {
         "tags" : [ "Execute Transaction" ],
@@ -3965,6 +4324,23 @@
   },
   "components" : {
     "schemas" : {
+      "paymentMethodType" : {
+        "type" : "string",
+        "enum" : [ "ACH", "WIRE", "TOKEN", "CREDIT_CARD", "WALLET" ]
+      },
+      "simulatePaymentRequest" : {
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "maximum" : 999999,
+            "minimum" : 0,
+            "type" : "number"
+          },
+          "paymentMethodType" : {
+            "$ref" : "#/components/schemas/paymentMethodType"
+          }
+        }
+      },
       "address" : {
         "type" : "object",
         "properties" : {
@@ -4246,20 +4622,6 @@
               "$ref" : "#/components/schemas/address"
             } ]
           },
-          "transactionDescription" : {
-            "maxLength" : 1000,
-            "minLength" : 3,
-            "pattern" : "^[ -~]*$",
-            "type" : "string",
-            "description" : "cc transaction description"
-          },
-          "statementMessage" : {
-            "maxLength" : 50,
-            "minLength" : 3,
-            "pattern" : "^[ -~]*$",
-            "type" : "string",
-            "description" : "cc statement msg"
-          },
           "meta" : {
             "type" : "object",
             "description" : "key/value map of extra meta data for this credit card"
@@ -4516,8 +4878,6 @@
                 "A" : "hello123"
               },
               "creditCardReference" : "feead9c948a4b3393498cf17816fb289c2d4d80d4ffb5b11a7171c5f6c48f573",
-              "statementMessage" : "pti",
-              "billingEmail" : "billing@email.com",
               "cardHolderFirstName" : "John",
               "cardHolderLastName" : "Smith",
               "transactionDescription" : "test 123",
@@ -4529,7 +4889,9 @@
                 "postalCode" : "AAAA"
               }
             },
-            "paymentMethodType" : "CREDIT_CARD"
+            "paymentMethodType" : "CREDIT_CARD",
+            "billingEmail" : "billing@email.com",
+            "statementMessage" : "pti"
           },
           "destinationMethod" : {
             "paymentMethodType" : "WALLET",
@@ -4803,7 +5165,7 @@
           "$ref" : "#/components/schemas/transactionType"
         } ]
       },
-      "executeSwapTransaction" : {
+      "executeTradeTransaction" : {
         "required" : [ "destinationMethod", "sourceMethod" ],
         "type" : "object",
         "properties" : {
@@ -4814,7 +5176,7 @@
             "$ref" : "#/components/schemas/walletPaymentMethod"
           }
         },
-        "description" : "Swap currency/crypto for another. SourceMethod: wallet. DestinationMethod: wallet.",
+        "description" : "Trade currency/crypto for another. SourceMethod: wallet. DestinationMethod: wallet.",
         "example" : {
           "initiator" : {
             "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
@@ -4836,7 +5198,7 @@
           },
           "amount" : 200,
           "usdValue" : 200,
-          "type" : "SWAP"
+          "type" : "TRADE"
         },
         "allOf" : [ {
           "$ref" : "#/components/schemas/transactionType"
@@ -4918,14 +5280,56 @@
         "type" : "object",
         "properties" : {
           "paymentMethodType" : {
-            "maxLength" : 50,
-            "pattern" : "^[A-Z]+(?:_[A-Z]+)*$",
-            "type" : "string"
+            "$ref" : "#/components/schemas/paymentMethodType"
           },
           "currency" : {
             "maxLength" : 3,
             "pattern" : "^([A-Za-z]{1,10})$",
             "type" : "string"
+          },
+          "billingEmail" : {
+            "maxLength" : 320,
+            "pattern" : "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
+            "type" : "string",
+            "format" : "email"
+          },
+          "paymentInformation" : {
+            "$ref" : "#/components/schemas/oneOfFiatPaymentInformation"
+          }
+        },
+        "additionalProperties" : true
+      },
+      "creditCardPaymentMethod" : {
+        "required" : [ "paymentMethodType" ],
+        "type" : "object",
+        "properties" : {
+          "paymentMethodType" : {
+            "$ref" : "#/components/schemas/paymentMethodType"
+          },
+          "currency" : {
+            "maxLength" : 3,
+            "pattern" : "^([A-Za-z]{1,10})$",
+            "type" : "string"
+          },
+          "billingEmail" : {
+            "maxLength" : 320,
+            "pattern" : "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
+            "type" : "string",
+            "format" : "email"
+          },
+          "transactionDescription" : {
+            "maxLength" : 1000,
+            "minLength" : 3,
+            "pattern" : "^[ -~]*$",
+            "type" : "string",
+            "description" : "cc transaction description"
+          },
+          "statementMessage" : {
+            "maxLength" : 50,
+            "minLength" : 3,
+            "pattern" : "^[ -~]*$",
+            "type" : "string",
+            "description" : "cc statement msg"
           },
           "paymentInformation" : {
             "$ref" : "#/components/schemas/oneOfFiatPaymentInformation"
@@ -4938,9 +5342,7 @@
         "type" : "object",
         "properties" : {
           "paymentMethodType" : {
-            "maxLength" : 50,
-            "pattern" : "^[A-Z]+(?:_[A-Z]+)*$",
-            "type" : "string"
+            "$ref" : "#/components/schemas/paymentMethodType"
           },
           "currency" : {
             "maxLength" : 3,
@@ -4951,6 +5353,12 @@
             "maxLength" : 100,
             "pattern" : "^([A-Za-z]{1,10})$",
             "type" : "string"
+          },
+          "billingEmail" : {
+            "maxLength" : 320,
+            "pattern" : "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
+            "type" : "string",
+            "format" : "email"
           },
           "paymentInformation" : {
             "$ref" : "#/components/schemas/oneOfFiatPaymentInformation"
@@ -4963,9 +5371,13 @@
         "type" : "object",
         "properties" : {
           "paymentMethodType" : {
-            "maxLength" : 50,
-            "pattern" : "^[A-Z]+(?:_[A-Z]+)*$",
-            "type" : "string"
+            "$ref" : "#/components/schemas/paymentMethodType"
+          },
+          "billingEmail" : {
+            "maxLength" : 320,
+            "pattern" : "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
+            "type" : "string",
+            "format" : "email"
           },
           "paymentInformation" : {
             "$ref" : "#/components/schemas/wallet"
@@ -5143,7 +5555,7 @@
           "propertyName" : "paymentMethodType",
           "mapping" : {
             "ACH" : "#/components/schemas/fiatPaymentMethod",
-            "CREDIT_CARD" : "#/components/schemas/fiatPaymentMethod",
+            "CREDIT_CARD" : "#/components/schemas/creditCardPaymentMethod",
             "WIRE" : "#/components/schemas/wirePaymentMethod",
             "TOKEN" : "#/components/schemas/tokenPaymentMethod"
           }
@@ -5152,6 +5564,8 @@
           "$ref" : "#/components/schemas/tokenPaymentMethod"
         }, {
           "$ref" : "#/components/schemas/fiatPaymentMethod"
+        }, {
+          "$ref" : "#/components/schemas/creditCardPaymentMethod"
         }, {
           "$ref" : "#/components/schemas/wirePaymentMethod"
         } ]
@@ -5161,7 +5575,7 @@
           "propertyName" : "paymentMethodType",
           "mapping" : {
             "ACH" : "#/components/schemas/fiatPaymentMethod",
-            "CREDIT_CARD" : "#/components/schemas/fiatPaymentMethod",
+            "CREDIT_CARD" : "#/components/schemas/creditCardPaymentMethod",
             "WIRE" : "#/components/schemas/wirePaymentMethod",
             "WALLET" : "#/components/schemas/walletPaymentMethod",
             "TOKEN" : "#/components/schemas/tokenPaymentMethod"
@@ -5171,6 +5585,8 @@
           "$ref" : "#/components/schemas/tokenPaymentMethod"
         }, {
           "$ref" : "#/components/schemas/fiatPaymentMethod"
+        }, {
+          "$ref" : "#/components/schemas/creditCardPaymentMethod"
         }, {
           "$ref" : "#/components/schemas/walletPaymentMethod"
         }, {
@@ -5246,7 +5662,7 @@
         }, {
           "$ref" : "#/components/schemas/mintTransaction"
         }, {
-          "$ref" : "#/components/schemas/swapTransaction"
+          "$ref" : "#/components/schemas/tradeTransaction"
         } ]
       },
       "oneOfUserSubTypes" : {
@@ -5299,12 +5715,6 @@
             "pattern" : "^[a-z0-9_-]{3,40}$",
             "type" : "string",
             "description" : "Unique identifier for the payment information, must be used to refer to a payment information for a payment"
-          },
-          "billingEmail" : {
-            "maxLength" : 320,
-            "pattern" : "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
-            "type" : "string",
-            "format" : "email"
           }
         }
       },
@@ -5483,7 +5893,7 @@
             "$ref" : "#/components/schemas/tokenPaymentInformation"
           }
         },
-        "description" : "The destination payment method of the swap(wallet), if available"
+        "description" : "The destination payment method of the trade(wallet), if available"
       },
       "tokenPaymentMethodSource" : {
         "type" : "object",
@@ -5492,16 +5902,20 @@
             "$ref" : "#/components/schemas/tokenPaymentInformation"
           }
         },
-        "description" : "The source payment method of the swap(wallet), if available"
+        "description" : "The source payment method of the trade(wallet), if available"
       },
       "tokenPaymentMethod" : {
         "required" : [ "paymentMethodType" ],
         "type" : "object",
         "properties" : {
           "paymentMethodType" : {
-            "maxLength" : 50,
-            "pattern" : "^[A-Z]+(?:_[A-Z]+)*$",
-            "type" : "string"
+            "$ref" : "#/components/schemas/paymentMethodType"
+          },
+          "billingEmail" : {
+            "maxLength" : 320,
+            "pattern" : "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
+            "type" : "string",
+            "format" : "email"
           },
           "paymentInformation" : {
             "$ref" : "#/components/schemas/tokenPaymentInformation"
@@ -5644,7 +6058,7 @@
           "$ref" : "#/components/schemas/transactionType"
         } ]
       },
-      "swapTransaction" : {
+      "tradeTransaction" : {
         "type" : "object",
         "properties" : {
           "destinationMethod" : {
@@ -5654,14 +6068,14 @@
             "$ref" : "#/components/schemas/tokenPaymentMethodSource"
           }
         },
-        "description" : "The action of doing a token swap. Source and destination wallet are provided through the source and destination methods properties.",
+        "description" : "The action of doing a token trade. Source and destination wallet are provided through the source and destination methods properties.",
         "allOf" : [ {
           "$ref" : "#/components/schemas/transactionType"
         } ]
       },
       "transactionTypeEnum" : {
         "type" : "string",
-        "enum" : [ "DEPOSIT", "WITHDRAWAL", "PAYMENT", "TRANSFER", "SELL", "BUY", "MINT", "SWAP" ]
+        "enum" : [ "DEPOSIT", "WITHDRAWAL", "PAYMENT", "TRANSFER", "SELL", "BUY", "MINT", "TRADE" ]
       },
       "transactionType" : {
         "required" : [ "type" ],
@@ -5837,9 +6251,10 @@
             "type" : "string"
           },
           "currency" : {
-            "maxLength" : 10,
-            "pattern" : "^([A-Za-z]{1,10})$",
-            "type" : "string"
+            "$ref" : "#/components/schemas/currencyEnum"
+          },
+          "network" : {
+            "$ref" : "#/components/schemas/blockChainEnum"
           },
           "type" : {
             "type" : "string",
@@ -5869,9 +6284,10 @@
             "type" : "string"
           },
           "currency" : {
-            "maxLength" : 10,
-            "pattern" : "^([A-Za-z]{1,10})$",
-            "type" : "string"
+            "$ref" : "#/components/schemas/currencyEnum"
+          },
+          "network" : {
+            "$ref" : "#/components/schemas/blockChainEnum"
           },
           "balance" : {
             "maximum" : 999999,
@@ -5879,10 +6295,9 @@
             "type" : "number",
             "format" : "double"
           },
-          "reference" : {
-            "maxLength" : 1050,
-            "pattern" : "^[ -~]*$",
-            "type" : "string",
+          "depositInstruction" : {
+            "required" : [ "type" ],
+            "type" : "object",
             "description" : "External reference to the wallet(could be bank account number, or blockchain address)"
           },
           "createDateTime" : {
@@ -5900,7 +6315,11 @@
           "walletId" : "MyUSDWallet",
           "currency" : "USD",
           "type" : "WALLET",
-          "reference" : "0x16Df97AB64d9eb5FF393F9f52F9290566857B07C",
+          "depositInstruction" : {
+            "type" : "CRYPTO_ADDRESS",
+            "address" : "0x128ZuOfgu9LZYkKjrOLLSExMELO6otneF2",
+            "blockchain" : "Bitcoin"
+          },
           "createDateTime" : "2021-09-28T12:00:00Z",
           "balance" : 1000
         }
@@ -6596,6 +7015,43 @@
           }
         },
         "additionalProperties" : false
+      },
+      "currencyEnum" : {
+        "type" : "object",
+        "additionalProperties" : false,
+        "enum" : [ "BTC", "ETH", "SOL", "POL", "USDC", "USD" ]
+      },
+      "blockChainEnum" : {
+        "type" : "object",
+        "additionalProperties" : false,
+        "enum" : [ "ETHEREUM", "BITCOIN", "SOLANA", "POLYGON" ]
+      },
+      "currencyType" : {
+        "type" : "object",
+        "additionalProperties" : false,
+        "enum" : [ "CRYPTO", "FIAT" ]
+      },
+      "currencyAsset" : {
+        "type" : "object",
+        "properties" : {
+          "type" : {
+            "$ref" : "#/components/schemas/currencyType"
+          },
+          "currency" : {
+            "$ref" : "#/components/schemas/currencyEnum"
+          },
+          "networks" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/blockChainEnum"
+            }
+          }
+        },
+        "additionalProperties" : false,
+        "example" : {
+          "currency" : "BTC",
+          "networks" : [ "BITCOIN" ]
+        }
       },
       "body" : {
         "type" : "object",

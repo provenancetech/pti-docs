@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1.0.180'
+  version: '1.0.184'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -57,6 +57,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
+  /assets:
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+    get:
+      operationId: getListOfAssets
+      summary: Get the list of the supported assets by the platform
+      tags:
+        - Wallets
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 100
+                items:
+                  $ref: '#/components/schemas/currencyAsset'
+                example: [
+                  {
+                    "currency": "BTC",
+                    "networks": [ "BITCOIN" ],
+                    "type": "CRYPTO"
+                  },
+                  {
+                    "currency": "USDC",
+                    "networks": [ "ETHEREUM", "POLYGON", "SOLANA" ],
+                    "type": "CRYPTO"
+                  },
+                  {
+                    "currency": "USD",
+                    "type": "FIAT"
+                  }
+                ]
+        
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+  
   /users:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -746,7 +796,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
-  /transactions/swap/price-estimation:
+  /transactions/trade/price-estimation:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
     post:
@@ -759,7 +809,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/swapTransaction'
+              $ref: '#/components/schemas/tradeTransaction'
       callbacks:
         transactionQuoteUpdate:
           '${yourWebhookAddress}':
@@ -1323,16 +1373,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
-  /transactions/swaps:
+  /transactions/trades:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
     post:
-      operationId: swap
-      summary: Execute a swap of liquidity between wallets
+      operationId: trade
+      summary: Execute a trade of liquidity between wallets
       tags:
         - Execute Transaction
       description: >-
-        This endpoint is used to execute a swap between currencies and crypto.
+        This endpoint is used to execute a trade between currencies and crypto.
         The transaction assessment and user information requirement are
         evaluated before the transaction is executed.
       parameters:
@@ -1346,7 +1396,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/executeSwapTransaction'
+              $ref: '#/components/schemas/executeTradeTransaction'
       callbacks:
         transactionUpdate:
           '${yourWebhookAddress}':
@@ -1949,6 +1999,182 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
+  '/users/{userId}/wallets/{walletId}/simulate-payment':
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+      - name: userId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+      - name: walletId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+    post:
+      operationId: simulateWalletPayment
+      summary: Simulate a payment to a wallet
+      tags:
+        - Wallets
+      requestBody:
+        description: amount of the payment and type of payment method
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/simulatePaymentRequest'
+      responses:
+        '201':
+          description: >-
+            Successfully created a simulated payment to the wallet.
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '403':
+          description: forbidden
+        '404':
+          description: User or wallet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+  
+  '/users/{userId}/wallets/{walletId}/deposit-address':
+    summary: Manage deposit address
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+      - name: userId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+      - name: walletId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+    post:
+      operationId: createWalletDepositAddress
+      summary: Create a crypto deposit address
+      tags:
+        - Wallets
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: >-
+            Successfully created a crypto deposit address.
+            The wallet with its deposit instruction is returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/wallet'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '403':
+          description: forbidden
+        '404':
+          description: User or wallet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+  '/users/{userId}/wallets/{walletId}/virtual-bank-account':
+    summary: Manage deposit address
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+      - name: userId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+      - name: walletId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+    post:
+      operationId: createWalletVirtualBankAccount
+      summary: Create a virtual bank account for a wallet
+      tags:
+        - Wallets
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: >-
+            Successfully created a wallet virtual bank account.
+            The wallet with its deposit instruction is returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/wallet'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '403':
+          description: forbidden
+        '404':
+          description: User or wallet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
   '/transactions/{requestId}/updates':
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -2041,6 +2267,25 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
 components:
   schemas:
+    
+    paymentMethodType:
+      type: string
+      enum:
+        - ACH
+        - WIRE
+        - TOKEN
+        - CREDIT_CARD
+        - WALLET
+    
+    simulatePaymentRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+          minimum: 0
+          maximum: 999999
+        paymentMethodType:
+          $ref: '#/components/schemas/paymentMethodType'
     address:
       type: object
       additionalProperties: false
@@ -2082,7 +2327,7 @@ components:
           enum:
             - CHECKING
             - SAVINGS
-          description: 'Type of bank account, Required for ACH and WIRE'         
+          description: 'Type of bank account, Required for ACH and WIRE'
         bankSwiftCode:
           type: string
           maxLength: 11
@@ -2268,18 +2513,6 @@ components:
           type: object
           allOf:
             - $ref: '#/components/schemas/address'
-        transactionDescription:
-          description: cc transaction description
-          pattern: '^[ -~]*$'
-          type: string
-          minLength: 3
-          maxLength: 1000
-        statementMessage:
-          description: cc statement msg
-          pattern: '^[ -~]*$'
-          type: string
-          minLength: 3
-          maxLength: 50
         meta:
           type: object
           description: key/value map of extra meta data for this credit card
@@ -2371,7 +2604,7 @@ components:
         - FUNDING_FROM_CRYPTO_ONLY
         - WITHDRAWAL_FROM_WALLET_TO_CRYPTO
         - SOURCE_WALLET_CURRENCY_DIFFERENT_THAN_DESTINATION_TOKEN_CURRENCY
-        
+    
     oneOfAssessmentValidationError:
       oneOf:
         - $ref: '#/components/schemas/missingInformationError'
@@ -2605,8 +2838,6 @@ components:
             encryptedInformation:
               A: hello123
             creditCardReference: feead9c948a4b3393498cf17816fb289c2d4d80d4ffb5b11a7171c5f6c48f573
-            statementMessage: pti
-            billingEmail: billing@email.com
             cardHolderFirstName: John
             cardHolderLastName: Smith
             transactionDescription: test 123
@@ -2617,6 +2848,8 @@ components:
               country: US
               postalCode: AAAA
           paymentMethodType: CREDIT_CARD
+          billingEmail: billing@email.com
+          statementMessage: pti
         destinationMethod:
           paymentMethodType: WALLET
           paymentInformation:
@@ -2838,13 +3071,13 @@ components:
         amount: 200
         usdValue: 200
         type: WITHDRAWAL
-    executeSwapTransaction:
+    executeTradeTransaction:
       type: object
       required:
         - sourceMethod
         - destinationMethod
       description: >-
-        Swap currency/crypto for another. SourceMethod: wallet.
+        Trade currency/crypto for another. SourceMethod: wallet.
         DestinationMethod: wallet.
       allOf:
         - $ref: '#/components/schemas/transactionType'
@@ -2869,7 +3102,7 @@ components:
             walletId: MyBTCWallet
         amount: 200
         usdValue: 200
-        type: SWAP
+        type: TRADE
     executePaymentTransaction:
       type: object
       required:
@@ -2935,13 +3168,47 @@ components:
         - paymentMethodType
       properties:
         paymentMethodType:
-          type: string
-          maxLength: 50
-          pattern: '^[A-Z]+(?:_[A-Z]+)*$'
+          $ref: '#/components/schemas/paymentMethodType'
         currency:
           type: string
           pattern: '^([A-Za-z]{1,10})$'
           maxLength: 3
+        billingEmail:
+          type: string
+          pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'
+          format: email
+          maxLength: 320
+        paymentInformation:
+          $ref: '#/components/schemas/oneOfFiatPaymentInformation'
+    creditCardPaymentMethod:
+      type: object
+      additionalProperties: true
+      required:
+        - paymentMethodType
+      properties:
+        paymentMethodType:
+          $ref: '#/components/schemas/paymentMethodType'
+        currency:
+          type: string
+          pattern: '^([A-Za-z]{1,10})$'
+          maxLength: 3
+        billingEmail:
+          type: string
+          pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'
+          format: email
+          maxLength: 320
+        transactionDescription:
+          description: cc transaction description
+          pattern: '^[ -~]*$'
+          type: string
+          minLength: 3
+          maxLength: 1000
+        statementMessage:
+          description: cc statement msg
+          pattern: '^[ -~]*$'
+          type: string
+          minLength: 3
+          maxLength: 50
         paymentInformation:
           $ref: '#/components/schemas/oneOfFiatPaymentInformation'
     wirePaymentMethod:
@@ -2951,9 +3218,7 @@ components:
         - paymentMethodType
       properties:
         paymentMethodType:
-          type: string
-          maxLength: 50
-          pattern: '^[A-Z]+(?:_[A-Z]+)*$'
+          $ref: '#/components/schemas/paymentMethodType'
         currency:
           type: string
           pattern: '^([A-Za-z]{1,10})$'
@@ -2962,6 +3227,11 @@ components:
           type: string
           pattern: '^([A-Za-z]{1,10})$'
           maxLength: 100
+        billingEmail:
+          type: string
+          pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'
+          format: email
+          maxLength: 320
         paymentInformation:
           $ref: '#/components/schemas/oneOfFiatPaymentInformation'
     walletPaymentMethod:
@@ -2971,9 +3241,12 @@ components:
         - paymentMethodType
       properties:
         paymentMethodType:
+          $ref: '#/components/schemas/paymentMethodType'
+        billingEmail:
           type: string
-          maxLength: 50
-          pattern: '^[A-Z]+(?:_[A-Z]+)*$'
+          pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'
+          format: email
+          maxLength: 320
         paymentInformation:
           $ref: '#/components/schemas/wallet'
     depositTransaction:
@@ -3116,25 +3389,27 @@ components:
       oneOf:
         - $ref: '#/components/schemas/tokenPaymentMethod'
         - $ref: '#/components/schemas/fiatPaymentMethod'
+        - $ref: '#/components/schemas/creditCardPaymentMethod'
         - $ref: '#/components/schemas/wirePaymentMethod'
       discriminator:
         propertyName: paymentMethodType
         mapping:
           ACH: '#/components/schemas/fiatPaymentMethod'
-          CREDIT_CARD: '#/components/schemas/fiatPaymentMethod'
+          CREDIT_CARD: '#/components/schemas/creditCardPaymentMethod'
           WIRE: '#/components/schemas/wirePaymentMethod'
           TOKEN: '#/components/schemas/tokenPaymentMethod'
     oneOfPaymentMethod:
       oneOf:
         - $ref: '#/components/schemas/tokenPaymentMethod'
         - $ref: '#/components/schemas/fiatPaymentMethod'
+        - $ref: '#/components/schemas/creditCardPaymentMethod'
         - $ref: '#/components/schemas/walletPaymentMethod'
         - $ref: '#/components/schemas/wirePaymentMethod'
       discriminator:
         propertyName: paymentMethodType
         mapping:
           ACH: '#/components/schemas/fiatPaymentMethod'
-          CREDIT_CARD: '#/components/schemas/fiatPaymentMethod'
+          CREDIT_CARD: '#/components/schemas/creditCardPaymentMethod'
           WIRE: '#/components/schemas/wirePaymentMethod'
           WALLET: '#/components/schemas/walletPaymentMethod'
           TOKEN: '#/components/schemas/tokenPaymentMethod'
@@ -3185,7 +3460,7 @@ components:
         - $ref: '#/components/schemas/sellTransaction'
         - $ref: '#/components/schemas/buyTransaction'
         - $ref: '#/components/schemas/mintTransaction'
-        - $ref: '#/components/schemas/swapTransaction'
+        - $ref: '#/components/schemas/tradeTransaction'
       discriminator:
         propertyName: type
     oneOfUserSubTypes:
@@ -3228,12 +3503,6 @@ components:
           pattern: '^[a-z0-9_-]{3,40}$'
           maxLength: 40
           description: 'Unique identifier for the payment information, must be used to refer to a payment information for a payment'
-
-        billingEmail:
-          type: string
-          pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'
-          format: email
-          maxLength: 320
     person:
       type: object
       allOf:
@@ -3375,13 +3644,13 @@ components:
             subtoken asset is involved
     tokenPaymentMethodDestination:
       type: object
-      description: 'The destination payment method of the swap(wallet), if available'
+      description: 'The destination payment method of the trade(wallet), if available'
       properties:
         paymentInformation:
           $ref: '#/components/schemas/tokenPaymentInformation'
     tokenPaymentMethodSource:
       type: object
-      description: 'The source payment method of the swap(wallet), if available'
+      description: 'The source payment method of the trade(wallet), if available'
       properties:
         paymentInformation:
           $ref: '#/components/schemas/tokenPaymentInformation'
@@ -3392,9 +3661,12 @@ components:
         - paymentMethodType
       properties:
         paymentMethodType:
+          $ref: '#/components/schemas/paymentMethodType'
+        billingEmail:
           type: string
-          maxLength: 50
-          pattern: '^[A-Z]+(?:_[A-Z]+)*$'
+          pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'
+          format: email
+          maxLength: 320
         paymentInformation:
           $ref: '#/components/schemas/tokenPaymentInformation'
     transaction:
@@ -3502,10 +3774,10 @@ components:
           $ref: '#/components/schemas/oneOfUserSubTypes'
         destinationMethod:
           $ref: '#/components/schemas/tokenPaymentMethod'
-    swapTransaction:
+    tradeTransaction:
       type: object
       description: >-
-        The action of doing a token swap. Source and destination wallet are
+        The action of doing a token trade. Source and destination wallet are
         provided through the source and destination methods properties.
       allOf:
         - $ref: '#/components/schemas/transactionType'
@@ -3524,7 +3796,7 @@ components:
         - SELL
         - BUY
         - MINT
-        - SWAP
+        - TRADE
     transactionType:
       type: object
       required:
@@ -3697,9 +3969,9 @@ components:
           maxLength: 255
           pattern: '^[A-Za-z]+(?:_[A-Za-z]+)*$'
         currency:
-          type: string
-          pattern: '^([A-Za-z]{1,10})$'
-          maxLength: 10
+          $ref: '#/components/schemas/currencyEnum'
+        network:
+          $ref: '#/components/schemas/blockChainEnum'
         type:
           type: string
           enum:
@@ -3727,21 +3999,20 @@ components:
           maxLength: 255
           pattern: '^[A-Za-z]+(?:_[A-Za-z]+)*$'
         currency:
-          type: string
-          pattern: '^([A-Za-z]{1,10})$'
-          maxLength: 10
+          $ref: '#/components/schemas/currencyEnum'
+        network:
+          $ref: '#/components/schemas/blockChainEnum'  
         balance:
           type: number
           minimum: 0
           maximum: 999999
           format: double
-        reference:
-          type: string
-          pattern: '^[ -~]*$'
-          maxLength: 1050
+        depositInstruction:
+          type: object
+          required:
+            - type
           description: >-
-            External reference to the wallet(could be bank account number, or
-            blockchain address)
+            External reference to the wallet(could be bank account number, or blockchain address)
         createDateTime:
           type: string
           pattern: >-
@@ -3756,7 +4027,7 @@ components:
         walletId: MyUSDWallet
         currency: USD
         type: WALLET
-        reference: '0x16Df97AB64d9eb5FF393F9f52F9290566857B07C'
+        depositInstruction: { "type": "CRYPTO_ADDRESS", "address": "0x128ZuOfgu9LZYkKjrOLLSExMELO6otneF2", "blockchain": "Bitcoin" }
         createDateTime: '2021-09-28T12:00:00Z'
         balance: 1000
     withdrawalTransaction:
@@ -4400,6 +4671,48 @@ components:
           $ref: '#/components/schemas/cost'
         subtotal:
           $ref: '#/components/schemas/cost'
+    
+    currencyEnum:
+      type: object
+      additionalProperties: false
+      enum:
+        - BTC
+        - ETH
+        - SOL
+        - POL
+        - USDC
+        - USD
+    
+    blockChainEnum:
+      type: object
+      additionalProperties: false
+      enum:
+        - ETHEREUM
+        - BITCOIN
+        - SOLANA
+        - POLYGON
+    
+    currencyType:
+      type: object
+      additionalProperties: false
+      enum:
+        - CRYPTO
+        - FIAT
+    currencyAsset:
+      type: object
+      additionalProperties: false
+      properties:
+        type:
+          $ref: '#/components/schemas/currencyType'
+        currency:
+          $ref: '#/components/schemas/currencyEnum'
+        networks:
+          type: array
+          items:
+            $ref: '#/components/schemas/blockChainEnum'
+      example:
+        currency: BTC
+        networks: [ BITCOIN ]
   parameters:
     mandatoryScenarioIdHeaderParam:
       name: x-pti-scenario-id
