@@ -37,7 +37,7 @@ You need to use the same `REQUEST_ID` you used in the log transaction API call.
 
 ## Webhooks
 
-Most operations on the PTI API will result in asynchronous responses which will be sent to the webhook URL you provided during the [onboarding](onboarding.md).
+Most operations on the PTI API will result in asynchronous responses which will be sent to the webhook URL you provided during the [onboarding](fiant-onboarding).
 The content posted on your webhook is encrypted using your public key, and signed using PTI's private key.
 You have to decrypt the message using your private key, and verify that the message originated from PTI by validating the signature using PTI's public key.
 This mechanism insures that nobody but you can have access to the content of those messages, even if your webhook was hijacked, and you can always be sure 
@@ -69,7 +69,7 @@ This section provides the details on the possible messages that you can receive 
     "statusReason": "STATUS_REASON"
 }
 ```
-The `CLIENT_ID` value will be set to the Client ID provided to you during [onboarding](onboarding.md)
+The `CLIENT_ID` value will be set to the Client ID provided to you during [onboarding](fiant-onboarding)
 
 The `USER_ID` corresponds to the user for which we are providing the status udate.
 

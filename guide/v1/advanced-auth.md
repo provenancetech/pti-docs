@@ -19,7 +19,7 @@ are made from a private client. Only your server backend should make signed requ
 
 #### Making signed requests
 
-Once you have completed the steps in the [onboarding guide](onboarding.md) and have your client ID and private key on hand, you can make requests to the PTI API. 
+Once you have completed the steps in the [onboarding guide](fiant-onboarding) and have your client ID and private key on hand, you can make requests to the PTI API. 
 
 To make a signed request to the PTI API, you must include at least the two following headers:
 - `x-pti-client-id` with the value set to your client ID
