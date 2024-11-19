@@ -29,17 +29,17 @@ Tiers are cumulative. For example, the information required by tier 3 includes a
 This table illustrates how a scenario and an amount bracket maps to a KYC tier.
 This is only an example, discuss with PTI to set up your desired configuration. 
 
-| Scenario        | 0$ - 100$                              | 100$ - 1000$ | 1000$ - 10K$ | 10K$ and up |
-|-----------------|----------------------------------------|--------------|--------------|-------------|
-| Crypto Purchase | 1                                      | 2            | 2            | 2           |  
-| Crypto Transfer | 1                                      | 1            | 1            | 1           |
-| Crypto Sell     | 3                                      | 3            | 4            | 5           |
+| Scenario/Nominal value | 0$ - 100$                              | 100$ - 1000$ | 1000$ - 10K$ | 10K$ and up |
+|------------------------|----------------------------------------|--------------|--------------|-------------|
+| Deposit                | 1                                      | 2            | 2            | 2           |  
+| Transfer               | 1                                      | 1            | 1            | 1           |
+| Withdrawal             | 3                                      | 3            | 4            | 5           |
 
 With the above configuration, a user who wishes to do a 150$ transaction associated to the Crypto Sell scenario 
 would have to successfully have executed a KYC flow providing all the information required by KYC tier 3.
 
 Also note that the amount brackets represent cumulative amounts per scenario. For example, if a user does multiple transactions
-associated to the `Crypto Sell` scenario, it is the total of all these transactions that will be used to select the KYC tier for that scenario.
+associated to the `Withdrawal` scenario, it is the total of all these transactions that will be used to select the KYC tier for that scenario.
 
 
 ## Performing KYC flows
@@ -104,21 +104,25 @@ const callTransactionLog = (accessToken) => {
             'Date': date
         };
         const body = {
-            type: "FUNDING",
-            amount: 117,
+            type: "DEPOSIT",
+            amount: 150,
             usdValue: 150,
             initiator: {
                 type: "PERSON",
                 id: userId
             },
             sourceMethod: {
-                currency: "CAD",
+                currency: "USD",
                 paymentInformation: {
                     type: "ENCRYPTED_CREDIT_CARD",
-                    creditCardNumberHash: "feead9c948a4b3393498cf17816fb289c2d4d80d4ffb5b11a7171c5f6c48f573"
+                    id: "credit_card_id"
                 },
-                paymentMethodType: "FIAT"
+                paymentMethodType: "CREDIT_CARD"
             },
+            destinationMethod:{
+                paymentMethodType: "WALLET",
+                walletId:"my_wallet"
+            }
             date: date
         }
         const options = {

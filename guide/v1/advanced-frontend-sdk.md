@@ -147,7 +147,7 @@ The value of `USER_ID` is also under your control. It corresponds to the value y
 You must store the `this` value at user creation time to make sure you can associate your users with users in the PTI platform.
 
 The value of `SCENARIO_ID` will select the scenario under which the transaction or KYC will be made.
-The scenario must have been configured previously as explained [here](kyc.md).
+The scenario must have been configured previously as explained [here](advanced-kyc).
 Passing an unconfigured `SCENARIO_ID` value will result in an error.
 
 The value of `lang` is to specify which language strings should be used in the form. Default is `en` (English)

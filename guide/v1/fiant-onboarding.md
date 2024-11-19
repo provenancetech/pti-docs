@@ -31,5 +31,5 @@ As soon as your account application is approved, you will receive a client ID th
 
 With your client ID and private key on hand, you are ready start using the PTI platform.
 
-Visit the [SDK guide](advanced-sdk) to learn how to leverage PTI's hosted forms or the [authentication page](advanced-auth) to learn how to
+Visit the [SDK guide](advanced-frontend-sdk) to learn how to leverage PTI's hosted forms or the [authentication page](advanced-auth) to learn how to
 interact securely with the PTI API.

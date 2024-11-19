@@ -12,6 +12,15 @@ There are two authentication mechanisms to make api requests:
 * Signed requests
 * Single use authorization tokens
 
+## Using Fiant SDK
+
+Using Fiant Sdk is the simplest approach, authentication is handled transparently.
+
+```
+PROVIDE SDK INITIALIZATION CODE HERE!
+```
+
+
 ## Signed requests
 
 Signed requests requires access to the private key to sign the request, so it is only possible to use this method when the API calls

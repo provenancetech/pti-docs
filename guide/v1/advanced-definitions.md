@@ -51,7 +51,7 @@ In order to simplify a secure integration to the PTI platform, hosted forms are 
 
 The web sdk is a publicly available Javascript library provided to simplify the integration of the Hosted Forms in the client UI.
 It also enables the tracking of user devices and UI interactions to improve the detection of malicious behaviour.
-The [SDK page](./advanced-sdk) contains guidance on how to leverage the PTI SDK.
+The [SDK page](./advanced-frontend-sdk) contains guidance on how to leverage the PTI SDK.
 
 ### REST API
 
@@ -67,9 +67,9 @@ In order to start using the PTI platform, follow our [onboarding guide](./fiant-
 
 The [authentication page](./advanced-auth) provides all the information required and steps to follow in order to be able to securely interact with the PTI platform.
 
-The [KYC page](./kyc.md) details the different ways the KYC flow can be configured and customized to suit various use cases.
+The [KYC page](./advanced-kyc) details the different ways the KYC flow can be configured and customized to suit various use cases.
 
-The [SDK page](./kyc.md) shows you how to initialize and use the SDK.
+The [SDK page](./advanced-kyc) shows you how to initialize and use the SDK.
 
 The [API usage page](./delete?usage) demonstrates how communicate via the PTI API and associated webhooks.
 

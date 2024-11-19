@@ -4,10 +4,11 @@
 link
 ### Java
 link
-### Python
-link
-## Plain http calls
-Curl examples
-
+### Postman
 link to the Postman collection
+
+## Quick start guides
+- [Core API](quickstart-api)
+- [Fiant Elements](quickstart-elements)
+- [Webhook](quickstart-receiving-webhooks)
 

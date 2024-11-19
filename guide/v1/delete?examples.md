@@ -203,5 +203,5 @@ In the examples, these values must be set as follows:
 * `REQUEST_ID`: Unique UUID that will identify the request. The `REQUEST_ID` will be part of the response returned on the webhook and must be stored on your end.
 * `CLIENT_ID`: UUID provided to you by PTI when you did your onboarding. It identifies your account on the PTI platform.
 * `ACCESS_TOKEN`: Single use token you generated via your token generation endpoint, as detailed [here](advanced-auth#single-use-tokens)
-* `SCENARIO_ID`: Scenario under which the transaction is made. It will have an impact on how much user information is required to allow the transaction to go through. More details about scenarios can be found [here](kyc.md#kyc)
+* `SCENARIO_ID`: Scenario under which the transaction is made. It will have an impact on how much user information is required to allow the transaction to go through. More details about scenarios can be found [here](advanced-kyc#kyc)
 * `USER_ID`: UUID uniquely identifying the user on the PTI platform. It corresponds to the value you passed in at user creation time. More details about user creation can be found [here](delete?usage#creating-pti-users)

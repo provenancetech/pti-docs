@@ -19,7 +19,7 @@ Fiant embeddable Credit card element enable you to save a credit card without th
 ## Perform user Assessment
 ### Display the element
 ### Receive assessment webhook
-<a>Link to use cases element</a>
+
 
 ## Onboard a user
 A quick drop in form to create user in our system (person or business)
