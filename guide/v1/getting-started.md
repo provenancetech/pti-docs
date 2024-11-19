@@ -3,7 +3,7 @@
 ### JS
 link
 ### Java
-link
+https://github.com/provenancetech/pti-platform-sdks/tree/master/java
 ### Postman
 link to the Postman collection
 
@@ -11,4 +11,3 @@ link to the Postman collection
 - [Core API](quickstart-api)
 - [Fiant Elements](quickstart-elements)
 - [Webhook](quickstart-receiving-webhooks)
-
