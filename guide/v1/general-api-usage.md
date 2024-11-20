@@ -3,34 +3,32 @@
 
 Prior to doing any actions on the API, you must define your users on the PTI system using the [create user](https://provenancetech.github.io/pti-docs/api/v1/#/default/post_users) API call. 
 We recommend that you create the PTI user that the same time you create the user on your side.
-It could also be done the first time they need to interact with PTI.
+It could also be done the first time they need to interact with Fiant.
 In any case, you will need to pass a unique UUID of your choice as the value of the `id` field in the body of the request.
 You need to store this `id` and associate it to the user in your system as it will be needed for most of the API calls you will make to PTI.
 We will refer to this user `id` as `USER_ID` in the rest of the documentation.
 
-## Initiating a KYC
+## Initiating a user assessment
 
-Once a user exists on the PTI platform, you can initiate a KYC check for that user. To do so, call the [start KYC endpoint](https://provenancetech.github.io/pti-docs/api/v1/index.html#/default/post_users__userId__kyc) 
+Once a user exists on the PTI platform, you can initiate an assessment for that user. To do so, call the [start user assessment endpoint](https://provenancetech.github.io/pti-docs/api/v1/index.html#/User%20Assessment/startUserAssessment) 
 using the user `USER_ID` you passed in the [create user](https://provenancetech.github.io/pti-docs/api/v1/#/default/post_users) API call. You must also provide a `REQUEST_ID` that you must store
-to be able to correlate the webhook [KYC result](#kyc-result) to this specific KYC check.
+to be able to correlate the webhook [User assessment result](#user-assessment-result) to this specific Assessment check.
 
-## Checking if a KYC is required
+## Checking if a user assessment is required
 
-Instead of trying to log a transaction and getting a `DENY` status because the user has not successfully completed the appropriate KYC check, you can call the [is KYC needed endpoint](https://provenancetech.github.io/pti-docs/api/v1/#/default/get_users__userId__kyc_needed)
-with the desired `SCENARIO_ID` and amount of the transaction in USD. The response will be a boolean that informs you if your user should be directed to a KYC check before moving on to performing the transaction itself.
+In order to be able to perform a specific transaction in the system, your user may need to have certain assessment clearance(you can consult [the advanced kyc section](#kyc) to get more details on this).
+
+You have 2 choices, you can either attempt the transaction, and handle 422 errors if they happen, or you can preemptively validate the transaction using the [Validate transaction endpoint](https://provenancetech.github.io/pti-docs/api/v1/index.html#/Transaction%20Assessment/transactionInformationAssessment)
 
 
-## Monitoring Transactions
+## Executing Transactions
 
-Once your user has successfully passed a KYC check, you can start logging the transactions that user makes. To do so, you need to call the [log transaction endpoint](https://provenancetech.github.io/pti-docs/api/v1/index.html#/default/post_users__userId__transactionLogs).
+Once your user has the required assessment level acceptance, you can execute transactions.
 Again, you will need the `USER_ID` of the user originating the transaction. You must also provide a `REQUEST_ID` that you must store
-to be able to correlate the webhook [transaction monitoring result](#transaction-monitoring-result) to this specific transaction.
+to be able to correlate the webhook [transaction monitoring result](#transaction-monitoring-result) and [payment processing update](#payment-processing-update)  to this specific transaction.
 
-To ensure compliance, you **MUST** base your decision to proceed with the transaction only if the [transaction monitoring result](#transaction-monitoring-result) status returned is `ACCEPT`.
-
-To complete the transaction cycle, you should provide a feedback on the transaction once it is finalized on your side using the [transaction feedback endpoint](https://provenancetech.github.io/pti-docs/api/v1/index.html#/default/post_transactions__requestId__feedback)
+You may need to complete the transaction cycle, especially for some operations, like sell operations, if they require actions being taken on your proprietary infrastructure. For the cases, you should provide a feedback on the transaction once it is finalized on your side using the [transaction feedback endpoint](https://provenancetech.github.io/pti-docs/api/v1/index.html#/default/post_transactions__requestId__feedback)
 You need to use the same `REQUEST_ID` you used in the log transaction API call.
-
 
 ## Webhooks
 
@@ -54,16 +52,17 @@ Codes in the 5xx range indicate an error with PTI servers (these are rare and sh
 
 The following table details the meaning of the various codes that can be returned by the API:
 
-| Code | Short        | Description                                                                                                                                          |
-|------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 200  | OK           | Everything worked as expected.                                                                                                                       |
-| 201  | Created      | The request has been fulfilled and has resulted in one or more new resources being created.                                                          |
-| 202  | Accepted     | The request has been accepted for processing, but the processing has not been completed. You *might* get a response back on your Webhook eventually. |
-| 400  | Bad Request  | The request was unacceptable, often due to missing a required parameter.                                                                             |
-| 401  | Unauthorized | No valid Signature or Token provided.                                                                                                                |
-| 402  | Request Failed | The parameters were valid but the request failed.                                                                                                    |
-| 403  | Forbidden | The Client or the Token doesn't have permissions to perform the request.                                                                             |
-| 404  | Not Found | The requested resource doesn't exist.                                                                                                                |
-| 409  | Conflict | The request conflicts with another request (perhaps due to using the same `REQUEST ID` twice).                                                       |
-| 429  | Too Many Requests | Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.                                                     |
-| 5xx  | Server Errors | 	Something went wrong on PTI servers. (These are rare and should not happen)                                                                         |
+| Code | Short                | Description                                                                                                                                                                                  |
+|------|----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 200  | OK                   | Everything worked as expected.                                                                                                                                                               |
+| 201  | Created              | The request has been fulfilled and has resulted in one or more new resources being created.                                                                                                  |
+| 202  | Accepted             | The request has been accepted for processing, but the processing has not been completed. You *might* get a response back on your Webhook eventually.                                         |
+| 400  | Bad Request          | The request was unacceptable, often due to missing a required parameter.                                                                                                                     |
+| 401  | Unauthorized         | No valid Signature or Token provided.                                                                                                                                                        |
+| 402  | Request Failed       | The parameters were valid but the request failed.                                                                                                                                            |
+| 403  | Forbidden            | The Client or the Token doesn't have permissions to perform the request.                                                                                                                     |
+| 404  | Not Found            | The requested resource doesn't exist.                                                                                                                                                        |
+| 422  | Unprocessable entity | One of these 2 cases: More information about the User is needed in order to approve the transaction. There is no approved assessment for this user that enables him to perform the operation |
+| 409  | Conflict             | The request conflicts with another request (perhaps due to using the same `REQUEST ID` twice).                                                                                               |
+| 429  | Too Many Requests    | Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.                                                                                             |
+| 5xx  | Server Errors        | 	Something went wrong on PTI servers. (These are rare and should not happen)                                                                                                                 |

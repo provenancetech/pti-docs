@@ -3,7 +3,7 @@
 This section provides the details on the possible messages that you can receive on your webhook endpoint.
 
 * [User Status Update](#user-status-update)
-* [KYC Result](#kyc-result)
+* [User assessment Result](#user-assessment-result)
 * [Transaction Monitoring Result](#transaction-monitoring-result)
 * [Payment Processing Update](#payment-processing-update)
 
@@ -33,7 +33,7 @@ Only PTI personnel can modify the status of a user.
 The `STATUS_REASON` value will provide more details on the reason why the status field is at the value provided.
 
 
-## KYC Result
+## User assessment Result
 
 ```json
 {
