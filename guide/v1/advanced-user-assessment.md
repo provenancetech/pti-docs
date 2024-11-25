@@ -95,7 +95,7 @@ const callTransactionLog = (accessToken) => {
             "x-pti-request-id": requestId,
             "x-pti-client-id": "${YOUR_CLIENT_ID}",
             'x-pti-token': accessToken,
-            'x-pti-scenario-id': "CCC Deposit",
+            'x-pti-scenario-id': "CC Deposit",
             'Date': date
         };
         const body = {
