@@ -68,7 +68,7 @@ transactions.
     "status":"ACCEPT | MANUAL_REVIEW | DENY | ERROR | PENDING",
     "transactionDate":"TRANSACTION_DATE",
     "amount":"TRANSACTION_AMOUNT",
-    "transactionType":"FUNDING | WITHDRAWAL | TRANSFER",
+    "transactionType":"DEPOSIT | WITHDRAWAL | TRANSFER | MINT | BUY | SELL",
     "transactionMonitoringResultDetail":{
         "complianceProviderResponseCode" : "FRAUD_SUSPICION | TRANSACTION_VELOCITY_VIOLATION | BLOCKED_JURISDICTION | GEO_FENCING_VIOLATION | SANCTION_SCREENING"
    }
@@ -101,7 +101,7 @@ The `TRANSACTION_DATE` will come in the form of an ISO 8601 compliant date strin
     "fees": "TRANSACTION_FEES",
     "currency":"TRANSACTION_CURRENCY",
     "transactionType":"DEPOSIT",
-    "paymentMethod":"PAYPAL | TOKEN | BANK_ACCOUNT | ENCRYPTED_CREDIT_CARD",
+    "paymentMethod":"CRYPTO | BANK_ACCOUNT | CREDIT_CARD",
     "additionalInfos": {
         "CreditCardLast4Digits":"XXXX",
         "PaymentProviderTransactionId":"XXXX"
@@ -115,7 +115,7 @@ The `TRANSACTION_DATE` will come in the form of an ISO 8601 compliant date strin
 
 The `REQUEST_ID` value will be set to the value you provided when you performed the your API call
 
-The `USER_ID` corresponds to the user who initiated the funding request.
+The `USER_ID` corresponds to the user who initiated the deposit request.
 
 You will receive multiple payment processing result messages. The first one will have a `PENDING` status will be followed by `AUTHORISZED` and `SETTLED` in the normal case.
 A status of `REFUSED` means that the payment processor did not accept the transaction. The `transactionStatusDetail` field contains more details about the reason for the refusal.

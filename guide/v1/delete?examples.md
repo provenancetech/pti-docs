@@ -173,11 +173,11 @@ Withdrawals are used to take assets out of the ecosystem.
             },
             destinationMethod: {
                 paymentInformation: {
-                    type: "TOKEN",
-                    tokenType: "ETH",
+                    type: "CRYPTO",
+                    currency: "ETH",
                     tokenAddress: "0x0000000000000000000000000000000000000000"
                 },
-                paymentMethodType: "TOKEN"
+                paymentMethodType: "CRYPTO"
             },
             date: TRANSACTION_DATE
         }
