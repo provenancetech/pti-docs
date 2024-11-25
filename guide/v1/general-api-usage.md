@@ -1,8 +1,8 @@
 
-## Creating PTI Users
+## Creating Fiant Users
 
 Prior to doing any actions on the API, you must define your users on the PTI system using the [create user](https://provenancetech.github.io/pti-docs/api/v1/#/default/post_users) API call. 
-We recommend that you create the PTI user that the same time you create the user on your side.
+We recommend that you create the Fiant user that the same time you create the user on your side.
 It could also be done the first time they need to interact with Fiant.
 In any case, you will need to pass a unique UUID of your choice as the value of the `id` field in the body of the request.
 You need to store this `id` and associate it to the user in your system as it will be needed for most of the API calls you will make to PTI.
@@ -37,11 +37,11 @@ The content posted on your webhook is encrypted using your public key, and signe
 You have to decrypt the message using your private key, and verify that the message originated from PTI by validating the signature using PTI's public key.
 This mechanism insures that nobody but you can have access to the content of those messages, even if your webhook was hijacked, and you can always be sure 
 that the message originated from PTI by validating the signature of the message.
-The PTI public key used for signing webhook payloads can be found [here](https://github.com/provenancetech/pti-docs/blob/master/utils/pti-prod-public.jwk)
-Example code that shows you how to handle webhook requests can be found [here](https://github.com/provenancetech/pti-docs/blob/master/examples/webhook-server/python/webhook_server.py).
+You can find the sandbox public key [here](sandbox.pub) and the production one [here](prod.pub) 
+Example code (Python) that shows you how to handle webhook requests can be found [here](https://github.com/provenancetech/pti-docs/blob/master/examples/webhook-server/python/webhook_server.py).
 
 Most webhook requests will originate form an API call you made, but it may not always be the case. For example, we may have gathered some new information about one of your users that 
-allowed us to increase the level of KYC for that user. When this happens, we send you that information by posting a [KYC result](#kyc-result) on your webhook.
+allowed us to increase the level of KYC for that user. When this happens, we send you that information by posting a [Assessment result](#user-assessment-result) on your webhook.
 
 
 ## Status codes and Errors

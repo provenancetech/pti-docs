@@ -1,11 +1,11 @@
-# KYC
+# User Assessment
 
-In order to limit the amount of fraud and other nefarious activities, PTI offers the possibility of performing a KYC ( Know Your Customer ) flow for a specific user.
+In order to limit the amount of fraud and other nefarious activities, Fiant offers the possibility of performing a User assessment ( KYC, Know Your Customer ) flow for a specific user.
 A KYC flow will require a set of information about the user and return a status. The status returned should be used to allow or deny the user to perform transactions.
 KYCs are configurable with these two elements:
 
 * **Tier**: A KYC tier is a numerical value associated to a set of user information
-* **Scenario**: A scenario is defined by a name an array of price brackets that map to a KYC tier
+* **Scenario**: A scenario is defined by a name an array of price brackets that map to an Assessment tier
 
 This implies that for a given amount and scenario, the required user information is determined via the mapped tier. The following tables illustrate the default configuration 
 for tiers and an example for scenario mappings.
@@ -13,20 +13,20 @@ These can be configured by PTI to suit your specific needs
 
 ## Default Tier Configuration
 
-| KYC Tier | Required User Information                                      |
-|----------|----------------------------------------------------------------|
-| 0        | No user information required                                   |  
-| 1        | full Name, email address, street address, date of birth        |  
-| 2        | ID with Picture ( Passport or Driver License ), liveness check |
-| 3        | cryptocurrency address                                         |
-| 4        | social security number                                         |
-| 5        | linked bank account or source of funds                         |
+| Tier | Required User Information                                      |
+|------|----------------------------------------------------------------|
+| 0    | No user information required                                   |  
+| 1    | full Name, email address, street address, date of birth        |  
+| 2    | ID with Picture ( Passport or Driver License ), liveness check |
+| 3    | cryptocurrency address                                         |
+| 4    | social security number                                         |
+| 5    | linked bank account or source of funds                         |
 
 Tiers are cumulative. For example, the information required by tier 3 includes all the information required by tier 1 and 2.
 
 ## Example Scenario Configuration
 
-This table illustrates how a scenario and an amount bracket maps to a KYC tier.
+This table illustrates how a scenario and an amount bracket maps to a Assessment tier.
 This is only an example, discuss with PTI to set up your desired configuration. 
 
 | Scenario/Nominal value | 0$ - 100$                              | 100$ - 1000$ | 1000$ - 10K$ | 10K$ and up |
@@ -63,31 +63,26 @@ example using the SDK form function to display the KYC form. Note that only the 
 In the above example, the KYC form displayed will collect all the missing information on the user identified by `USER_ID`. Again, assuming that this
 is the first transaction under the `Crypto Sell` scenario from our example configuration above, the form will collect all the missing fields in tier 3.
 
-Under the hood, all the user information will be collected, the single use token fetched and the call to the [initiate KYC endpoint](https://provenancetech.github.io/pti-docs/api/v1/#/default/post_users__userId__kyc) made.
+Under the hood, all the user information will be collected, the single use token fetched and the call to the [initiate Assessment endpoint](https://provenancetech.github.io/pti-docs/api/v1/#/User%20Assessment/startUserAssessment) made.
 
 Please note that the amount passed in the above example must be in USD.
 
-### KYC via API calls
+### User Assessment via API calls
 
-Another way to perform KYC flows is to use the API directly.
+Another way to perform a user assessment flows is to use the API directly.
 
-#### Checking if a KYC is needed
+#### Initiate a check
 
-Using the [is KYC needed endpoint](https://provenancetech.github.io/pti-docs/api/v1/#/default/get_users__userId__kyc_needed),
-it is possible to know if a KYC would be needed to perform a transaction with a given scenario and amount.
-
-#### Initiate a KYC check
-
-Using the [initiate KYC endpoint](https://provenancetech.github.io/pti-docs/api/v1/#/default/post_users__userId__kyc), it is possible to start the KYC check.
+Using the [initiate Assessment endpoint](https://provenancetech.github.io/pti-docs/api/v1/#/User%20Assessment/startUserAssessment), it is possible to start the KYC check.
 Note that all the user information needed for the selected scenario and amount must be either provided in the call or have been previously provided for the
 selected user. The result of the KYC check will be returned asynchronously over your webhook. Please note that if a liveness check is required by the selected
 tier, the user will receive a notification on his device to complete it.
 
-### KYC in the context of transactions
+### User assessment in the context of transactions
 
-When calling the transaction monitoring endpoint, passing in the scenario as well as the amount will result in the initiation of a KYC check using the
+When calling any transactions endpoint, passing in the scenario as well as the amount will result in the initiation of a KYC check using the
 KYC tier mapped by the configuration. The following example shows a call to the transaction monitoring endpoint for a transaction of 150$ done with
-the `Crypto Purchase` scenario. Assuming that this is the first transaction of that kind for a user and that the scenario configuration was exactly as the example above, 
+the `CC Deposit` scenario. Assuming that this is the first transaction of that kind for a user and that the scenario configuration was exactly as the example above, 
 this would lead to a KYC check with a KYC tier of 2. A transaction request that fails a KYC cycle will **NOT** return an `ACCEPTED` status.
 
 ```js
@@ -100,7 +95,7 @@ const callTransactionLog = (accessToken) => {
             "x-pti-request-id": requestId,
             "x-pti-client-id": "${YOUR_CLIENT_ID}",
             'x-pti-token': accessToken,
-            'x-pti-scenario-id': "Crypto Purchase",
+            'x-pti-scenario-id': "CCC Deposit",
             'Date': date
         };
         const body = {

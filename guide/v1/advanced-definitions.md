@@ -1,26 +1,26 @@
-# Provenance Technologies Documentation
+# Fiant Core API Documentation
 
-Welcome to Provenance Technologies (PTI) documentation site. Here, you will find all the relevant information needed
-for integrating with, and leveraging the PTI platform.
+Welcome Fiant documentation site. Here, you will find all the relevant information needed
+for integrating with, and leveraging the Fiant platform.
 
 ## Definitions
 
 ### Compliance
 
-Being in compliance means acting in accordance to local laws and regulations. Ensuring that all the required information is collected, all value transfers are appropriately licensed is all part of achieving compliance. The PTI platform aims to simplify this process as much as possible, but ultimately, PTI clients also have their role to play and are responsible for using the PTI platform correctly to achieve compliance.
+Being in compliance means acting in accordance to local laws and regulations. Ensuring that all the required information is collected, all value transfers are appropriately licensed is all part of achieving compliance. The Fiant(PTI) platform aims to simplify this process as much as possible, but ultimately, Fiant clients also have their role to play and are responsible for using the platform correctly to achieve compliance.
 
 ### User
 
 A user is either a person or a business for which a KYC can be initiated or that is part of a transaction. Users must be created via the create user route of the API before KYCs or transactions
 involving them can be initiated. Users have a status of `ACTIVE` when all is fine, but may also be `BLOCKED` for various reasons. Attempting API calls involving `BLOCKED` users will trigger an error.
 
-### KYC
+### KYC / User Assessment
 
 Acronym for Know Your Customer. In this documentation, "performing a KYC" means collecting as set of information about a person and returning a status.
 
-### KYC Tier
+### Tier
 
-The KYC tier, also referred to as the KYC level, is a grouping of information about a person associated to a numeric value.
+The User Assessment(KYC) tier, also referred to as the KYC level, is a grouping of information about a person associated to a numeric value.
 Depending on the information collected and the returned status, a person will be considered to have reached a KYC level.
 Higher tiers will require all the information from the lower levels.
 
@@ -38,40 +38,41 @@ A transaction, in its general form, represents a transfer of assets from an orig
 
 ## Components
 
-The PTI platform provides you with components that will allow you to achieve compliance while minimizing the amount of effort needed on your end to do so.
+The Fiant platform provides you with components that will allow you to achieve compliance while minimizing the amount of effort needed on your end to do so.
 
-### Hosted Forms
+### Elements
 
-In order to simplify a secure integration to the PTI platform, hosted forms are provided for the following use cases:
+In order to simplify a secure integration to the Fiant platform, hosted forms are provided for the following use cases:
 
-- Collection of information for the KYC flow
-- Payment for a Deposit transaction
+- Collection of information for the User Assessment(KYC) flow
+- Collecting payment information
+- Onboarding users
 
 ### Web SDK
 
-The web sdk is a publicly available Javascript library provided to simplify the integration of the Hosted Forms in the client UI.
+The web sdk is a publicly available Javascript library provided to simplify the integration of the Fiant Elements in the client UI.
 It also enables the tracking of user devices and UI interactions to improve the detection of malicious behaviour.
-The [SDK page](./advanced-frontend-sdk) contains guidance on how to leverage the PTI SDK.
+The [SDK page](./advanced-frontend-sdk) contains guidance on how to leverage the Fiant Web SDK.
 
 ### REST API
 
-The REST API is the central part of the PTI platform. Its endpoints focus around these main areas:
+The REST API is the central part of the Fiant platform. Its endpoints focus around these main areas:
 
 - User creation and management
-- KYC cycle management
-- Transaction management and logging
+- User Assessment cycle management
+- Transaction execution and assessment
 
 ## Integration
 
-In order to start using the PTI platform, follow our [onboarding guide](./fiant-onboarding).
+In order to start using the Fiant platform, follow our [onboarding guide](./fiant-onboarding).
 
-The [authentication page](./advanced-auth) provides all the information required and steps to follow in order to be able to securely interact with the PTI platform.
+The [authentication page](./advanced-auth) provides all the information required and steps to follow in order to be able to securely interact with the Fiant Core API.
 
-The [KYC page](./advanced-kyc) details the different ways the KYC flow can be configured and customized to suit various use cases.
+The [User Assessment page](./advanced-user-assessment) details the different ways the KYC flow can be configured and customized to suit various use cases.
 
-The [SDK page](./advanced-kyc) shows you how to initialize and use the SDK.
+The [SDK page](./advanced-user-assessment) shows you how to initialize and use the SDK.
 
-The [API usage page](./delete?usage) demonstrates how communicate via the PTI API and associated webhooks.
+The [API usage page](./advanced?usage) demonstrates how communicate via the Fiant Core API and associated webhooks.
 
 ## Contributing
 

@@ -1,10 +1,10 @@
 # Onboarding
 
-This page details the steps to follow in order to get access to the PTI platform.
+This page details the steps to follow in order to get access to the Fiant platform.
 
 ## Generating a key pair
 
-The PTI API uses asymmetric cryptography and singed tokens.
+The Fiant Core API uses asymmetric cryptography and singed tokens.
 In order to get access to the PTI API and other services you first need to create yourself a set of credentials.
 The PTI API makes extensive use of the [JWT](https://tools.ietf.org/html/rfc7519), [JWE](https://datatracker.ietf.org/doc/rfc7516) and [JWS](https://tools.ietf.org/html/rfc7515) standards.
 
@@ -18,10 +18,10 @@ This will create a pair of files in the form of `${CLIENT_NAME}_private_key.jwk`
 
 **It is your responsibility** to make sure that your private key ( contents of `${CLIENT_NAME}_private_key.jwk` ) is handled and stored in a secure fashion.
 
-## Opening your account with PTI
+## Opening your account with Fiant
 
-Once you are ready to start interacting with the PTI platform,
-write an email to [PTI customer service](mailto:customerservice@provenancetech.io) requesting an account.
+Once you are ready to start interacting with the Fiant platform,
+write an email to [Fiant customer service](mailto:customerservice@provenancetech.io) requesting an account.
 You need to provide these 2 pieces of information:
 
 - **Your public key**: ( attach your `${CLIENT_NAME}_public_key.jwk` to the email)
@@ -31,5 +31,4 @@ As soon as your account application is approved, you will receive a client ID th
 
 With your client ID and private key on hand, you are ready start using the PTI platform.
 
-Visit the [SDK guide](advanced-frontend-sdk) to learn how to leverage PTI's hosted forms or the [authentication page](advanced-auth) to learn how to
-interact securely with the PTI API.
+

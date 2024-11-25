@@ -26,9 +26,9 @@ Here is the meaning of the possible statuses:
 
  * `ACTIVE`: This is the status of a normal and valid user for which it is possible to initiate KYCs or be involved in transactions.
  * `INACTIVE`: This is the status of a user that is within our systems for tracking purposes, but it is not possible to involve inactive users in transactions or initiate KYCs on them.
- * `BLOCKED`: This is the status of a user that was blocked by PTI for security and compliance reasons. it is not possible to involve blocked users in transactions or initiate KYCs on them.
+ * `BLOCKED`: This is the status of a user that was blocked by Fiant for security and compliance reasons. it is not possible to involve blocked users in transactions or initiate KYCs on them.
 
-Only PTI personnel can modify the status of a user.
+Only Fiant personnel can modify the status of a user.
 
 The `STATUS_REASON` value will provide more details on the reason why the status field is at the value provided.
 
@@ -37,7 +37,7 @@ The `STATUS_REASON` value will provide more details on the reason why the status
 
 ```json
 {
-    "resourceType":"KYC",
+    "resourceType":"USER_ASSESSMENT",
     "requestId":"REQUEST_ID",
     "clientId":"CLIENT_ID",
     "userId":"USER_ID",
@@ -47,7 +47,7 @@ The `STATUS_REASON` value will provide more details on the reason why the status
   
 }
 ```
-The `REQUEST_ID` value will be set to the value you provided when you [initiated the KYC](#initiating-a-kyc)
+The `REQUEST_ID` value will be set to the value you provided when you [initiated the user assessment](#initiating-a-user-assessment)
 
 The `USER_ID` corresponds to the user for which we are providing the KYC status and tier.
 
@@ -100,7 +100,7 @@ The `TRANSACTION_DATE` will come in the form of an ISO 8601 compliant date strin
     "amount":"TRANSACTION_AMOUNT",
     "fees": "TRANSACTION_FEES",
     "currency":"TRANSACTION_CURRENCY",
-    "transactionType":"FUNDING",
+    "transactionType":"DEPOSIT",
     "paymentMethod":"PAYPAL | TOKEN | BANK_ACCOUNT | ENCRYPTED_CREDIT_CARD",
     "additionalInfos": {
         "CreditCardLast4Digits":"XXXX",
@@ -113,7 +113,7 @@ The `TRANSACTION_DATE` will come in the form of an ISO 8601 compliant date strin
 }
 ```
 
-The `REQUEST_ID` value will be set to the value you provided when you performed the [fiat funding call](https://provenancetech.github.io/pti-docs/api/v1/#/default/post_users__userId__transactions_fiat_funding)
+The `REQUEST_ID` value will be set to the value you provided when you performed the your API call
 
 The `USER_ID` corresponds to the user who initiated the funding request.
 

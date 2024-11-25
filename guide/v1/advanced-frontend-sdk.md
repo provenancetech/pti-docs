@@ -1,7 +1,7 @@
 # SDK
 
-In order to simplify the integration of PTI Hosted forms and enable the tracking of UI interactions,
-PTI provides a SDK that comes in the form of a Javascript library.
+In order to simplify the integration of Fiant elements and enable the tracking of UI interactions,
+Fiant provides a Web SDK that comes in the form of a Javascript library.
 
 ## Initialize the SDK
 
@@ -23,11 +23,11 @@ Normally there should only be one call to the `PTI.init` function.
 ```
 {env}: Set to dev, staging, or platform for development, staging, or production environments, respectively.
 
-The `CLIENT_ID` must be set to the UUID provided by PTI when you did the [onboarding](fiant-onboarding).
+The `CLIENT_ID` must be set to the UUID provided by Fiant(PTI) when you did the [onboarding](fiant-onboarding).
 
 The `GENERATE_TOKEN_ENDPOINT` should be set to the url of your backend that will proxy the generation of [single use tokens](advanced-auth#single-use-tokens)
 
-The `PTI_DOMAIN` is the domain hosting PTI forms, corresponding to {env}. Use the field `ptiDomain` to specify one of the following:
+The `PTI_DOMAIN` is the domain hosting Fiant(PTI) elements, corresponding to {env}. Use the field `ptiDomain` to specify one of the following:
 - dev.fiant.io (development)
 - staging.fiant.io (staging)
 - platform.fiant.io (production)
@@ -41,7 +41,7 @@ you would provide a value that allows you to do an association to all the sessio
 
 ## Updating the context
 
-It is possible to leverage PTI UI interaction monitoring even on forms on your site that are not the PTI Hosted Forms.
+It is possible to leverage Fiant UI interaction monitoring even on forms on your site that are not the Fiant elements.
 Here is an example call to the updateContext function:
 
 ```js
@@ -55,19 +55,19 @@ PTI.updateContext({
 The `SCENARIO_ID` value can be one of the scenarios you configured for your KYC flows or any value that makes sense in your situation.
 This value is used to track the steps of the user journey withing your site.
 
-The `USER_ID` value should be set to the user ID you use with all the PTI endpoints
+The `USER_ID` value should be set to the user ID you use with all the API endpoints
 
 The `sessionId` can be the same as the one you provided in the init call ( as shown here ). Conceptually, the sessionId corrsponds to
 the user session with your site or application.
 
 Updating the context is not mandatory and it is done for you under the hood when you display the Hosted Forms.
 
-## Displaying forms
+## Displaying elements
 
 The hosted forms are displayed within an iframe on the html element of your choosing. Here are code examples showing how to
 render the forms on your web application.
 
-#### Display the KYC form
+#### Display the User Assessment element
 
 ```html
 <div id="kyc_form"></div>
@@ -83,25 +83,7 @@ render the forms on your web application.
 </script>
 ```
 
-#### Display the payment form
-
-```html
-<div id="payment_form"></div>
-<script>
-  PTI.form({
-    type: "FIAT_FUNDING",
-    requestId: "REQUEST_ID",
-    userId: "USER_ID",
-    scenarioId: "SCENARIO_ID",
-    currency: "USD",
-    amount: 150,
-    parentElement: document.getElementById("payment_form"),
-    lang: "es",
-  });
-</script>
-```
-
-#### Display the Onboarding form
+#### Display the Onboarding element
 
 ```html
 <div id="onboarding_form"></div>
@@ -117,7 +99,7 @@ render the forms on your web application.
 </script>
 ```
 
-#### Display the "Add a credit card" form
+#### Display the "Add payment informations" element
 
 ```html
 <div id="add_cc_form"></div>
@@ -132,22 +114,49 @@ render the forms on your web application.
 </script>
 ```
 
+```html
+<div id="add_crypto_form"></div>
+<script>
+  PTI.form({
+    type: "ADD_CRYPTO_WALLET",
+    requestId: "REQUEST_ID",
+    userId: "USER_ID",
+    parentElement: document.getElementById("add_crypto_form"),
+    lang: "en",
+  });
+</script>
+```
+
+```html
+<div id="add_bank_account_form"></div>
+<script>
+  PTI.form({
+    type: "ADD_BANK_ACCOUNT",
+    requestId: "REQUEST_ID",
+    userId: "USER_ID",
+    parentElement: document.getElementById("add_bank_account_form"),
+    lang: "en",
+  });
+</script>
+```
+
 The value of the `type` parameter will determine which form will be displayed.
 There are various forms available:
--  `KYC` will display the KYC form
-- `FIAT_FUNDING` will display the Payment form
+- `KYC` will display the KYC form
+- `ADD_BANK_ACCOUNT` will display the add bank account fork
+- `ADD_CRYPTO_WALLET` will display the add crypto wallet form
 - `ONBOARDING` will display the Onboarding form
 - `ADD_CC` will display the "Add a credit card" form
 
 The value of `REQUEST_ID` is under your control. You should provide a UUID that you will store on your side to be able to correlate to a specific
-transaction or KYC check. If you ever have to report a problem to PTI, you must provide the `REQUEST_ID` associated to it to allow PTI to investigate.
+transaction or KYC check. If you ever have to report a problem to Fiant(PTI), you must provide the `REQUEST_ID` associated to it to allow Fiant to investigate.
 The `REQUEST_ID` UUID should be unique. Trying to complete 2 transactions or KYCs with the same `REQUEST_ID` will generate an error.
 
 The value of `USER_ID` is also under your control. It corresponds to the value you passed in the `id` field in the body of the [create user](https://provenancetech.github.io/pti-docs/api/v1/#/default/post_users) API call.
-You must store the `this` value at user creation time to make sure you can associate your users with users in the PTI platform.
+You must store the `this` value at user creation time to make sure you can associate your users with users in the platform.
 
 The value of `SCENARIO_ID` will select the scenario under which the transaction or KYC will be made.
-The scenario must have been configured previously as explained [here](advanced-kyc).
+The scenario must have been configured previously as explained [here](advanced-user-assessment).
 Passing an unconfigured `SCENARIO_ID` value will result in an error.
 
 The value of `lang` is to specify which language strings should be used in the form. Default is `en` (English)

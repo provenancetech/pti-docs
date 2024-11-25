@@ -1,8 +1,8 @@
 # Authentication
 
-The PTI API uses asymmetric cryptography, encapsulated in a signature, to authenticate the caller of the API.
-PTI only has access to your public key(s), never to your private key. It's your responsibility to keep your private key secure at all times.
-Having access to your private key means having access to your PTI API account. 
+The Fiant Core API uses asymmetric cryptography, encapsulated in a signature, to authenticate the caller of the API.
+Fiant only has access to your public key(s), never to your private key. It's your responsibility to keep your private key secure at all times.
+Having access to your private key means having access to your Fiant Core API account. 
 Do **NOT** share your private key  in publicly accessible areas such as code repositories, client-side code, and so forth.
 
 All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail.
@@ -28,9 +28,9 @@ are made from a private client. Only your server backend should make signed requ
 
 #### Making signed requests
 
-Once you have completed the steps in the [onboarding guide](fiant-onboarding) and have your client ID and private key on hand, you can make requests to the PTI API. 
+Once you have completed the steps in the [onboarding guide](fiant-onboarding) and have your client ID and private key on hand, you can make requests to the Fiant Core API. 
 
-To make a signed request to the PTI API, you must include at least the two following headers:
+To make a signed request to the Fiant Core API, you must include at least the two following headers:
 - `x-pti-client-id` with the value set to your client ID
 - `x-pti-signature` with the value set to the compact form of a JSON Web Signature (JWS)
 
@@ -84,7 +84,7 @@ You must include `${SHA256 of request body}` and `${Content Type}` for POST, PAT
 
 #### Helper tool to make signed requests
 
-You can use the [signed_request_maker.py](https://github.com/provenancetech/pti-docs/blob/master/utils/signed_request_maker.py) utility to make signed requests to the PTI API. It's useful as a testing and learning tool for signed requests.
+You can use the [signed_request_maker.py](https://github.com/provenancetech/pti-docs/blob/master/utils/signed_request_maker.py) utility to make signed requests to the Fiant Core API. It's useful as a testing and learning tool for signed requests.
 
 For example:
 
@@ -95,7 +95,7 @@ python signed_request_maker.py --clientId "00000000-0000-0000-0000-000000000000"
 
 ## Single use tokens
 
-If you need your users or third parties to be able to call the PTI API on your behalf, for example for uploading a PII, you can generate a single-use JWT (JSON Web Token) restricted to that specific operation. You can then hand the token to your user/third-party. Remember, it's your responsibility to keep the token secure, as it provides (restricted) access to your PTI account.
+If you need your users or third parties to be able to call the Fiant Core API on your behalf, for example for uploading a PII, you can generate a single-use JWT (JSON Web Token) restricted to that specific operation. You can then hand the token to your user/third-party. Remember, it's your responsibility to keep the token secure, as it provides (restricted) access to your Fiant(PTI) account.
 
 ### Generating a single-use JWT with permissions for a specific URL
 
@@ -109,14 +109,14 @@ The following diagram illustrates the token generation process leading to an API
 
 ```mermaid
 sequenceDiagram
-    Client UI->>Client Back End: Get JWT Token ( http_method, pti_api_url )
+    Client UI->>Client Back End: Get JWT Token ( http_method, fiant_api_url )
     activate Client Back End
-    Client Back End->>Client Back End: Sign ( private_key, {method: http_method, url: pti_api_url} )
-    Client Back End->>PTI API: POST(/auth/jwt) with signature
-    activate PTI API
-    PTI API->>Client Back End: JWT Token
-    deactivate PTI API
+    Client Back End->>Client Back End: Sign ( private_key, {method: http_method, url: fiant_api_url} )
+    Client Back End->>FIANT API: POST(/auth/jwt) with signature
+    activate FIANT API
+    FIANT API->>Client Back End: JWT Token
+    deactivate FIANT API
     Client Back End->>Client UI: JWT Token
     deactivate Client Back End
-    Client UI->>PTI API: Request to pti_api_url ( x-pti-token : JWT Token )
+    Client UI->>FIANT API: Request to fiant_api_url ( x-pti-token : JWT Token )
 ```
