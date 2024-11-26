@@ -465,6 +465,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
+    patch:
+      operationId: updatePaymentInformation
+      summary: Update a payment information for a specific user.
+      description: >-
+        This endpoint is used to update a payment information for a specific user.
+        Note: This endpoint does not support updating Credit Cards.
+      tags:
+        - Collect User Data
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/oneOfExternalPaymentInformation'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/oneOfExternalPaymentInformation'
     delete:
       operationId: deleteUserPaymentInformations
       summary: Delete a payment information for a specific user.

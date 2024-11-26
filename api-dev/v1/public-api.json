@@ -916,6 +916,100 @@
             }
           }
         }
+      },
+      "patch" : {
+        "tags" : [ "Collect User Data" ],
+        "summary" : "Update a payment information for a specific user.",
+        "description" : "This endpoint is used to update a payment information for a specific user. Note: This endpoint does not support updating Credit Cards.",
+        "operationId" : "updatePaymentInformation",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        }, {
+          "name" : "paymentInformationId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/oneOfExternalPaymentInformation"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/oneOfExternalPaymentInformation"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/transactions/validations" : {
