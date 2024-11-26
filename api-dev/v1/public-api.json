@@ -5154,7 +5154,7 @@
             "paymentMethodType" : "WALLET",
             "paymentInformation" : {
               "type" : "WALLET",
-              "walletId" : "myEthWallet"
+              "walletId" : "db36f561-f20d-47b9-80b8-89dc1ecb4903"
             }
           },
           "amount" : 200,
@@ -5349,8 +5349,13 @@
             "pattern" : "^([A-Za-z]{1,10})$",
             "type" : "string"
           },
-          "transactionDescription" : {
+          "purposeOfPayment" : {
             "maxLength" : 100,
+            "pattern" : "^([A-Za-z]{1,10})$",
+            "type" : "string"
+          },
+          "memo" : {
+            "maxLength" : 140,
             "pattern" : "^([A-Za-z]{1,10})$",
             "type" : "string"
           },
@@ -6242,7 +6247,7 @@
         }
       },
       "walletCreation" : {
-        "required" : [ "currency", "type", "walletId" ],
+        "required" : [ "currency", "type" ],
         "type" : "object",
         "properties" : {
           "walletId" : {
@@ -6256,6 +6261,12 @@
           "network" : {
             "$ref" : "#/components/schemas/blockChainEnum"
           },
+          "label" : {
+            "maxLength" : 255,
+            "pattern" : "^[A-Za-z]+(?:_[A-Za-z]+)*$",
+            "type" : "string",
+            "description" : "Optional readable label"
+          },
           "type" : {
             "type" : "string",
             "enum" : [ "WALLET" ]
@@ -6268,17 +6279,23 @@
           }
         },
         "example" : {
-          "walletId" : "MyUSDWallet",
+          "walletId" : "6c870027-01d8-4804-8867-6a08e8a37e49",
+          "label" : "MyUSDWallet",
           "type" : "WALLET",
           "currency" : "USD",
           "reference" : "0x16Df97AB64d9eb5FF393F9f52F9290566857B07C"
         }
       },
       "wallet" : {
-        "required" : [ "currency", "type", "walletId" ],
+        "required" : [ "currency", "label", "type" ],
         "type" : "object",
         "properties" : {
           "walletId" : {
+            "maxLength" : 255,
+            "pattern" : "^[A-Za-z]+(?:_[A-Za-z]+)*$",
+            "type" : "string"
+          },
+          "label" : {
             "maxLength" : 255,
             "pattern" : "^[A-Za-z]+(?:_[A-Za-z]+)*$",
             "type" : "string"
@@ -6313,6 +6330,7 @@
         },
         "example" : {
           "walletId" : "MyUSDWallet",
+          "label" : "MyUSDWallet",
           "currency" : "USD",
           "type" : "WALLET",
           "depositInstruction" : {

@@ -3067,7 +3067,7 @@ components:
           paymentMethodType: WALLET
           paymentInformation:
             type: WALLET
-            walletId: myEthWallet
+            walletId: db36f561-f20d-47b9-80b8-89dc1ecb4903
         amount: 200
         usdValue: 200
         type: WITHDRAWAL
@@ -3223,10 +3223,14 @@ components:
           type: string
           pattern: '^([A-Za-z]{1,10})$'
           maxLength: 3
-        transactionDescription:
+        purposeOfPayment:
           type: string
           pattern: '^([A-Za-z]{1,10})$'
           maxLength: 100
+        memo:
+          type: string
+          pattern: '^([A-Za-z]{1,10})$'
+          maxLength: 140
         billingEmail:
           type: string
           pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'
@@ -3960,7 +3964,6 @@ components:
     walletCreation:
       type: object
       required:
-        - walletId
         - currency
         - type
       properties:
@@ -3972,6 +3975,11 @@ components:
           $ref: '#/components/schemas/currencyEnum'
         network:
           $ref: '#/components/schemas/blockChainEnum'
+        label:
+          type: string
+          maxLength: 255
+          pattern: '^[A-Za-z]+(?:_[A-Za-z]+)*$'
+          description: Optional readable label
         type:
           type: string
           enum:
@@ -3983,7 +3991,8 @@ components:
           maxLength: 40
           nullable: true
       example:
-        walletId: MyUSDWallet
+        walletId: 6c870027-01d8-4804-8867-6a08e8a37e49
+        label: MyUSDWallet
         type: WALLET
         currency: USD
         reference: '0x16Df97AB64d9eb5FF393F9f52F9290566857B07C'
@@ -3991,10 +4000,14 @@ components:
       type: object
       required:
         - type
-        - walletId
+        - label
         - currency
       properties:
         walletId:
+          type: string
+          maxLength: 255
+          pattern: '^[A-Za-z]+(?:_[A-Za-z]+)*$'
+        label:
           type: string
           maxLength: 255
           pattern: '^[A-Za-z]+(?:_[A-Za-z]+)*$'
@@ -4025,6 +4038,7 @@ components:
             - WALLET
       example:
         walletId: MyUSDWallet
+        label: MyUSDWallet
         currency: USD
         type: WALLET
         depositInstruction: { "type": "CRYPTO_ADDRESS", "address": "0x128ZuOfgu9LZYkKjrOLLSExMELO6otneF2", "blockchain": "Bitcoin" }
