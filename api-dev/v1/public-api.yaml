@@ -388,6 +388,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/oneOfExternalPaymentInformation'
+        '400':
+          description: Invalid payment information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidRequestError'
         '401':
           description: unauthorized
           content:
@@ -2317,6 +2323,7 @@ components:
         - TOKEN
         - CREDIT_CARD
         - WALLET
+        - CRYPTO
     
     simulatePaymentRequest:
       type: object
@@ -2475,14 +2482,10 @@ components:
         person:
           $ref: '#/components/schemas/person'
     countryCode:
-      type: object
-      additionalProperties: false
-      properties:
-        code:
-          maxLength: 2
-          type: string
-          description: 'ISO 3166 alpha 1 country code, example US'
-          pattern: '^([A-Za-z]{2})$'
+      type: string
+      maxLength: 2
+      description: 'ISO 3166 alpha 1 country code, example US'
+      pattern: '^([A-Za-z]{2})$'
     encryptedCreditCardPaymentInformation:
       type: object
       required:
@@ -2544,13 +2547,13 @@ components:
           maxLength: 255
           type: string
         cardHolderLastName:
-          description: first name of card holder
+          description: last name of card holder
           pattern: '^[ -~]*$'
           type: string
           minLength: 3
           maxLength: 255
         creditCardAddress:
-          description: cc address
+          description: card holder address
           type: object
           allOf:
             - $ref: '#/components/schemas/address'
@@ -3407,6 +3410,7 @@ components:
           BANK_ACCOUNT: '#/components/schemas/bankAccountPaymentInformation'
           ENCRYPTED_CREDIT_CARD: '#/components/schemas/encryptedCreditCardPaymentInformation'
           TOKEN: '#/components/schemas/cryptoPaymentInformation'
+          CRYPTO: '#/components/schemas/cryptoPaymentInformation'
       example: {
         "id": "36dbe68f-2747-41c6-8748-559588fd3248",
         "type": "ENCRYPTED_CREDIT_CARD",
@@ -3433,6 +3437,7 @@ components:
     oneOfExternalPaymentMethod:
       oneOf:
         - $ref: '#/components/schemas/tokenPaymentMethod'
+        - $ref: '#/components/schemas/cryptoPaymentMethod'
         - $ref: '#/components/schemas/fiatPaymentMethod'
         - $ref: '#/components/schemas/creditCardPaymentMethod'
         - $ref: '#/components/schemas/wirePaymentMethod'
@@ -3443,9 +3448,11 @@ components:
           CREDIT_CARD: '#/components/schemas/creditCardPaymentMethod'
           WIRE: '#/components/schemas/wirePaymentMethod'
           TOKEN: '#/components/schemas/tokenPaymentMethod'
+          CRYPTO: '#/components/schemas/cryptoPaymentMethod'
     oneOfPaymentMethod:
       oneOf:
         - $ref: '#/components/schemas/tokenPaymentMethod'
+        - $ref: '#/components/schemas/cryptoPaymentMethod'
         - $ref: '#/components/schemas/fiatPaymentMethod'
         - $ref: '#/components/schemas/creditCardPaymentMethod'
         - $ref: '#/components/schemas/walletPaymentMethod'
@@ -3458,6 +3465,7 @@ components:
           WIRE: '#/components/schemas/wirePaymentMethod'
           WALLET: '#/components/schemas/walletPaymentMethod'
           TOKEN: '#/components/schemas/tokenPaymentMethod'
+          CRYPTO: '#/components/schemas/cryptoPaymentMethod'
     oneOfPiiSubTypes:
       required:
         - type
@@ -3506,6 +3514,7 @@ components:
         - $ref: '#/components/schemas/buyTransaction'
         - $ref: '#/components/schemas/mintTransaction'
         - $ref: '#/components/schemas/tradeTransaction'
+        - $ref: '#/components/schemas/paymentTransaction'
       discriminator:
         propertyName: type
     oneOfUserSubTypes:
@@ -3641,14 +3650,10 @@ components:
           description: 'Valid us formatted SSN, example 222-22-2222'
           pattern: '^\d{3}-?\d{2}-?\d{4}$'
     stateCode:
-      type: object
-      additionalProperties: false
-      properties:
-        code:
-          type: string
-          maxLength: 5
-          description: 'ISO 3166-2 state code, example US-CA'
-          pattern: '^([A-Za-z]{2}-[A-Za-z0-9]{2})$'
+      type: string
+      maxLength: 5
+      description: 'ISO 3166-2 state code, example US-CA'
+      pattern: '^([A-Za-z]{2}-[A-Za-z0-9]{2})$'
     cryptoPaymentInformation:
       type: object
       required:
@@ -3700,6 +3705,21 @@ components:
         paymentInformation:
           $ref: '#/components/schemas/cryptoPaymentInformation'
     tokenPaymentMethod:
+      type: object
+      additionalProperties: true
+      required:
+        - paymentMethodType
+      properties:
+        paymentMethodType:
+          $ref: '#/components/schemas/paymentMethodType'
+        billingEmail:
+          type: string
+          pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'
+          format: email
+          maxLength: 320
+        paymentInformation:
+          $ref: '#/components/schemas/cryptoPaymentInformation'
+    cryptoPaymentMethod:
       type: object
       additionalProperties: true
       required:
@@ -3862,6 +3882,11 @@ components:
         - FRAUD_SUSPICION
         - BUSINESS_CO_OWNER
         - COMPLIANCE_FLAG
+        - HIGH_RISK_IP,
+        - INFORMATION_MISMATCH,
+        - HIGH_RISK_EMAIL_DOMAIN,
+        - UNUSUAL_HIGH_VELOCITY,
+        - CHARGEBACK
     userStatus:
       enum:
         - ACTIVE
@@ -4150,14 +4175,17 @@ components:
         DOCUMENT_NUMBER: '12345'
         NATIONALITY: American
         EXPIRY_DATE: '2023-06-28'
-      additionalProperties:
-        type: string
-        enum:
-          - PERSON_NAME
-          - DATE_OF_BIRTH
-          - DOCUMENT_NUMBER
-          - NATIONALITY
-          - EXPIRY_DATE
+      properties:
+        PERSON_NAME:
+          type: string
+        DATE_OF_BIRTH:
+          type: string
+        DOCUMENT_NUMBER:
+          type: string
+        NATIONALITY:
+          type: string
+        EXPIRY_DATE:
+          type: string
     kycRequest:
       oneOf:
         - $ref: '#/components/schemas/person'
@@ -4728,8 +4756,7 @@ components:
           $ref: '#/components/schemas/cost'
     
     currencyEnum:
-      type: object
-      additionalProperties: false
+      type: string
       enum:
         - BTC
         - ETH
@@ -4739,8 +4766,7 @@ components:
         - USD
     
     blockChainEnum:
-      type: object
-      additionalProperties: false
+      type: string
       enum:
         - ETHEREUM
         - BITCOIN
@@ -4748,8 +4774,7 @@ components:
         - POLYGON
     
     currencyType:
-      type: object
-      additionalProperties: false
+      type: string
       enum:
         - CRYPTO
         - FIAT
