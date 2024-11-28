@@ -2399,11 +2399,14 @@ components:
           pattern: '^[ -~]*$'
     bii:
       type: object
+      required:
+        - type
       properties:
-        value:
-          maxLength: 1024
-          type: string
-          pattern: '^[ -~]*$'
+        type:
+          enum:
+            - EIN
+      discriminator:
+        propertyName: type   
     business:
       type: object
       required:
@@ -2565,7 +2568,7 @@ components:
       allOf:
         - $ref: '#/components/schemas/bii'
       properties:
-        number:
+        value:
           maxLength: 16
           type: string
           description: 'Ein number, properly formatted, example 12-3456789'
@@ -3608,9 +3611,9 @@ components:
         - type
       properties:
         type:
-          type: string
-          pattern: '^[ -~]*$'
-          maxLength: 50
+          enum:
+            - SSN
+            - ITIN
       discriminator:
         propertyName: type
     phone:
@@ -3861,10 +3864,10 @@ components:
         - FRAUD_SUSPICION
         - BUSINESS_CO_OWNER
         - COMPLIANCE_FLAG
-        - HIGH_RISK_IP,
-        - INFORMATION_MISMATCH,
-        - HIGH_RISK_EMAIL_DOMAIN,
-        - UNUSUAL_HIGH_VELOCITY,
+        - HIGH_RISK_IP
+        - INFORMATION_MISMATCH
+        - HIGH_RISK_EMAIL_DOMAIN
+        - UNUSUAL_HIGH_VELOCITY
         - CHARGEBACK
     userStatus:
       enum:
