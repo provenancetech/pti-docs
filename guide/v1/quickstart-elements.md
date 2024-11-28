@@ -34,7 +34,7 @@ const onMessageReceived = () => {
 
 ### Retrieve the information from the API
 ```java
-
+EncryptedCreditCardPaymentInformation card = sdk.collectUserData().getUserPaymentInformation("YOUR_USER_ID", "CC_PAYMENT_INFO_ID").getEncryptedCreditCard().get();
 ```
 
 ## Save bank account information
@@ -69,7 +69,7 @@ const onMessageReceived = () => {
 
 ### Retrieve the information from the API
 ```java
-
+BankAccountPaymentInformation paymentInformation = sdk.collectUserData().getUserPaymentInformation("YOUR_USER_ID", "BANK_ACCOUNT_INFO_ID").getBankAccount().get();
 ```
 ## Save crypto wallet information
 ### Display the element
@@ -102,7 +102,7 @@ const onMessageReceived = () => {
 ```
 ### Retrieve the information from the API
 ```java
-
+CryptoPaymentInformation crypto = sdk.collectUserData().getUserPaymentInformation("YOUR_USER_ID", "CRYPTO_WALLET_INFO_ID").getCrypto().get();
 ```
 
 ## Perform user Assessment
@@ -182,5 +182,5 @@ const onMessageReceived = () => {
 
 ### Retrieve your user
 ```java
-
+Person person = sdk.collectUserData().getUser("").getPerson().get();
 ```

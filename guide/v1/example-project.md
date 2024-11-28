@@ -3,18 +3,19 @@
 Fiant provides some examples to help you understand the different ways you can interact with the platform.
 The source code for the examples is available [here](https://github.com/provenancetech/pti-docs/tree/master/examples)
 
+TODO: We need to review this repo, and remove/update deprecated stuff
 
 ## Reference React application example
 
 [Here](https://github.com/provenancetech/pti-docs/tree/master/examples/ReactJsSdkApp) is an example of a basic React web application that leverages the SDK to render forms
 and also shows some calls to the API.
 
-[Here](https://github.com/provenancetech/pti-docs/blob/master/examples/PythonBackendApp/client_backend.py) you will find the associated example backend that provides 2 endponints:
+[Here](https://github.com/provenancetech/pti-docs/blob/master/examples/PythonBackendApp/client_backend.py) you will find the associated example backend that provides 2 endpoints:
 
 * `/generateToken`:  the endpoint you would put in your backend to proxy the single use token requests
-* `/webhook`: the endpoint you would put in your backend to receive the [webhook responses](delete?usage#webhook-responses-definitions)
+* `/webhook`: the endpoint you would put in your backend to receive the [webhook responses](webhook-responses-definitions)
 
-Note that it is possible to connect run this example code locally and connect it to your environment on the PTI platform. 
+Note that it is possible to connect run this example code locally and connect it to your environment on the Fiant platform. 
 However, if you also wish to connect to the webhook endpoint, you must find a way to serve it over a public HTTPS address.
 
 ## Webhook server example
@@ -23,7 +24,7 @@ However, if you also wish to connect to the webhook endpoint, you must find a wa
 It shows how to handle the incoming webhook requests and verify the signature.
 
 
-## Transaction assessment call examples
+## Transaction call examples
 
 Here are examples for all three possible transaction types.
 
@@ -34,7 +35,7 @@ Deposit transactions are used to bring in assets in the client ecosystem.
 ```js
 const callAssessment = (accessToken) => {
         const baseUrl = 'https://api.fiant.io/v1';
-        const url = baseUrl + '/transactions/assessments';
+        const url = baseUrl + '/transactions/deposits';
         const date = new Date().toISOString();
         const headers = {
             "Content-type": "application/json",
@@ -55,7 +56,7 @@ const callAssessment = (accessToken) => {
                 currency: "USD",
                 paymentInformation: {
                     type: "ENCRYPTED_CREDIT_CARD",
-                    creditCardNumberHash: "feead9c948a4b3393498cf17816fb289c2d4d80d4ffb5b11a7171c5f6c48f573"
+                    id: "your_payment_information_id"
                 },
                 paymentMethodType: "CREDIT_CARD"
             },
@@ -79,12 +80,12 @@ const callAssessment = (accessToken) => {
     }
 
 ```
-### Swap
+### Trade
 Swaps are used to exchange assets within the ecosystem.
 ```js
 const callAssessment = (accessToken) => {
         const baseUrl = 'https://api.fiant.io/v1';
-        const url = baseUrl + '/transactions/assessments';
+        const url = baseUrl + '/transactions/trades';
         const date = new Date().toISOString();
         const headers = {
             "Content-type": "application/json",
@@ -94,7 +95,7 @@ const callAssessment = (accessToken) => {
             'x-pti-scenario-id': SCENARIO_ID,
         };
         const body = {
-            type: "SWAP",
+            type: "TRADE",
             amount: 150,
             usdValue: 150,
             initiator: {
@@ -104,7 +105,6 @@ const callAssessment = (accessToken) => {
             sourceTransferMethod: {
                 paymentInformation: {
                     type: "WALLET",
-                    currency: "ETH",
                     walletId: "MyEthWallet"
                 },
                 paymentMethodType: "WALLET"
@@ -112,7 +112,6 @@ const callAssessment = (accessToken) => {
             destinationTransferMethod: {
                 paymentInformation: {
                     type: "WALLET",
-                    currency: "USDC",
                     walletId: "MyUSDCWallet"
                 },
                 paymentMethodType: "WALLET"
@@ -143,7 +142,7 @@ Withdrawals are used to take assets out of the ecosystem.
 ```js
     const callTransactionLog = (accessToken) => {
         const baseUrl = 'https://api.fiant.io/v1';
-        const url = baseUrl + '/transactions/assessments';
+        const url = baseUrl + '/transactions/withdrawals';
         const date = new Date().toISOString();
         const headers = {
             "x-pti-request-id": REQUEST_ID,
@@ -166,7 +165,6 @@ Withdrawals are used to take assets out of the ecosystem.
             sourceMethod: {
                 paymentInformation: {
                     type: "WALLET",
-                    currency: "ETH",
                     walletId: "MyEthWallet"
                 },
                 paymentMethodType: "WALLET"

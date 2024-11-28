@@ -6,5 +6,5 @@
 - [Elements](advanced-elements)
 - [Onboarding with Fiant](fiant-onboarding)
 - [General API usage](general-api-usage)
-- [Deprecated - Examples](delete?examples)
+- [Examples](example-project)
 - [API Reference](https://provenancetech.github.io/pti-docs/api/v1/)

@@ -1,14 +1,22 @@
 # Fiant infrastructure use-cases
 
+## Using Platform SDKs
+https://github.com/provenancetech/pti-platform-sdks
+
 ## User management
 Fiant enables you to manage your user base with us enabling you to initiate regulated activities on their behalf
 ### 1.Create a user
 ```java
-
+Person person = Person.builder().id("id").name(Name.builder()
+        .firstName("John").lastName("Smith")
+        .build()).build();
+sdk.collectUserData().addAUser(OneOfUserSubTypes.person(person));
 ```
 ### 2.Add user information
 ```java
-
+Person person = Person.builder().id("id").emails(List.of(Email.builder().address("john.smith@hotmail.com").build())).piis(
+        List.of(OneOfPiiSubTypes.of(Ssn.builder().value("416-14-5209").build()))).build();
+sdk.collectUserData().mergeUserInfo(OneOfUserSubTypes.person(person));
 ```
 ### 3.Register some payment information(Bank, Crypto)
 You can register your users payment information via our API, or you can use our <a>elements</a> to do so, you absolutely need to use the element for credit cards.
