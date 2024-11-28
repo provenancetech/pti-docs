@@ -2320,7 +2320,6 @@ components:
       enum:
         - ACH
         - WIRE
-        - TOKEN
         - CREDIT_CARD
         - WALLET
         - CRYPTO
@@ -3391,14 +3390,14 @@ components:
       enum:
         - BANK_ACCOUNT
         - ENCRYPTED_CREDIT_CARD
-        - TOKEN
+        - CRYPTO
         - WALLET
     externalPaymentInformationType:
       type: string
       enum:
         - BANK_ACCOUNT
         - ENCRYPTED_CREDIT_CARD
-        - TOKEN
+        - CRYPTO
     oneOfExternalPaymentInformation:
       oneOf:
         - $ref: '#/components/schemas/encryptedCreditCardPaymentInformation'
@@ -3409,7 +3408,6 @@ components:
         mapping:
           BANK_ACCOUNT: '#/components/schemas/bankAccountPaymentInformation'
           ENCRYPTED_CREDIT_CARD: '#/components/schemas/encryptedCreditCardPaymentInformation'
-          TOKEN: '#/components/schemas/cryptoPaymentInformation'
           CRYPTO: '#/components/schemas/cryptoPaymentInformation'
       example: {
         "id": "36dbe68f-2747-41c6-8748-559588fd3248",
@@ -3436,7 +3434,6 @@ components:
           BANK_ACCOUNT: '#/components/schemas/bankAccountPaymentInformation'
     oneOfExternalPaymentMethod:
       oneOf:
-        - $ref: '#/components/schemas/tokenPaymentMethod'
         - $ref: '#/components/schemas/cryptoPaymentMethod'
         - $ref: '#/components/schemas/fiatPaymentMethod'
         - $ref: '#/components/schemas/creditCardPaymentMethod'
@@ -3447,11 +3444,9 @@ components:
           ACH: '#/components/schemas/fiatPaymentMethod'
           CREDIT_CARD: '#/components/schemas/creditCardPaymentMethod'
           WIRE: '#/components/schemas/wirePaymentMethod'
-          TOKEN: '#/components/schemas/tokenPaymentMethod'
           CRYPTO: '#/components/schemas/cryptoPaymentMethod'
     oneOfPaymentMethod:
       oneOf:
-        - $ref: '#/components/schemas/tokenPaymentMethod'
         - $ref: '#/components/schemas/cryptoPaymentMethod'
         - $ref: '#/components/schemas/fiatPaymentMethod'
         - $ref: '#/components/schemas/creditCardPaymentMethod'
@@ -3464,7 +3459,6 @@ components:
           CREDIT_CARD: '#/components/schemas/creditCardPaymentMethod'
           WIRE: '#/components/schemas/wirePaymentMethod'
           WALLET: '#/components/schemas/walletPaymentMethod'
-          TOKEN: '#/components/schemas/tokenPaymentMethod'
           CRYPTO: '#/components/schemas/cryptoPaymentMethod'
     oneOfPiiSubTypes:
       required:
@@ -3692,31 +3686,16 @@ components:
             key/value map of extra meta data for this payment info, for example,
             it could be useful to add information to a transaction, like if a
             subtoken asset is involved
-    tokenPaymentMethodDestination:
+    cryptoPaymentMethodDestination:
       type: object
       description: 'The destination payment method of the trade(wallet), if available'
       properties:
         paymentInformation:
           $ref: '#/components/schemas/cryptoPaymentInformation'
-    tokenPaymentMethodSource:
+    cryptoPaymentMethodSource:
       type: object
       description: 'The source payment method of the trade(wallet), if available'
       properties:
-        paymentInformation:
-          $ref: '#/components/schemas/cryptoPaymentInformation'
-    tokenPaymentMethod:
-      type: object
-      additionalProperties: true
-      required:
-        - paymentMethodType
-      properties:
-        paymentMethodType:
-          $ref: '#/components/schemas/paymentMethodType'
-        billingEmail:
-          type: string
-          pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'
-          format: email
-          maxLength: 320
         paymentInformation:
           $ref: '#/components/schemas/cryptoPaymentInformation'
     cryptoPaymentMethod:
@@ -3838,7 +3817,7 @@ components:
         destination:
           $ref: '#/components/schemas/oneOfUserSubTypes'
         destinationMethod:
-          $ref: '#/components/schemas/tokenPaymentMethod'
+          $ref: '#/components/schemas/cryptoPaymentMethod'
     tradeTransaction:
       type: object
       description: >-
@@ -3848,9 +3827,9 @@ components:
         - $ref: '#/components/schemas/transactionType'
       properties:
         destinationMethod:
-          $ref: '#/components/schemas/tokenPaymentMethodDestination'
+          $ref: '#/components/schemas/cryptoPaymentMethodDestination'
         sourceMethod:
-          $ref: '#/components/schemas/tokenPaymentMethodSource'
+          $ref: '#/components/schemas/cryptoPaymentMethodSource'
     transactionTypeEnum:
       type: string
       enum:

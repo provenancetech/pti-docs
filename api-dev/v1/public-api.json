@@ -4430,7 +4430,7 @@
     "schemas" : {
       "paymentMethodType" : {
         "type" : "string",
-        "enum" : [ "ACH", "WIRE", "TOKEN", "CREDIT_CARD", "WALLET", "CRYPTO" ]
+        "enum" : [ "ACH", "WIRE", "CREDIT_CARD", "WALLET", "CRYPTO" ]
       },
       "simulatePaymentRequest" : {
         "type" : "object",
@@ -5602,11 +5602,11 @@
       },
       "paymentInformationType" : {
         "type" : "string",
-        "enum" : [ "BANK_ACCOUNT", "ENCRYPTED_CREDIT_CARD", "TOKEN", "WALLET" ]
+        "enum" : [ "BANK_ACCOUNT", "ENCRYPTED_CREDIT_CARD", "CRYPTO", "WALLET" ]
       },
       "externalPaymentInformationType" : {
         "type" : "string",
-        "enum" : [ "BANK_ACCOUNT", "ENCRYPTED_CREDIT_CARD", "TOKEN" ]
+        "enum" : [ "BANK_ACCOUNT", "ENCRYPTED_CREDIT_CARD", "CRYPTO" ]
       },
       "oneOfExternalPaymentInformation" : {
         "example" : {
@@ -5628,7 +5628,6 @@
           "mapping" : {
             "BANK_ACCOUNT" : "#/components/schemas/bankAccountPaymentInformation",
             "ENCRYPTED_CREDIT_CARD" : "#/components/schemas/encryptedCreditCardPaymentInformation",
-            "TOKEN" : "#/components/schemas/cryptoPaymentInformation",
             "CRYPTO" : "#/components/schemas/cryptoPaymentInformation"
           }
         },
@@ -5661,13 +5660,10 @@
             "ACH" : "#/components/schemas/fiatPaymentMethod",
             "CREDIT_CARD" : "#/components/schemas/creditCardPaymentMethod",
             "WIRE" : "#/components/schemas/wirePaymentMethod",
-            "TOKEN" : "#/components/schemas/tokenPaymentMethod",
             "CRYPTO" : "#/components/schemas/cryptoPaymentMethod"
           }
         },
         "oneOf" : [ {
-          "$ref" : "#/components/schemas/tokenPaymentMethod"
-        }, {
           "$ref" : "#/components/schemas/cryptoPaymentMethod"
         }, {
           "$ref" : "#/components/schemas/fiatPaymentMethod"
@@ -5685,13 +5681,10 @@
             "CREDIT_CARD" : "#/components/schemas/creditCardPaymentMethod",
             "WIRE" : "#/components/schemas/wirePaymentMethod",
             "WALLET" : "#/components/schemas/walletPaymentMethod",
-            "TOKEN" : "#/components/schemas/tokenPaymentMethod",
             "CRYPTO" : "#/components/schemas/cryptoPaymentMethod"
           }
         },
         "oneOf" : [ {
-          "$ref" : "#/components/schemas/tokenPaymentMethod"
-        }, {
           "$ref" : "#/components/schemas/cryptoPaymentMethod"
         }, {
           "$ref" : "#/components/schemas/fiatPaymentMethod"
@@ -5992,7 +5985,7 @@
           "$ref" : "#/components/schemas/externalPaymentInformation"
         } ]
       },
-      "tokenPaymentMethodDestination" : {
+      "cryptoPaymentMethodDestination" : {
         "type" : "object",
         "properties" : {
           "paymentInformation" : {
@@ -6001,7 +5994,7 @@
         },
         "description" : "The destination payment method of the trade(wallet), if available"
       },
-      "tokenPaymentMethodSource" : {
+      "cryptoPaymentMethodSource" : {
         "type" : "object",
         "properties" : {
           "paymentInformation" : {
@@ -6009,25 +6002,6 @@
           }
         },
         "description" : "The source payment method of the trade(wallet), if available"
-      },
-      "tokenPaymentMethod" : {
-        "required" : [ "paymentMethodType" ],
-        "type" : "object",
-        "properties" : {
-          "paymentMethodType" : {
-            "$ref" : "#/components/schemas/paymentMethodType"
-          },
-          "billingEmail" : {
-            "maxLength" : 320,
-            "pattern" : "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
-            "type" : "string",
-            "format" : "email"
-          },
-          "paymentInformation" : {
-            "$ref" : "#/components/schemas/cryptoPaymentInformation"
-          }
-        },
-        "additionalProperties" : true
       },
       "cryptoPaymentMethod" : {
         "required" : [ "paymentMethodType" ],
@@ -6175,7 +6149,7 @@
             "$ref" : "#/components/schemas/oneOfUserSubTypes"
           },
           "destinationMethod" : {
-            "$ref" : "#/components/schemas/tokenPaymentMethod"
+            "$ref" : "#/components/schemas/cryptoPaymentMethod"
           }
         },
         "description" : "The action of minting, often this is not initiated by a user itself, so the initiator property is optional. The destination is the beneficiary of the minting action. You can specify the target wallet in the destination method if available.",
@@ -6187,10 +6161,10 @@
         "type" : "object",
         "properties" : {
           "destinationMethod" : {
-            "$ref" : "#/components/schemas/tokenPaymentMethodDestination"
+            "$ref" : "#/components/schemas/cryptoPaymentMethodDestination"
           },
           "sourceMethod" : {
-            "$ref" : "#/components/schemas/tokenPaymentMethodSource"
+            "$ref" : "#/components/schemas/cryptoPaymentMethodSource"
           }
         },
         "description" : "The action of doing a token trade. Source and destination wallet are provided through the source and destination methods properties.",
