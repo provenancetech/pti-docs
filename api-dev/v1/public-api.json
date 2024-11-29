@@ -4534,7 +4534,10 @@
           }
         },
         "discriminator" : {
-          "propertyName" : "type"
+          "propertyName" : "type",
+          "mapping" : {
+            "EIN" : "#/components/schemas/ein"
+          }
         }
       },
       "business" : {
@@ -5904,7 +5907,11 @@
           }
         },
         "discriminator" : {
-          "propertyName" : "type"
+          "propertyName" : "type",
+          "mapping" : {
+            "SSN" : "#/components/schemas/ssn",
+            "ITIN" : "#/components/schemas/itin"
+          }
         }
       },
       "phone" : {

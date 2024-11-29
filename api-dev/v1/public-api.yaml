@@ -2406,7 +2406,9 @@ components:
           enum:
             - EIN
       discriminator:
-        propertyName: type   
+        propertyName: type
+        mapping:
+          EIN: '#/components/schemas/ein'
     business:
       type: object
       required:
@@ -3616,6 +3618,9 @@ components:
             - ITIN
       discriminator:
         propertyName: type
+        mapping: 
+          SSN: '#/components/schemas/ssn'
+          ITIN: '#/components/schemas/itin'
     phone:
       type: object
       additionalProperties: false
