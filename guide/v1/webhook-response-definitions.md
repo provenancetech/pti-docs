@@ -91,25 +91,40 @@ The `TRANSACTION_DATE` will come in the form of an ISO 8601 compliant date strin
 
 ```json
 {
-    "resourceType":"PAYMENT_PROCESSOR",
-    "requestId":"REQUEST_ID",
-    "clientId":"CLIENT_ID",
-    "userId":"USER_ID",
-    "status":"AUTHORIZED | REFUSED | ERROR | PENDING | CHARGED_BACK | CANCELED | REFUNDED | CAPTURED | SETTLED",
-    "date":"TRANSACTION_DATE",
-    "amount":"TRANSACTION_AMOUNT",
-    "fees": "TRANSACTION_FEES",
-    "currency":"TRANSACTION_CURRENCY",
-    "transactionType":"DEPOSIT",
-    "paymentMethod":"CRYPTO | BANK_ACCOUNT | CREDIT_CARD",
-    "additionalInfos": {
-        "CreditCardLast4Digits":"XXXX",
-        "PaymentProviderTransactionId":"XXXX"
+  "resourceType": "TRANSACTION_STATUS",
+  "requestId": "REQUEST_ID",
+  "clientId": "CLIENT_ID",
+  "userId": "USER_ID",
+  "status": "AUTHORIZED | REFUSED | ERROR | PENDING | CHARGED_BACK | CANCELED | REFUNDED | CAPTURED | SETTLED",
+  "date": "TRANSACTION_DATE",
+  "amount": "TRANSACTION_AMOUNT",
+  "fees": "TRANSACTION_FEES",
+  "currency": "TRANSACTION_CURRENCY",
+  "transactionType": "DEPOSIT",
+  "paymentMethod": "CRYPTO | BANK_ACCOUNT | CREDIT_CARD | WALLET",
+  "transactionGroupId": "TRANSACTION_GROUP_ID",
+  "additionalInfos": {
+    "CreditCardLast4Digits": "XXXX",
+    "PaymentProviderTransactionId": "XXXX"
+  },
+  "paymentStatusDetail": {
+    "providerResponseCode": "PTI_TECHNICAL_ERROR | PAYMENT_PROVIDER_TECHNICAL_ERROR | FRAUD_SUSPICION | BLOCKED_COUNTRY | AVS_CHECK_FAILED | CVV_CHECK_FAILED | PAYMENT_INSTRUMENT_PROBLEM | PAYMENT_PROVIDER_DECLINED | SUSPENSE_TRANSACTION_RISK_EXCEEDED | SUSPENSE_KYC_LIMIT_EXCEEDED | SUSPENSE_OTHER",
+    "providerResponseCategory": "ERROR | SOFT_DECLINE | HARD_DECLINE | SUSPENSE"
+  },
+  "total": {
+    "subTotal": {
+      "amount": 0,
+      "currency": "CURRENCY"
     },
-    "transactionStatusDetail": {
-        "providerResponseCode": "PTI_TECHNICAL_ERROR | PAYMENT_PROVIDER_TECHNICAL_ERROR | FRAUD_SUSPICION | BLOCKED_COUNTRY | AVS_CHECK_FAILED | CVV_CHECK_FAILED | PAYMENT_INSTRUMENT_PROBLEM | PAYMENT_PROVIDER_DECLINED",
-        "providerResponseCategory":"ERROR | SOFT_DECLINE | HARD_DECLINE"
+    "fee": {
+      "amount": 0,
+      "currency": "CURRENCY"
+    },
+    "total": {
+      "amount": 0,
+      "currency": "CURRENCY"
     }
+  }
 }
 ```
 

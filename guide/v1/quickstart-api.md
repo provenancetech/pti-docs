@@ -109,11 +109,77 @@ System.out.println(wallet.getBalance()); // // prints "100"
 
 ## Trading currencies
 ### 1.Create crypto wallet
+```java
+sdk.wallets().createWallet("userId", WalletCreation.builder().currency(CurrencyEnum.BTC).
+        walletId("3aca65e0-9359-4490-9e4c-803daab5de1b").label("myBTCWallet").build());
+```        
 ### 2.Trade USD to BTC
+```java
+WalletPaymentMethod source = WalletPaymentMethod.builder().paymentInformation(Wallet.builder().walletId("287a78cc-a887-4021-9bd6-bb1854cc82a8").build()).build();
+
+WalletPaymentMethod destination = WalletPaymentMethod.builder().paymentInformation(Wallet.builder().walletId("3aca65e0-9359-4490-9e4c-803daab5de1b").build()).build();
+
+ExecuteTradeTransaction tradeTransaction = ExecuteTradeTransaction.builder().type(TransactionTypeEnum.TRADE).usdValue(100).amount(100).
+    date(DateTime.now().toString()).initiator(initiator).ptiRequestId(UUID.randomUUID().toString()).
+    ptiScenarioId("acme_trade").sourceMethod(source).destinationMethod(destination).build();
+``` 
+
 ### 3.Collecting fees
 Fiant is able to collect fees on your behalf.
+If we take again the previous example, but we add a fee that will be collected to the "client_fees" wallet, that belongs to your root user "00000000-00000000-00000000-00000000"
+
+```java
+Cost total = Cost.builder().amount(50.01).currency(CurrencyEnum.USD.toString()).build();
+Cost subtotal = Cost.builder().amount(50.00).currency(CurrencyEnum.USD.toString()).build();
+Cost fee = Cost.builder().amount(0.01).currency(CurrencyEnum.USD.toString()).build();
+Total transactionTotal = Total.builder().total(total).subtotal(subtotal).fee(fee).build();
+
+ExecuteTradeTransaction tradeTransaction = ExecuteTradeTransaction.builder().type(TransactionTypeEnum.TRADE).usdValue(100).amount(50.01).
+        date(DateTime.now().toString()).initiator(initiator).ptiRequestId(UUID.randomUUID().toString()).
+        ptiScenarioId("acme_trade").sourceMethod(source).destinationMethod(destination).transactionTotal(transactionTotal).build();
+```                     
+
 ### 4.Receive webhook confirming the trade
+```json
+{
+    "resourceType":"TRANSACTION_STATUS",
+    "requestId":"REQUEST_ID",
+    "clientId":"CLIENT_ID",
+    "userId":"USER_ID",
+    "status":"SETTLED",
+    "date":"TRANSACTION_DATE",
+    "amount":"50.01",
+    "fees": "0.01",
+    "currency":"USD",
+    "transactionType":"TRADE",
+    "additionalInfos": {
+      "avgFillPrice": "101000.87"
+    },
+    "total": {
+      "subTotal": {
+        "amount": 50,
+        "currency": "USD"
+      },
+      "fee": {
+        "amount": 0.01,
+        "currency": "USD"
+      },
+      "total": {
+        "amount": 50.01,
+        "currency": "CURRENCY"
+      }
+    }
+      
+}
+```
+
+
 ### 5.Check wallets balances
+```java
+          sdk.wallets().getWallet("00000000-00000000-00000000-00000000", "client_fees").getBalance().get(); // 0.01
+          sdk.wallets().getWallet("userId", "287a78cc-a887-4021-9bd6-bb1854cc82a8").getBalance().get(); // 0
+          sdk.wallets().getWallet("userId", "3aca65e0-9359-4490-9e4c-803daab5de1b").getBalance().get(); // X amount of bitcoins
+``` 
 
 ## Transacting digital assets
 ### 1.Create a digital asset
