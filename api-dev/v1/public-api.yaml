@@ -2125,12 +2125,6 @@ paths:
       summary: Create a crypto deposit address
       tags:
         - Wallets
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
       responses:
         '201':
           description: >-
@@ -2185,12 +2179,6 @@ paths:
       summary: Create a virtual bank account for a wallet
       tags:
         - Wallets
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
       responses:
         '201':
           description: >-
@@ -4051,10 +4039,6 @@ components:
         reference: '0x16Df97AB64d9eb5FF393F9f52F9290566857B07C'
     wallet:
       type: object
-      required:
-        - type
-        - label
-        - currency
       properties:
         walletId:
           type: string

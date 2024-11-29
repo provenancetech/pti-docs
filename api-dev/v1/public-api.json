@@ -4171,16 +4171,6 @@
             "type" : "string"
           }
         } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "type" : "object"
-              }
-            }
-          },
-          "required" : false
-        },
         "responses" : {
           "201" : {
             "description" : "Successfully created a crypto deposit address. The wallet with its deposit instruction is returned",
@@ -4270,16 +4260,6 @@
             "type" : "string"
           }
         } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "type" : "object"
-              }
-            }
-          },
-          "required" : false
-        },
         "responses" : {
           "201" : {
             "description" : "Successfully created a wallet virtual bank account. The wallet with its deposit instruction is returned",
@@ -6390,7 +6370,6 @@
         }
       },
       "wallet" : {
-        "required" : [ "currency", "label", "type" ],
         "type" : "object",
         "properties" : {
           "walletId" : {
