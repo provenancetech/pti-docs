@@ -4069,6 +4069,16 @@ components:
           minimum: 0
           maximum: 999999
           format: double
+        inflightBalance:
+          type: number
+          minimum: 0
+          maximum: 999999
+          format: double
+        availableBalance:
+          type: number
+          minimum: 0
+          maximum: 999999
+          format: double
         depositInstruction:
           type: object
           required:

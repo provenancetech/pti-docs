@@ -6414,6 +6414,18 @@
             "type" : "number",
             "format" : "double"
           },
+          "inflightBalance" : {
+            "maximum" : 999999,
+            "minimum" : 0,
+            "type" : "number",
+            "format" : "double"
+          },
+          "availableBalance" : {
+            "maximum" : 999999,
+            "minimum" : 0,
+            "type" : "number",
+            "format" : "double"
+          },
           "depositInstruction" : {
             "required" : [ "type" ],
             "type" : "object",
