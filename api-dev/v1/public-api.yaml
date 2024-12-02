@@ -843,7 +843,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
-  /transactions/trade/price-estimation:
+  /transactions/trades/price-estimation:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
     post:
@@ -2125,6 +2125,12 @@ paths:
       summary: Create a crypto deposit address
       tags:
         - Wallets
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
       responses:
         '201':
           description: >-
@@ -2179,6 +2185,12 @@ paths:
       summary: Create a virtual bank account for a wallet
       tags:
         - Wallets
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
       responses:
         '201':
           description: >-
