@@ -5366,7 +5366,7 @@
           "$ref" : "#/components/schemas/transactionType"
         } ]
       },
-      "fiatPaymentMethod" : {
+      "achPaymentMethod" : {
         "required" : [ "paymentMethodType" ],
         "type" : "object",
         "properties" : {
@@ -5650,7 +5650,7 @@
         "discriminator" : {
           "propertyName" : "paymentMethodType",
           "mapping" : {
-            "ACH" : "#/components/schemas/fiatPaymentMethod",
+            "ACH" : "#/components/schemas/achPaymentMethod",
             "CREDIT_CARD" : "#/components/schemas/creditCardPaymentMethod",
             "WIRE" : "#/components/schemas/wirePaymentMethod",
             "CRYPTO" : "#/components/schemas/cryptoPaymentMethod"
@@ -5659,7 +5659,7 @@
         "oneOf" : [ {
           "$ref" : "#/components/schemas/cryptoPaymentMethod"
         }, {
-          "$ref" : "#/components/schemas/fiatPaymentMethod"
+          "$ref" : "#/components/schemas/achPaymentMethod"
         }, {
           "$ref" : "#/components/schemas/creditCardPaymentMethod"
         }, {
@@ -5670,7 +5670,7 @@
         "discriminator" : {
           "propertyName" : "paymentMethodType",
           "mapping" : {
-            "ACH" : "#/components/schemas/fiatPaymentMethod",
+            "ACH" : "#/components/schemas/achPaymentMethod",
             "CREDIT_CARD" : "#/components/schemas/creditCardPaymentMethod",
             "WIRE" : "#/components/schemas/wirePaymentMethod",
             "WALLET" : "#/components/schemas/walletPaymentMethod",
@@ -5680,7 +5680,7 @@
         "oneOf" : [ {
           "$ref" : "#/components/schemas/cryptoPaymentMethod"
         }, {
-          "$ref" : "#/components/schemas/fiatPaymentMethod"
+          "$ref" : "#/components/schemas/achPaymentMethod"
         }, {
           "$ref" : "#/components/schemas/creditCardPaymentMethod"
         }, {
@@ -6796,7 +6796,7 @@
             "providerResponseCode" : "AVS_CHECK_FAILED",
             "providerResponseCategory" : "SOFT_DECLINE"
           },
-          "total" : {
+          "transactionTotal" : {
             "fee" : {
               "amount" : 0.01,
               "currency" : "USD"
@@ -6906,7 +6906,7 @@
       "transactionQuoteStatusObject" : {
         "type" : "object",
         "properties" : {
-          "total" : {
+          "transactionTotal" : {
             "$ref" : "#/components/schemas/total"
           }
         },
@@ -6917,7 +6917,7 @@
           "clientId" : "4121df47-7a05-4b42-9db3-d1ff8a29abf0",
           "userId" : "5121df47-7a05-4b42-9db3-d1ff8a29abf0",
           "requestId" : "3121df47-7a05-4b42-9db3-d1ff8a29abf0",
-          "total" : {
+          "transactionTotal" : {
             "fee" : {
               "amount" : 0.01,
               "currency" : "USD"

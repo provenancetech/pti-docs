@@ -3197,7 +3197,7 @@ components:
           $ref: '#/components/schemas/oneOfUserSubTypes'
         destinationMethod:
           $ref: '#/components/schemas/walletPaymentMethod'
-    fiatPaymentMethod:
+    achPaymentMethod:
       type: object
       additionalProperties: true
       required:
@@ -3428,27 +3428,27 @@ components:
     oneOfExternalPaymentMethod:
       oneOf:
         - $ref: '#/components/schemas/cryptoPaymentMethod'
-        - $ref: '#/components/schemas/fiatPaymentMethod'
+        - $ref: '#/components/schemas/achPaymentMethod'
         - $ref: '#/components/schemas/creditCardPaymentMethod'
         - $ref: '#/components/schemas/wirePaymentMethod'
       discriminator:
         propertyName: paymentMethodType
         mapping:
-          ACH: '#/components/schemas/fiatPaymentMethod'
+          ACH: '#/components/schemas/achPaymentMethod'
           CREDIT_CARD: '#/components/schemas/creditCardPaymentMethod'
           WIRE: '#/components/schemas/wirePaymentMethod'
           CRYPTO: '#/components/schemas/cryptoPaymentMethod'
     oneOfPaymentMethod:
       oneOf:
         - $ref: '#/components/schemas/cryptoPaymentMethod'
-        - $ref: '#/components/schemas/fiatPaymentMethod'
+        - $ref: '#/components/schemas/achPaymentMethod'
         - $ref: '#/components/schemas/creditCardPaymentMethod'
         - $ref: '#/components/schemas/walletPaymentMethod'
         - $ref: '#/components/schemas/wirePaymentMethod'
       discriminator:
         propertyName: paymentMethodType
         mapping:
-          ACH: '#/components/schemas/fiatPaymentMethod'
+          ACH: '#/components/schemas/achPaymentMethod'
           CREDIT_CARD: '#/components/schemas/creditCardPaymentMethod'
           WIRE: '#/components/schemas/wirePaymentMethod'
           WALLET: '#/components/schemas/walletPaymentMethod'
@@ -4412,7 +4412,7 @@ components:
         paymentStatusDetail:
           providerResponseCode: AVS_CHECK_FAILED
           providerResponseCategory: SOFT_DECLINE
-        total:
+        transactionTotal:
           fee:
             amount: 0.01
             currency: USD
@@ -4539,7 +4539,7 @@ components:
       allOf:
         - $ref: '#/components/schemas/actionStatus'
       properties:
-        total:
+        transactionTotal:
           $ref: '#/components/schemas/total'
       example:
         resourceType: TRANSACTION_QUOTE_UPDATE
@@ -4547,7 +4547,7 @@ components:
         clientId: 4121df47-7a05-4b42-9db3-d1ff8a29abf0
         userId: 5121df47-7a05-4b42-9db3-d1ff8a29abf0
         requestId: 3121df47-7a05-4b42-9db3-d1ff8a29abf0
-        total:
+        transactionTotal:
           fee:
             amount: 0.01
             currency: USD
