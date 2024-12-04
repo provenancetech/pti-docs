@@ -22,9 +22,10 @@ sdk.collectUserData().mergeUserInfo(OneOfUserSubTypes.person(person));
 You can register your users payment information via our API, or you can use our [elements](quickstart-elements.md) to do so, you absolutely need to use the element for credit cards.
 You can use the payment information id to perform operations afterward.
 ```java
-sdk.collectUserData().addUserPaymentInformation("userId", OneOfExternalPaymentInformation.bankAccount(BankAccountPaymentInformation.builder().
+BankAccountPaymentInformation bankAccountPaymentInformation = testContext.wrapSDKCall((sdk) -> {
+        sdk.collectUserData().addUserPaymentInformation("userId", OneOfExternalPaymentInformation.bankAccount(BankAccountPaymentInformation.builder().
         bankAccountNumber("1234567890").accountBankName("Acme Bank").bankRoutingNumber("026009593").bankRoutingCheckDigit("9").
-        bankAccountType(BankAccountPaymentInformationBankAccountType.CHECKING).build()));
+        bankAccountType(BankAccountPaymentInformationBankAccountType.CHECKING).build())).getBankAccount().get();
 ```
 ## Initiating user assessment
 Fiant provides drop in [elements](quickstart-elements.md) for you to perform user assessment, however, we also allow the usage of custom client forms.
@@ -124,7 +125,7 @@ ExecuteTradeTransaction tradeTransaction = ExecuteTradeTransaction.builder().typ
     ptiScenarioId("acme_trade").sourceMethod(source).destinationMethod(destination).build();
 ``` 
 
-### 3.Collecting fees
+### 3.Collecting fees(Optional)
 Fiant is able to collect fees on your behalf.
 If we take again the previous example, but we add a fee that will be collected to the "client_fees" wallet, that belongs to your root user "00000000-00000000-00000000-00000000"
 
@@ -176,19 +177,74 @@ ExecuteTradeTransaction tradeTransaction = ExecuteTradeTransaction.builder().typ
 
 ### 5.Check wallets balances
 ```java
-          sdk.wallets().getWallet("00000000-00000000-00000000-00000000", "client_fees").getBalance().get(); // 0.01
-          sdk.wallets().getWallet("userId", "287a78cc-a887-4021-9bd6-bb1854cc82a8").getBalance().get(); // 0
-          sdk.wallets().getWallet("userId", "3aca65e0-9359-4490-9e4c-803daab5de1b").getBalance().get(); // X amount of bitcoins
+sdk.wallets().getWallet("00000000-00000000-00000000-00000000", "client_fees").getBalance().get(); // 0.01
+sdk.wallets().getWallet("userId", "287a78cc-a887-4021-9bd6-bb1854cc82a8").getBalance().get(); // 0
+sdk.wallets().getWallet("userId", "3aca65e0-9359-4490-9e4c-803daab5de1b").getBalance().get(); // X amount of bitcoins
 ``` 
 
 ## Transacting digital assets
+Fiant can manage your marketplace to power your digital economy. 
+You can perform buy/sell operations and track ownership of digital assets that resides in your system.
 ### 1.Create a digital asset
+```java
+DigitalItem digitalItem = DigitalItem.builder().itemReference(UUID.randomUUID().toString())
+        .itemTitle("Acme playing card #1234")
+        .itemDescription("Super powerful").digitalItemType(DigitalItemType.NFT).itemUsdValue(100.0).build();
+sdk.marketplace().createDigitalItems("userId", List.of(digitalItem));
+``` 
 ### 2.Buy Operation
+```java
+String transactionGroupId = UUID.randomUUID().toString();
+WalletPaymentMethod source = WalletPaymentMethod.builder().
+        paymentInformation(Wallet.builder().walletId(usdWallet.getWalletId()).
+                build()).build();
+ExecuteBuyTransaction executeBuyTransaction = ExecuteBuyTransaction.builder().type(TransactionTypeEnum.BUY).
+        usdValue(100.00).amount(100.00).date(new Date().toString()).initiator(buyer).
+        ptiRequestId(UUID.randomUUID().toString()).ptiScenarioId("acme_buy").
+        sourceMethod(OneOfPaymentMethod.wallet(source)).seller(seller).digitalItem(digitalItem).transactionGroupId(transactionGroupId).build();
+
+sdk.marketplace().digitalItemBuy(executeBuyTransaction);
+``` 
 ### 3.Sell Operation
-### 4.Collect commissions
+```java
+WalletPaymentMethod destination = WalletPaymentMethod.builder().
+        paymentInformation(Wallet.builder().walletId(sellerWallet.getWalletId()).build()).build();
+
+Total total = Total.builder().total(Cost.builder().amount(100.00).currency(CurrencyEnum.USD.toString()).build()).
+        subtotal(Cost.builder().amount(98.00).currency(CurrencyEnum.USD.toString()).build()).
+        fee(Cost.builder().amount(2.00).currency(CurrencyEnum.USD.toString()).build()).build();
+
+ExecuteSellTransaction executeSellTransaction = ExecuteSellTransaction.builder().type(TransactionTypeEnum.SELL).
+        usdValue(98.00).amount(100.00).date(new Date().toString()).initiator(seller).
+        ptiRequestId(UUID.randomUUID().toString()).ptiScenarioId("acme_sell").
+        destinationMethod(OneOfPaymentMethod.wallet(destination)).buyer(buyer).digitalItem(digitalItem).
+        transactionTotal(total).transactionGroupId(transactionGroupId).digitalItem(digitalItem).build();
+``` 
+### 4.Collect commissions(Optional)
 Fiant has the ability to collect commissions on behalf of your users.
-### 5.Check recipient wallet balance
+```java
+FeeRecipient feeRecipient = FeeRecipient.builder().feeRecipientId("creator_user_id").
+         walletId("creator_comission_wallet_id").currency("USD").
+         amount(10.0).feeRecipientType(FeeRecipientFeeRecipientType.COMMISSION).build();
+            
+ExecuteSellTransaction executeSellTransaction = ExecuteSellTransaction.builder().type(TransactionTypeEnum.SELL).
+        usdValue(98.00).amount(100.00).date(new Date().toString()).initiator(seller).
+        ptiRequestId(UUID.randomUUID().toString()).ptiScenarioId("acme_sell").
+        destinationMethod(OneOfPaymentMethod.wallet(destination)).buyer(buyer).digitalItem(digitalItem).
+        transactionTotal(total).transactionGroupId(transactionGroupId).digitalItem(digitalItem).
+        feeRecipients(List.of(feeRecipient)).build();
+```                   
+
+### 5.Check fee recipient and seller wallet balance
+```java
+sdk.wallets().getWallet("creator_user_id", "creator_comission_wallet_id").getBalance().get();//2.00
+sdk.wallets().getWallet(seller.getPerson().get().getId(), sellerWallet.getWalletId()).getBalance().get();//96.00
+sdk.wallets().getWallet("00000000-00000000-00000000-00000000", "client_fees").getBalance().get(); // 2.00
+``` 
 ### 6.Check buyer digital asset
+```java
+sdk.marketplace().getDigitalItems(buyer.getPerson().get().getId());//[{your digital item}]
+``` 
 
 ## Transfer funds between users
 ### 1.Create recipient's wallet
