@@ -1635,12 +1635,12 @@
           "required" : true
         },
         "responses" : {
-          "201" : {
-            "description" : "Successfully initiated the transaction estimate",
+          "200" : {
+            "description" : "OK",
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/objectReference"
+                  "$ref" : "#/components/schemas/tradeQuote"
                 }
               }
             }
@@ -1694,29 +1694,6 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          }
-        },
-        "callbacks" : {
-          "transactionQuoteUpdate" : {
-            "${yourWebhookAddress}" : {
-              "post" : {
-                "requestBody" : {
-                  "content" : {
-                    "application/json" : {
-                      "schema" : {
-                        "$ref" : "#/components/schemas/transactionQuoteStatusObject"
-                      }
-                    }
-                  },
-                  "required" : true
-                },
-                "responses" : {
-                  "200" : {
-                    "description" : "Your server returns this code if it accepts the callback"
-                  }
                 }
               }
             }
@@ -7204,6 +7181,30 @@
           "currency" : "BTC",
           "networks" : [ "BITCOIN" ]
         }
+      },
+      "tradeQuote" : {
+        "type" : "object",
+        "properties" : {
+          "estimatedFillPricePerUnit" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "sourceCurrency" : {
+            "maxLength" : 5,
+            "pattern" : "^[a-zA-Z0-9_-]{3,5}$",
+            "type" : "string"
+          },
+          "destinationCurrency" : {
+            "maxLength" : 5,
+            "pattern" : "^[a-zA-Z0-9_-]{3,5}$",
+            "type" : "string"
+          },
+          "amount" : {
+            "type" : "number",
+            "format" : "double"
+          }
+        },
+        "additionalProperties" : false
       },
       "body" : {
         "type" : "object",

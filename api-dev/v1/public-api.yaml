@@ -857,26 +857,13 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/tradeTransaction'
-      callbacks:
-        transactionQuoteUpdate:
-          '${yourWebhookAddress}':
-            post:
-              requestBody:
-                required: true
-                content:
-                  application/json:
-                    schema:
-                      $ref: '#/components/schemas/transactionQuoteStatusObject'
-              responses:
-                '200':
-                  description: Your server returns this code if it accepts the callback
       responses:
-        '201':
-          description: Successfully initiated the transaction estimate
+        '200':
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/objectReference'
+                $ref: '#/components/schemas/tradeQuote'
         '400':
           description: Invalid fields on Transaction
           content:
@@ -4787,6 +4774,24 @@ components:
       example:
         currency: BTC
         networks: [ BITCOIN ]
+    tradeQuote:
+      type: object
+      additionalProperties: false
+      properties:
+        estimatedFillPricePerUnit:
+          type: number
+          format: double
+        sourceCurrency:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]{3,5}$'
+          maxLength: 5
+        destinationCurrency:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]{3,5}$'
+          maxLength: 5
+        amount:
+          type: number
+          format: double
   parameters:
     mandatoryScenarioIdHeaderParam:
       name: x-pti-scenario-id
