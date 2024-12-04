@@ -4004,6 +4004,16 @@
           "204" : {
             "description" : "No Content"
           },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/invalidRequestError"
+                }
+              }
+            }
+          },
           "401" : {
             "description" : "unauthorized",
             "content" : {
@@ -4928,7 +4938,7 @@
           },
           "providerName" : {
             "type" : "string",
-            "enum" : [ "CHECKOUT", "ADMIN", "CIRCLE", "COINBASE", "FORTE", "PTI_LEDGER", "UNKNOWN" ]
+            "enum" : [ "PTI_LEDGER", "UNKNOWN" ]
           },
           "feedback" : {
             "type" : "string",
