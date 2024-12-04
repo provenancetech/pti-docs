@@ -4455,7 +4455,7 @@ components:
           pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'
           format: email
           maxLength: 320
-        total:
+        transactionTotal:
           $ref: '#/components/schemas/total'
         currency:
           type: string

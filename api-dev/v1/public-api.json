@@ -6786,7 +6786,7 @@
             "type" : "string",
             "format" : "email"
           },
-          "total" : {
+          "transactionTotal" : {
             "$ref" : "#/components/schemas/total"
           },
           "currency" : {
