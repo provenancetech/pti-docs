@@ -1,6 +1,6 @@
-# Forms
+# Elements
 
-The PTI Forms service exposes the various forms used to collect information on users.
+The Fiant elements service exposes the various forms used to collect information on users.
 The SDK tool uses this service to provide the different forms. Form customization is available through scenarios
 and client configuration. 
 
@@ -84,7 +84,7 @@ simply be hidden. Contact us if you need to use custom scenarios, and we will wo
 
 ## End of Flow Events
 
-Synchronous messages via `window.postMessage are dispatched upon completion of each supported flow within our PTI Forms service.
+Synchronous messages via `window.postMessage are dispatched upon completion of each supported flow within our Fiant elements service.
 
 These messages are js objects containing a message's event name, followed by the ID of the freshly created entity (in this case, the credit card payment information ID).
 ```json
@@ -95,7 +95,6 @@ These messages are js objects containing a message's event name, followed by the
 ```
 
 ### Message names
-- Payment: `UserTransactionCompleted`
 - Assessment: `UserAssessmentCompleted`
 - User onboarding: `UserOnboardingCompleted`
 - Add credit card: `AddCreditCardCompleted`, `AddPaymentMethodCompleted`
