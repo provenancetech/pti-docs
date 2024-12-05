@@ -114,6 +114,7 @@ CryptoPaymentInformation crypto = sdk.collectUserData().getUserPaymentInformatio
     type: "KYC",
     requestId: "REQUEST_ID",
     userId: "USER_ID",
+    usdValue: 100,
     scenarioId: "SCENARIO_ID",
     parentElement: document.getElementById("kyc_form"),
     lang: "en",

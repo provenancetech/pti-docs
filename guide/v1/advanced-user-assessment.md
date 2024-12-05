@@ -56,7 +56,7 @@ example using the SDK form function to display the KYC form. Note that only the 
         userId: "USER_ID",
         parentElement: document.getElementById("root"),
         scenarioId: "Crypto Sell",
-        amount: 150
+        usdValue: 150
     });
 ```
 
@@ -67,11 +67,20 @@ Under the hood, all the user information will be collected, the single use token
 
 Please note that the amount passed in the above example must be in USD.
 
+The usdValue parameter is extremely important here because the element will call the [transaction validation endpoint](https://fiant.readme.io/reference/transactioninformationassessment) to populate itself.
+
 ### User Assessment via API calls
 
 Another way to perform a user assessment flows is to use the API directly.
 
 #### Initiate a check
+
+The [transaction assessment endpoint](https://fiant.readme.io/reference/transactioninformationassessment)is very useful if you want 
+to know which information you need to collect to make the assessment call. 
+[The assessment endpoint ](https://fiant.readme.io/reference/startuserassessment)will 
+automatically calculate the tier it can achieve according to the available user pieces of
+information.
+
 
 Using the [initiate Assessment endpoint](https://provenancetech.github.io/pti-docs/api/v1/#/User%20Assessment/startUserAssessment), it is possible to start the KYC check.
 Note that all the user information needed for the selected scenario and amount must be either provided in the call or have been previously provided for the

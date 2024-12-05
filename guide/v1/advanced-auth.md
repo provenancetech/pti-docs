@@ -26,7 +26,7 @@ PROVIDE SDK INITIALIZATION CODE HERE!
 Signed requests requires access to the private key to sign the request, so it is only possible to use this method when the API calls
 are made from a private client. Only your server backend should make signed requests.
 
-#### Making signed requests
+### Making signed requests
 
 Once you have completed the steps in the [onboarding guide](fiant-onboarding) and have your client ID and private key on hand, you can make requests to the Fiant Core API. 
 

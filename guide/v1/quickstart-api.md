@@ -248,10 +248,100 @@ sdk.marketplace().getDigitalItems(buyer.getPerson().get().getId());//[{your digi
 
 ## Transfer funds between users
 ### 1.Create recipient's wallet
-### 2.Collecting fees
-Fiant is able to collect fees on your behalf.
-### 3.Receive webhook confirming the transfer 
+```java
+Wallet wallet = sdk.wallets().createWallet("userId", WalletCreation.builder().
+	currency(CurrencyEnum.USD).walletId(UUID.randomUUID().toString()).build());
 
-## Withdrawing some funds
+Wallet wallet2 = sdk.wallets().createWallet("userId2", WalletCreation.builder().
+	currency(CurrencyEnum.USD).walletId(UUID.randomUUID().toString()).build());
+``` 
+### 2.Perform transfer and collect fees(Optional)
+Fiant is able to collect fees on your behalf.
+```java
+WalletPaymentMethod sourceWallet = WalletPaymentMethod.builder().
+    paymentInformation(Wallet.builder().walletId(wallet.getWalletId()).
+    build()).build();
+
+WalletPaymentMethod destinationWallet = WalletPaymentMethod.builder().
+    paymentInformation(Wallet.builder().walletId(wallet2.getWalletId()).
+    build()).build();
+
+
+Total transferTotal = Total.builder().total(Cost.builder().amount(1.0).
+  currency(CurrencyEnum.BTC.toString()).build()).
+  subtotal(Cost.builder().amount(0.999).currency(CurrencyEnum.BTC.toString()).build()).
+  fee(Cost.builder().amount(0.001).currency(CurrencyEnum.USD.toString()).build()).build();
+
+ExecuteTransferTransaction executeTransferTransaction = ExecuteTransferTransaction.
+  builder().type(TransactionTypeEnum.TRANSFER).
+  usdValue(100000.00).amount(0.999).date(new Date().toString()).initiator(initiator).
+  ptiRequestId(UUID.randomUUID().toString()).ptiScenarioId("acme_transfer").
+  sourceTransferMethod(sourceWallet).destinationTransferMethod(destinationWallet).
+  destination(receiver).transactionTotal(transferTotal).build();
+
+sdk.executeTransaction().transfer(executeTransferTransaction);
+``` 
+### 3.Receive webhook confirming the transfer 
+```json
+{
+  "resourceType": "TRANSACTION_STATUS",
+  "requestId": "REQUEST_ID",
+  "clientId": "CLIENT_ID",
+  "userId": "userId",
+  "status": "SETTLED",
+  "date": "TRANSACTION_DATE",
+  "amount": "0.999",
+  "fees": "0.001",
+  "currency": "BTC",
+  "transactionType": "TRANSFER",
+  "paymentMethod": "WALLET",
+  "total": {
+    "subTotal": {
+      "amount": 0.999,
+      "currency": "BTC"
+    },
+    "fee": {
+      "amount": 0.001,
+      "currency": "BTC"
+    },
+    "total": {
+      "amount": 1,
+      "currency": "BTC"
+    }
+  }
+}
+```
+### 4.Check wallet balances
+```java
+sdk.wallets().getWallet("userId1", sourceWallet.getPaymentInformation().get().getWalletId().get()); // 0
+sdk.wallets().getWallet("userId2", destinationWallet.getPaymentInformation().get().getWalletId().get()); // 0.999
+sdk.wallets().getWallet("00000000-00000000-00000000-00000000", "client_fees").getBalance().get(); // 0.001
+``` 
+## Withdrawing funds
 ### 1.Withdrawal operation(USD)
+```java
+BankAccountPaymentInformation destinationBankAccount = BankAccountPaymentInformation.builder().bankAccountType(BankAccountPaymentInformationBankAccountType.CHECKING).
+        bankAccountNumber("1234567890").accountBankName("Acme Bank").bankRoutingNumber("026009593").bankRoutingCheckDigit("9").build();           
+OneOfExternalPaymentMethod destinationPaymentMethod =  OneOfExternalPaymentMethod.ach(AchPaymentMethod.builder().paymentInformation(
+        OneOfFiatPaymentInformation.bankAccount(destinationBankAccount)).build());
+WalletPaymentMethod walletPaymentMethod = WalletPaymentMethod.builder().paymentInformation(Wallet.builder().walletId(usdWallet.getWalletId()).build()).build(); 
+
+ExecuteWithdrawalTransaction executeWithdrawalTransaction = ExecuteWithdrawalTransaction.builder().type(TransactionTypeEnum.WITHDRAWAL).
+        usdValue(100.55).amount(100.00).date(new Date().toString()).initiator(initiator).
+        ptiRequestId(UUID.randomUUID().toString()).ptiScenarioId("acme_withdrawal").
+        destinationMethod(destinationPaymentMethod).sourceMethod(walletPaymentMethod).transactionTotal(transferTotal).build();
+```       
 ### 2.Withdrawal operation(Crypto)
+```java
+WalletPaymentMethod cryptoWalletPaymentMethod = WalletPaymentMethod.builder().paymentInformation(Wallet.builder().walletId(cryptoWallet.getWalletId()).build()).build();
+
+CryptoPaymentInformation destinationCryptoWalletPI = CryptoPaymentInformation.builder().walletAddress("0x71C7656EC7ab88b098defB751B7401B5f6d8976F").currency("ETH").network("Ethereum").build();
+
+OneOfExternalPaymentMethod destinationCryptoWallet = OneOfExternalPaymentMethod.crypto(CryptoPaymentMethod.builder().
+        paymentInformation(destinationCryptoWalletPI).build());
+
+ExecuteWithdrawalTransaction executeWithdrawalTransaction = ExecuteWithdrawalTransaction.builder().type(TransactionTypeEnum.WITHDRAWAL).
+        usdValue(100.55).amount(100.00).date(new Date().toString()).initiator(initiator).
+        ptiRequestId(UUID.randomUUID().toString()).ptiScenarioId("acme_withdrawal").
+        destinationMethod(destinationCryptoWallet).sourceMethod(cryptoWalletPaymentMethod).transactionTotal(transferTotal).build();
+```
