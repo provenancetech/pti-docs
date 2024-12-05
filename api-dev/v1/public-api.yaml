@@ -2094,7 +2094,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
-  
+
   '/users/{userId}/wallets/{walletId}/deposit-address':
     summary: Manage deposit address
     parameters:
@@ -2119,11 +2119,12 @@ paths:
       tags:
         - Wallets
       requestBody:
+        description:
         required: false
         content:
           application/json:
             schema:
-              type: object
+              $ref: '#/components/schemas/depositAddressRequest'
       responses:
         '201':
           description: >-
@@ -2316,7 +2317,13 @@ components:
         - CREDIT_CARD
         - WALLET
         - CRYPTO
-    
+
+    depositAddressRequest:
+      type: object
+      properties:
+        multiWalletAddress:
+          type: boolean
+
     simulatePaymentRequest:
       type: object
       properties:
@@ -4021,6 +4028,8 @@ components:
           maxLength: 255
           pattern: '^[A-Za-z]+(?:_[A-Za-z]+)*$'
           description: Optional readable label
+        multiWalletAddress:
+          type: boolean
         type:
           type: string
           enum:
@@ -4079,6 +4088,8 @@ components:
             ^(?:[1-9]\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,9})?(?:Z|[+-][01]\d:?[0-5]\d)
           maxLength: 40
           nullable: true
+        multiWalletAddress:
+          type: boolean
         type:
           type: string
           enum:
@@ -4088,7 +4099,7 @@ components:
         label: MyUSDWallet
         currency: USD
         type: WALLET
-        depositInstruction: { "type": "CRYPTO_ADDRESS", "address": "0x128ZuOfgu9LZYkKjrOLLSExMELO6otneF2", "blockchain": "Bitcoin" }
+        depositInstruction: { "type": "CRYPTO_ADDRESS", "address": "0x128ZuOfgu9LZYkKjrOLLSExMELO6otneF2", "blockchain": "Bitcoin", currency: "BTC" }
         createDateTime: '2021-09-28T12:00:00Z'
         balance: 1000
     withdrawalTransaction:

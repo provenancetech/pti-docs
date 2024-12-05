@@ -4159,10 +4159,11 @@
           }
         } ],
         "requestBody" : {
+          "description" : "null",
           "content" : {
             "application/json" : {
               "schema" : {
-                "type" : "object"
+                "$ref" : "#/components/schemas/depositAddressRequest"
               }
             }
           },
@@ -4418,6 +4419,14 @@
       "paymentMethodType" : {
         "type" : "string",
         "enum" : [ "ACH", "WIRE", "CREDIT_CARD", "WALLET", "CRYPTO" ]
+      },
+      "depositAddressRequest" : {
+        "type" : "object",
+        "properties" : {
+          "multiWalletAddress" : {
+            "type" : "boolean"
+          }
+        }
       },
       "simulatePaymentRequest" : {
         "type" : "object",
@@ -6357,6 +6366,9 @@
             "type" : "string",
             "description" : "Optional readable label"
           },
+          "multiWalletAddress" : {
+            "type" : "boolean"
+          },
           "type" : {
             "type" : "string",
             "enum" : [ "WALLET" ]
@@ -6424,6 +6436,9 @@
             "type" : "string",
             "nullable" : true
           },
+          "multiWalletAddress" : {
+            "type" : "boolean"
+          },
           "type" : {
             "type" : "string",
             "enum" : [ "WALLET" ]
@@ -6437,7 +6452,8 @@
           "depositInstruction" : {
             "type" : "CRYPTO_ADDRESS",
             "address" : "0x128ZuOfgu9LZYkKjrOLLSExMELO6otneF2",
-            "blockchain" : "Bitcoin"
+            "blockchain" : "Bitcoin",
+            "currency" : "BTC"
           },
           "createDateTime" : "2021-09-28T12:00:00Z",
           "balance" : 1000
