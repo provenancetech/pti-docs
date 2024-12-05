@@ -4318,6 +4318,120 @@
         }
       }
     },
+    "/users/{userId}/wallets/{walletId}/history" : {
+      "get" : {
+        "tags" : [ "Wallets" ],
+        "summary" : "Retrieve the history of a wallet",
+        "operationId" : "getWalletHistory",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        }, {
+          "name" : "walletId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Offset for pagination. If not specified, the default value is 0.",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "maximum" : 9999999,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Page size for pagination. If not specified, the default value is 20.",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "maximum" : 100,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/walletHistoryPage"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "forbidden"
+          },
+          "404" : {
+            "description" : "User or wallet not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/transactions/{requestId}/updates" : {
       "post" : {
         "tags" : [ "Execute Transaction" ],
@@ -5584,6 +5698,56 @@
         "example" : {
           "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
           "link" : "https://api.pticlient.com/v1/user/3121df47-7a05-4b42-9db3-d1ff8a29abf0/transactions/36dbe68f-2747-41c6-8748-559588fd3248"
+        }
+      },
+      "walletHistory" : {
+        "required" : [ "walletId" ],
+        "type" : "object",
+        "properties" : {
+          "walletId" : {
+            "maxLength" : 255,
+            "pattern" : "^[A-Za-z]+(?:_[A-Za-z]+)*$",
+            "type" : "string"
+          },
+          "balanceBefore" : {
+            "maximum" : 999999,
+            "minimum" : 0,
+            "type" : "number",
+            "format" : "double"
+          },
+          "inFlightBalanceBefore" : {
+            "maximum" : 999999,
+            "minimum" : 0,
+            "type" : "number",
+            "format" : "double"
+          },
+          "createDateTime" : {
+            "maxLength" : 40,
+            "pattern" : "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z|[+-][01]\\d:?[0-5]\\d)",
+            "type" : "string",
+            "nullable" : true
+          },
+          "change" : {
+            "maximum" : 999999,
+            "minimum" : 0,
+            "type" : "number",
+            "format" : "double"
+          },
+          "operationTarget" : {
+            "type" : "string",
+            "enum" : [ "BALANCE", "IN_FLIGHT_BALANCE" ]
+          },
+          "requestId" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        },
+        "additionalProperties" : false,
+        "example" : {
+          "walletId" : "6d9e99eb-95e2-44c3-a790-c61dde3952ad",
+          "balanceBefore" : 100.0,
+          "change" : 5.99,
+          "targetOperation" : "BALANCE",
+          "createDateTime" : "2024-12-05T12:00:00Z"
         }
       },
       "oneOfBiiSubTypes" : {
@@ -7041,6 +7205,52 @@
           }
         },
         "additionalProperties" : false
+      },
+      "walletHistoryPage" : {
+        "type" : "object",
+        "additionalProperties" : false,
+        "example" : {
+          "page" : 0,
+          "pageSize" : 25,
+          "total" : 2,
+          "items" : [ {
+            "walletId" : "6d9e99eb-95e2-44c3-a790-c61dde3952ad",
+            "balanceBefore" : 100.0,
+            "change" : 5.99,
+            "targetOperation" : "BALANCE",
+            "createDateTime" : "2024-12-05T12:00:00Z"
+          }, {
+            "walletId" : "6d9e99eb-95e2-44c3-a790-c61dde3952ad",
+            "inFlightBalanceBefore" : 0.0,
+            "change" : 5.99,
+            "targetOperation" : "IN_FLIGHT_BALANCE",
+            "createDateTime" : "2024-12-05T12:00:00Z"
+          } ],
+          "properties" : {
+            "page" : {
+              "type" : "integer",
+              "minimum" : 0,
+              "maximum" : 9999999
+            },
+            "pageSize" : {
+              "type" : "integer",
+              "minimum" : 1,
+              "maximum" : 100
+            },
+            "total" : {
+              "type" : "integer",
+              "minimum" : 0,
+              "maximum" : 99999999
+            },
+            "items" : {
+              "type" : "array",
+              "maxItems" : 100,
+              "items" : {
+                "$ref" : "#/components/schemas/walletHistory"
+              }
+            }
+          }
+        }
       },
       "objectReferencePage" : {
         "type" : "object",
