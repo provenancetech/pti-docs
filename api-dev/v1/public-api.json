@@ -10,8 +10,6 @@
     "version" : "master"
   },
   "servers" : [ {
-    "url" : "https://api.dev.fiant.io/v1"
-  }, {
     "url" : "https://api.staging.fiant.io/v1"
   }, {
     "url" : "https://api.platform.fiant.io/v1"
@@ -7077,39 +7075,6 @@
           },
           "transactionMonitoringResultDetail" : {
             "complianceProviderResponseCode" : "FRAUD_SUSPICION"
-          }
-        },
-        "allOf" : [ {
-          "$ref" : "#/components/schemas/actionStatus"
-        } ]
-      },
-      "transactionQuoteStatusObject" : {
-        "type" : "object",
-        "properties" : {
-          "transactionTotal" : {
-            "$ref" : "#/components/schemas/total"
-          }
-        },
-        "description" : "Status of a transaction quote request. The date property is the date that the quote request has been initiated.",
-        "example" : {
-          "resourceType" : "TRANSACTION_QUOTE_UPDATE",
-          "date" : "2021-09-01T00:00:00.000Z",
-          "clientId" : "4121df47-7a05-4b42-9db3-d1ff8a29abf0",
-          "userId" : "5121df47-7a05-4b42-9db3-d1ff8a29abf0",
-          "requestId" : "3121df47-7a05-4b42-9db3-d1ff8a29abf0",
-          "transactionTotal" : {
-            "fee" : {
-              "amount" : 0.01,
-              "currency" : "USD"
-            },
-            "total" : {
-              "amount" : 100.01,
-              "currency" : "USD"
-            },
-            "subtotal" : {
-              "amount" : 100,
-              "currency" : "USD"
-            }
           }
         },
         "allOf" : [ {
