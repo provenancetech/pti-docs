@@ -146,8 +146,9 @@ paths:
         - Collect User Data
       callbacks:
         userStatusUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives user status updates
               requestBody:
                 required: true
                 content:
@@ -157,6 +158,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       requestBody:
         required: true
         content:
@@ -614,8 +617,9 @@ paths:
         required: true
       callbacks:
         userAssessUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint to receive user assessments updates
               requestBody:
                 required: true
                 content:
@@ -625,6 +629,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: started
@@ -741,8 +747,9 @@ paths:
               $ref: '#/components/schemas/oneOfTransactionSubTypes'
       callbacks:
         transactionAssessUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives transaction assessment updates
               requestBody:
                 required: true
                 content:
@@ -752,6 +759,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: Successfully added transaction log
@@ -921,8 +930,9 @@ paths:
               $ref: '#/components/schemas/executeDepositTransaction'
       callbacks:
         transactionUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives transaction status updates 
               requestBody:
                 required: true
                 content:
@@ -932,6 +942,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: Successfully initiated the transaction
@@ -1006,8 +1018,9 @@ paths:
               $ref: '#/components/schemas/executeBuyTransaction'
       callbacks:
         transactionUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives transaction status update
               requestBody:
                 required: true
                 content:
@@ -1017,6 +1030,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: Successfully initiated the transaction
@@ -1091,8 +1106,9 @@ paths:
               $ref: '#/components/schemas/executeSellTransaction'
       callbacks:
         transactionUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives transaction status updates
               requestBody:
                 required: true
                 content:
@@ -1102,6 +1118,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: Successfully initiated the transaction
@@ -1176,8 +1194,9 @@ paths:
               $ref: '#/components/schemas/executeWithdrawalTransaction'
       callbacks:
         transactionUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives transaction status updates
               requestBody:
                 required: true
                 content:
@@ -1187,6 +1206,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: Successfully initiated the transaction
@@ -1261,8 +1282,9 @@ paths:
               $ref: '#/components/schemas/executePaymentTransaction'
       callbacks:
         transactionUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives transaction status updates
               requestBody:
                 required: true
                 content:
@@ -1272,6 +1294,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: Successfully initiated the transaction
@@ -1346,8 +1370,9 @@ paths:
               $ref: '#/components/schemas/executeTransferTransaction'
       callbacks:
         transactionUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives transaction status updates
               requestBody:
                 required: true
                 content:
@@ -1357,6 +1382,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: Successfully initiated the transaction
@@ -1432,8 +1459,9 @@ paths:
               $ref: '#/components/schemas/executeTradeTransaction'
       callbacks:
         transactionUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives transaction status updates
               requestBody:
                 required: true
                 content:
@@ -1443,6 +1471,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: Successfully initiated the transaction
@@ -1517,8 +1547,9 @@ paths:
               $ref: '#/components/schemas/executeMintTransaction'
       callbacks:
         transactionUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives transaction status updates
               requestBody:
                 required: true
                 content:
@@ -1528,6 +1559,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: Successfully initiated the transaction
@@ -3368,25 +3401,6 @@ components:
           maxLength: 11
           description: 'itin number, properly formatted, example 911-83-1111'
           pattern: '^9\d{2}-?((5[0-9]|6[0-5])|(8[3-8])|(9[0-2])|(9[4-9]))-?\d{4}$'
-    kyc:
-      type: object
-      additionalProperties: false
-      properties:
-        status:
-          enum:
-            - ACCEPTED
-            - REFUSED
-            - MANUAL_REVIEW
-            - REQUESTED_MORE_INFORMATION
-          type: string
-        tier:
-          type: integer
-          description: related kyc tier level
-        clientMeta:
-          type: object
-          description: key/value map of extra meta data for this kyc
-        requestId:
-          $ref: '#/components/schemas/uuidLikeStr'
     name:
       type: object
       additionalProperties: false
@@ -4725,24 +4739,24 @@ components:
             change: 5.99
             targetOperation: IN_FLIGHT_BALANCE
             createDateTime: '2024-12-05T12:00:00Z'
-        properties:
-          page:
-            type: integer
-            minimum: 0
-            maximum: 9999999
-          pageSize:
-            type: integer
-            minimum: 1
-            maximum: 100
-          total:
-            type: integer
-            minimum: 0
-            maximum: 99999999
+      properties:
+        page:
+          type: integer
+          minimum: 0
+          maximum: 9999999
+        pageSize:
+          type: integer
+          minimum: 1
+          maximum: 100
+        total:
+          type: integer
+          minimum: 0
+          maximum: 99999999
+        items:
+          type: array
+          maxItems: 100
           items:
-            type: array
-            maxItems: 100
-            items:
-              $ref: '#/components/schemas/walletHistory'
+            $ref: '#/components/schemas/walletHistory'
     objectReferencePage:
       type: object
       additionalProperties: false
@@ -4926,10 +4940,7 @@ components:
       name: x-pti-disable-webhook
       description: Set to true to disable webhook calls for this request.
       schema:
-        type: string
-        enum:
-          - true
-          - false
+        type: boolean
       in: header
       required: false
     providerNameHeaderParam:

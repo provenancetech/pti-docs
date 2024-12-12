@@ -409,8 +409,9 @@
         },
         "callbacks" : {
           "userStatusUpdate" : {
-            "${yourWebhookAddress}" : {
+            "{$url}" : {
               "post" : {
+                "summary" : "Endpoint that receives user status updates",
                 "requestBody" : {
                   "content" : {
                     "application/json" : {
@@ -424,6 +425,9 @@
                 "responses" : {
                   "200" : {
                     "description" : "Your server returns this code if it accepts the callback"
+                  },
+                  "422" : {
+                    "description" : "Your server returns an error"
                   }
                 }
               }
@@ -1073,8 +1077,7 @@
           "style" : "simple",
           "explode" : false,
           "schema" : {
-            "type" : "string",
-            "enum" : [ "true", "false" ]
+            "type" : "boolean"
           }
         } ],
         "requestBody" : {
@@ -1178,8 +1181,7 @@
           "style" : "simple",
           "explode" : false,
           "schema" : {
-            "type" : "string",
-            "enum" : [ "true", "false" ]
+            "type" : "boolean"
           }
         } ],
         "requestBody" : {
@@ -1269,8 +1271,9 @@
         },
         "callbacks" : {
           "userAssessUpdate" : {
-            "${yourWebhookAddress}" : {
+            "{$url}" : {
               "post" : {
+                "summary" : "Endpoint to receive user assessments updates",
                 "requestBody" : {
                   "content" : {
                     "application/json" : {
@@ -1284,6 +1287,9 @@
                 "responses" : {
                   "200" : {
                     "description" : "Your server returns this code if it accepts the callback"
+                  },
+                  "422" : {
+                    "description" : "Your server returns an error"
                   }
                 }
               }
@@ -1420,8 +1426,7 @@
           "style" : "simple",
           "explode" : false,
           "schema" : {
-            "type" : "string",
-            "enum" : [ "true", "false" ]
+            "type" : "boolean"
           }
         } ],
         "requestBody" : {
@@ -1511,8 +1516,9 @@
         },
         "callbacks" : {
           "transactionAssessUpdate" : {
-            "${yourWebhookAddress}" : {
+            "{$url}" : {
               "post" : {
+                "summary" : "Endpoint that receives transaction assessment updates",
                 "requestBody" : {
                   "content" : {
                     "application/json" : {
@@ -1526,6 +1532,9 @@
                 "responses" : {
                   "200" : {
                     "description" : "Your server returns this code if it accepts the callback"
+                  },
+                  "422" : {
+                    "description" : "Your server returns an error"
                   }
                 }
               }
@@ -1753,8 +1762,7 @@
           "style" : "simple",
           "explode" : false,
           "schema" : {
-            "type" : "string",
-            "enum" : [ "true", "false" ]
+            "type" : "boolean"
           }
         }, {
           "name" : "x-pti-provider-name",
@@ -1854,8 +1862,9 @@
         },
         "callbacks" : {
           "transactionUpdate" : {
-            "${yourWebhookAddress}" : {
+            "{$url}" : {
               "post" : {
+                "summary" : "Endpoint that receives transaction status updates",
                 "requestBody" : {
                   "content" : {
                     "application/json" : {
@@ -1869,6 +1878,9 @@
                 "responses" : {
                   "200" : {
                     "description" : "Your server returns this code if it accepts the callback"
+                  },
+                  "422" : {
+                    "description" : "Your server returns an error"
                   }
                 }
               }
@@ -1931,8 +1943,7 @@
           "style" : "simple",
           "explode" : false,
           "schema" : {
-            "type" : "string",
-            "enum" : [ "true", "false" ]
+            "type" : "boolean"
           }
         }, {
           "name" : "x-pti-provider-name",
@@ -2032,8 +2043,9 @@
         },
         "callbacks" : {
           "transactionUpdate" : {
-            "${yourWebhookAddress}" : {
+            "{$url}" : {
               "post" : {
+                "summary" : "Endpoint that receives transaction status update",
                 "requestBody" : {
                   "content" : {
                     "application/json" : {
@@ -2047,6 +2059,9 @@
                 "responses" : {
                   "200" : {
                     "description" : "Your server returns this code if it accepts the callback"
+                  },
+                  "422" : {
+                    "description" : "Your server returns an error"
                   }
                 }
               }
@@ -2109,8 +2124,7 @@
           "style" : "simple",
           "explode" : false,
           "schema" : {
-            "type" : "string",
-            "enum" : [ "true", "false" ]
+            "type" : "boolean"
           }
         }, {
           "name" : "x-pti-provider-name",
@@ -2210,8 +2224,9 @@
         },
         "callbacks" : {
           "transactionUpdate" : {
-            "${yourWebhookAddress}" : {
+            "{$url}" : {
               "post" : {
+                "summary" : "Endpoint that receives transaction status updates",
                 "requestBody" : {
                   "content" : {
                     "application/json" : {
@@ -2225,6 +2240,9 @@
                 "responses" : {
                   "200" : {
                     "description" : "Your server returns this code if it accepts the callback"
+                  },
+                  "422" : {
+                    "description" : "Your server returns an error"
                   }
                 }
               }
@@ -2287,8 +2305,7 @@
           "style" : "simple",
           "explode" : false,
           "schema" : {
-            "type" : "string",
-            "enum" : [ "true", "false" ]
+            "type" : "boolean"
           }
         }, {
           "name" : "x-pti-provider-name",
@@ -2388,8 +2405,9 @@
         },
         "callbacks" : {
           "transactionUpdate" : {
-            "${yourWebhookAddress}" : {
+            "{$url}" : {
               "post" : {
+                "summary" : "Endpoint that receives transaction status updates",
                 "requestBody" : {
                   "content" : {
                     "application/json" : {
@@ -2403,6 +2421,9 @@
                 "responses" : {
                   "200" : {
                     "description" : "Your server returns this code if it accepts the callback"
+                  },
+                  "422" : {
+                    "description" : "Your server returns an error"
                   }
                 }
               }
@@ -2465,8 +2486,7 @@
           "style" : "simple",
           "explode" : false,
           "schema" : {
-            "type" : "string",
-            "enum" : [ "true", "false" ]
+            "type" : "boolean"
           }
         }, {
           "name" : "x-pti-provider-name",
@@ -2566,8 +2586,9 @@
         },
         "callbacks" : {
           "transactionUpdate" : {
-            "${yourWebhookAddress}" : {
+            "{$url}" : {
               "post" : {
+                "summary" : "Endpoint that receives transaction status updates",
                 "requestBody" : {
                   "content" : {
                     "application/json" : {
@@ -2581,6 +2602,9 @@
                 "responses" : {
                   "200" : {
                     "description" : "Your server returns this code if it accepts the callback"
+                  },
+                  "422" : {
+                    "description" : "Your server returns an error"
                   }
                 }
               }
@@ -2643,8 +2667,7 @@
           "style" : "simple",
           "explode" : false,
           "schema" : {
-            "type" : "string",
-            "enum" : [ "true", "false" ]
+            "type" : "boolean"
           }
         }, {
           "name" : "x-pti-provider-name",
@@ -2744,8 +2767,9 @@
         },
         "callbacks" : {
           "transactionUpdate" : {
-            "${yourWebhookAddress}" : {
+            "{$url}" : {
               "post" : {
+                "summary" : "Endpoint that receives transaction status updates",
                 "requestBody" : {
                   "content" : {
                     "application/json" : {
@@ -2759,6 +2783,9 @@
                 "responses" : {
                   "200" : {
                     "description" : "Your server returns this code if it accepts the callback"
+                  },
+                  "422" : {
+                    "description" : "Your server returns an error"
                   }
                 }
               }
@@ -2821,8 +2848,7 @@
           "style" : "simple",
           "explode" : false,
           "schema" : {
-            "type" : "string",
-            "enum" : [ "true", "false" ]
+            "type" : "boolean"
           }
         }, {
           "name" : "x-pti-provider-name",
@@ -2922,8 +2948,9 @@
         },
         "callbacks" : {
           "transactionUpdate" : {
-            "${yourWebhookAddress}" : {
+            "{$url}" : {
               "post" : {
+                "summary" : "Endpoint that receives transaction status updates",
                 "requestBody" : {
                   "content" : {
                     "application/json" : {
@@ -2937,6 +2964,9 @@
                 "responses" : {
                   "200" : {
                     "description" : "Your server returns this code if it accepts the callback"
+                  },
+                  "422" : {
+                    "description" : "Your server returns an error"
                   }
                 }
               }
@@ -2999,8 +3029,7 @@
           "style" : "simple",
           "explode" : false,
           "schema" : {
-            "type" : "string",
-            "enum" : [ "true", "false" ]
+            "type" : "boolean"
           }
         }, {
           "name" : "x-pti-provider-name",
@@ -3100,8 +3129,9 @@
         },
         "callbacks" : {
           "transactionUpdate" : {
-            "${yourWebhookAddress}" : {
+            "{$url}" : {
               "post" : {
+                "summary" : "Endpoint that receives transaction status updates",
                 "requestBody" : {
                   "content" : {
                     "application/json" : {
@@ -3115,6 +3145,9 @@
                 "responses" : {
                   "200" : {
                     "description" : "Your server returns this code if it accepts the callback"
+                  },
+                  "422" : {
+                    "description" : "Your server returns an error"
                   }
                 }
               }
@@ -5630,28 +5663,6 @@
           "$ref" : "#/components/schemas/pii"
         } ]
       },
-      "kyc" : {
-        "type" : "object",
-        "properties" : {
-          "status" : {
-            "type" : "string",
-            "enum" : [ "ACCEPTED", "REFUSED", "MANUAL_REVIEW", "REQUESTED_MORE_INFORMATION" ]
-          },
-          "tier" : {
-            "type" : "integer",
-            "description" : "related kyc tier level",
-            "format" : "int32"
-          },
-          "clientMeta" : {
-            "type" : "object",
-            "description" : "key/value map of extra meta data for this kyc"
-          },
-          "requestId" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        },
-        "additionalProperties" : false
-      },
       "name" : {
         "type" : "object",
         "properties" : {
@@ -7173,6 +7184,33 @@
       },
       "walletHistoryPage" : {
         "type" : "object",
+        "properties" : {
+          "page" : {
+            "maximum" : 9999999,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "pageSize" : {
+            "maximum" : 100,
+            "minimum" : 1,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "total" : {
+            "maximum" : 99999999,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "items" : {
+            "maxItems" : 100,
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/walletHistory"
+            }
+          }
+        },
         "additionalProperties" : false,
         "example" : {
           "page" : 0,
@@ -7190,31 +7228,7 @@
             "change" : 5.99,
             "targetOperation" : "IN_FLIGHT_BALANCE",
             "createDateTime" : "2024-12-05T12:00:00Z"
-          } ],
-          "properties" : {
-            "page" : {
-              "type" : "integer",
-              "minimum" : 0,
-              "maximum" : 9999999
-            },
-            "pageSize" : {
-              "type" : "integer",
-              "minimum" : 1,
-              "maximum" : 100
-            },
-            "total" : {
-              "type" : "integer",
-              "minimum" : 0,
-              "maximum" : 99999999
-            },
-            "items" : {
-              "type" : "array",
-              "maxItems" : 100,
-              "items" : {
-                "$ref" : "#/components/schemas/walletHistory"
-              }
-            }
-          }
+          } ]
         }
       },
       "objectReferencePage" : {
@@ -7457,8 +7471,7 @@
         "style" : "simple",
         "explode" : false,
         "schema" : {
-          "type" : "string",
-          "enum" : [ "true", "false" ]
+          "type" : "boolean"
         }
       },
       "providerNameHeaderParam" : {
