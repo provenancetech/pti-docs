@@ -4157,7 +4157,7 @@
           }
         } ],
         "requestBody" : {
-          "description" : "null",
+          "description" : "Deposit address request parameters",
           "content" : {
             "application/json" : {
               "schema" : {

@@ -2118,7 +2118,7 @@ paths:
       tags:
         - Wallets
       requestBody:
-        description:
+        description: Deposit address request parameters
         required: false
         content:
           application/json:
