@@ -46,9 +46,9 @@ allowed us to increase the level of KYC for that user. When this happens, we sen
 
 ## Status codes and Errors
 
-PTI uses conventional HTTP response codes to indicate the success or failure of an API request. 
+Fiant uses conventional HTTP response codes to indicate the success or failure of an API request. 
 In general, codes in the 2xx range indicate success. Codes in the 4xx range indicate an error. 
-Codes in the 5xx range indicate an error with PTI servers (these are rare and should not happen).
+Codes in the 5xx range indicate an error with Fiant servers (these are rare and should not happen).
 
 The following table details the meaning of the various codes that can be returned by the API:
 

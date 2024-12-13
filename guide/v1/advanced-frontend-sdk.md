@@ -28,7 +28,6 @@ The `CLIENT_ID` must be set to the UUID provided by Fiant(PTI) when you did the 
 The `GENERATE_TOKEN_ENDPOINT` should be set to the url of your backend that will proxy the generation of [single use tokens](advanced-auth#single-use-tokens)
 
 The `PTI_DOMAIN` is the domain hosting Fiant(PTI) elements, corresponding to {env}. Use the field `ptiDomain` to specify one of the following:
-- dev.fiant.io (development)
 - staging.fiant.io (staging)
 - platform.fiant.io (production)
 

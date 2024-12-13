@@ -41,4 +41,5 @@ def verify_signature(jwstoken, pub_key):
 ```
 ### SDK code example
 ```java
+Sting content = sdk.decodeWebhookPayload(payload); // This decrypts the webhook content and verify the PTI signature.
 ```
