@@ -4213,7 +4213,6 @@ components:
         - date
         - amount
         - initiator
-        - usdValue
       properties:
         transactionGroupId:
           $ref: '#/components/schemas/uuidLikeStrTransactionGroup'

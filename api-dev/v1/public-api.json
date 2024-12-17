@@ -6688,7 +6688,7 @@
         "additionalProperties" : true
       },
       "transaction" : {
-        "required" : [ "amount", "date", "initiator", "usdValue" ],
+        "required" : [ "amount", "date", "initiator" ],
         "type" : "object",
         "properties" : {
           "transactionGroupId" : {
