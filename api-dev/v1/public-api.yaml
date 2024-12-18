@@ -24,6 +24,10 @@ paths:
       requestBody:
         content:
           application/json:
+            example:
+              url: >-
+                https://api.staging.fiant.io/v1/user/3121df47-7a05-4b42-9db3-d1ff8a29abf0/transactions/36dbe68f-2747-41c6-8748-559588fd3248
+              method: GET
             schema:
               $ref: '#/components/schemas/userTokenRequest'
         required: true
@@ -164,6 +168,27 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              name:
+                firstName: John
+                lastName: Smith
+              id: 36dbe68f-2747-41c6-8748-559588fd3248
+              dateOfBirth: '1988-09-28'
+              emails:
+                - address: johnsmith@test.com
+                  default: true
+              phones:
+                - number: '12345678901'
+                  type: WORK
+                  default: true
+              addresses:
+                - streetAddress: '1, main street'
+                  city: New Hampshire
+                  postalCode: '10005'
+                  stateCode: US-NH
+                  country: US
+                  default: true
+              sourceOfFunds: Creator earnings
             schema:
               $ref: '#/components/schemas/oneOfUserSubTypes'
       responses:
@@ -414,6 +439,23 @@ paths:
           description: unexpected error
           content:
             application/json:
+              example:
+                type: ENCRYPTED_CREDIT_CARD
+                creditCardLast4: '1234'
+                cvv: '789'
+                creditCardType: mastercard
+                expirationYear: '2030'
+                expirationMonth: '01'
+                creditCardBin: '123456'
+                cardHolderFirstName: John
+                cardHolderLastName: Smith
+                creditCardAddress:
+                  streetAddress: 1 Main street
+                  city: New York
+                  postalCode: '10001'
+                  stateCode: NY
+                  country: US
+                id: 6c61b7d4-3676-4903-a991-5eefba1f7a70
               schema:
                 $ref: '#/components/schemas/unmanagedError'
       requestBody:
@@ -563,6 +605,53 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              sourceMethod:
+                paymentMethodType: CREDIT_CARD
+                paymentInformation:
+                  id: 4b573a86-fd3f-475d-a90b-3658f2e79719
+                billingEmail: user@example.com
+              destinationMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  id: 3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82
+                billingEmail: user@example.com
+              type: DEPOSIT
+              transactionTotal:
+                fee:
+                  amount: 10
+                  currency: USD
+                total:
+                  amount: 100
+                  currency: USD
+                subtotal:
+                  amount: 90
+                  currency: USD
+              initiator:
+                name:
+                  firstName: john
+                  lastName: smith
+                id: 36dbe68f-2747-41c6-8748-559588fd3248
+                dateOfBirth: '1988-09-28'
+                emails:
+                  - address: johnsmith@test.com
+                    default: true
+                phones:
+                  - number: '12345678901'
+                    type: WORK
+                    default: true
+                addresses:
+                  - streetAddress: '1, main street'
+                    city: New Hampshire
+                    postalCode: '10005'
+                    stateCode: US-NH
+                    country: US
+                    default: true
+                sourceOfFunds: Creator earnings
+              transactionGroupId: c8d8ed2a-33df-463b-95af-e59ff6e16414
+              usdValue: 100
+              amount: 100
+              date: 2024-12-13T18:46:40.666+0000
             schema:
               $ref: '#/components/schemas/oneOfTransactionSubTypes'
       responses:
@@ -612,6 +701,27 @@ paths:
       requestBody:
         content:
           application/json:
+            example:
+              name:
+                firstName: john
+                lastName: smith
+              id: 36dbe68f-2747-41c6-8748-559588fd3248
+              dateOfBirth: '1988-09-28'
+              emails:
+                - address: johnsmith@test.com
+                  default: true
+              phones:
+                - number: '12345678901'
+                  type: WORK
+                  default: true
+              addresses:
+                - streetAddress: '1, main street'
+                  city: New Hampshire
+                  postalCode: '10005'
+                  stateCode: US-NH
+                  country: US
+                  default: true
+              sourceOfFunds: Creator earnings
             schema:
               $ref: '#/components/schemas/kycRequest'
         required: true
@@ -743,6 +853,53 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              sourceMethod:
+                paymentMethodType: CREDIT_CARD
+                paymentInformation:
+                  id: 4b573a86-fd3f-475d-a90b-3658f2e79719
+                billingEmail: user@example.com
+              destinationMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  id: 3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82
+                billingEmail: user@example.com
+              type: DEPOSIT
+              transactionTotal:
+                fee:
+                  amount: 10
+                  currency: USD
+                total:
+                  amount: 100
+                  currency: USD
+                subtotal:
+                  amount: 90
+                  currency: USD
+              initiator:
+                name:
+                  firstName: john
+                  lastName: smith
+                id: 36dbe68f-2747-41c6-8748-559588fd3248
+                dateOfBirth: '1988-09-28'
+                emails:
+                  - address: johnsmith@test.com
+                    default: true
+                phones:
+                  - number: '12345678901'
+                    type: WORK
+                    default: true
+                addresses:
+                  - streetAddress: '1, main street'
+                    city: New Hampshire
+                    postalCode: '10005'
+                    stateCode: US-NH
+                    country: US
+                    default: true
+                sourceOfFunds: Creator earnings
+              transactionGroupId: c8d8ed2a-33df-463b-95af-e59ff6e16414
+              usdValue: 100
+              amount: 100
+              date: 2024-12-13T18:46:40.666+0000              
             schema:
               $ref: '#/components/schemas/oneOfTransactionSubTypes'
       callbacks:
@@ -863,6 +1020,53 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              sourceMethod:
+                paymentMethodType: CREDIT_CARD
+                paymentInformation:
+                  id: 4b573a86-fd3f-475d-a90b-3658f2e79719
+                billingEmail: user@example.com
+              destinationMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  id: 3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82
+                billingEmail: user@example.com
+              type: DEPOSIT
+              transactionTotal:
+                fee:
+                  amount: 10
+                  currency: USD
+                total:
+                  amount: 100
+                  currency: USD
+                subtotal:
+                  amount: 90
+                  currency: USD
+              initiator:
+                name:
+                  firstName: john
+                  lastName: smith
+                id: 36dbe68f-2747-41c6-8748-559588fd3248
+                dateOfBirth: '1988-09-28'
+                emails:
+                  - address: johnsmith@test.com
+                    default: true
+                phones:
+                  - number: '12345678901'
+                    type: WORK
+                    default: true
+                addresses:
+                  - streetAddress: '1, main street'
+                    city: New Hampshire
+                    postalCode: '10005'
+                    stateCode: US-NH
+                    country: US
+                    default: true
+                sourceOfFunds: Creator earnings
+              transactionGroupId: c8d8ed2a-33df-463b-95af-e59ff6e16414
+              usdValue: 100
+              amount: 100
+              date: 2024-12-13T18:46:40.666+0000
             schema:
               $ref: '#/components/schemas/tradeTransaction'
       responses:
@@ -926,6 +1130,43 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              sourceMethod:
+                paymentMethodType: CREDIT_CARD
+                paymentInformation:
+                  id: 4b573a86-fd3f-475d-a90b-3658f2e79719
+                billingEmail: user@example.com
+              destinationMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  id: 3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82
+                billingEmail: user@example.com
+              type: DEPOSIT
+              initiator:
+                name:
+                  firstName: john
+                  lastName: smith
+                id: 36dbe68f-2747-41c6-8748-559588fd3248
+                dateOfBirth: '1988-09-28'
+                emails:
+                  - address: johnsmith@test.com
+                    default: true
+                phones:
+                  - number: '12345678901'
+                    type: WORK
+                    default: true
+                addresses:
+                  - streetAddress: '1, main street'
+                    city: New Hampshire
+                    postalCode: '10005'
+                    stateCode: US-NH
+                    country: US
+                    default: true
+                sourceOfFunds: Creator earnings
+              transactionGroupId: c8d8ed2a-33df-463b-95af-e59ff6e16414
+              usdValue: 100
+              amount: 100
+              date: 2024-12-13T18:46:40.666+0000
             schema:
               $ref: '#/components/schemas/executeDepositTransaction'
       callbacks:
@@ -1014,6 +1255,25 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              initiator:
+                id: c5c4b077-0c9a-4d5f-84fd-439a6123cdd2
+                type: PERSON
+              sourceMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  type: WALLET
+                  walletId: 1de3e77b-e673-4e44-8b69-4931364c4e76
+              digitalItem:
+                digitalItemType: NFT
+                itemReference: 21d7c009-8469-41ae-83d7-393085fd6fef
+              seller:
+                id: f0714c92-d5bf-4ed2-9636-e9ab3743fcb6
+                type: PERSON
+              date: 2024-12-13T18:46:40.666+0000
+              usdValue: 5
+              amount: 5
+              type: BUY
             schema:
               $ref: '#/components/schemas/executeBuyTransaction'
       callbacks:
@@ -1102,6 +1362,25 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              initiator:
+                id: 2903c06b-6291-4cc8-b568-fe93064a5a8c
+                type: PERSON
+              digitalItem:
+                digitalItemType: NFT
+                itemReference: f5511285-9d0b-41fd-8ae7-0817bb7462ba
+              buyer:
+                id: be975fae-fb15-4b70-80ba-e59968ae48c3
+                type: PERSON
+              destinationMethod:
+                paymentInformation:
+                  type: WALLET
+                  walletId: c5b2cca7-a1ac-4aad-a461-be8903c695d9
+                paymentMethodType: WALLET
+              date: 2024-12-13T18:46:40.666+0000
+              usdValue: 5
+              amount: 5
+              type: SELL
             schema:
               $ref: '#/components/schemas/executeSellTransaction'
       callbacks:
@@ -1190,6 +1469,22 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              sourceMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  type: WALLET
+                  walletId: a8e99100-f562-4e5b-b86f-9142dc2bc9f0
+              destinationMethod:
+                paymentMethodType: TOKEN
+                paymentInformation:
+                  type: TOKEN
+                  tokenAddress: '0xfecf1d73653c4231a6781770c7b44eda'
+                  tokenType: ETH
+                  blockchain: ETHEREUM
+              amount: 1
+              usdValue: 3999.54
+              type: WITHDRAWAL
             schema:
               $ref: '#/components/schemas/executeWithdrawalTransaction'
       callbacks:
@@ -1278,6 +1573,33 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              sourceMethod:
+                currency: USD
+                paymentInformation:
+                  type: ENCRYPTED_CREDIT_CARD
+                  id: 79a0da5f-d24b-4ed8-a194-f8e0db32cf05
+                paymentMethodType: CREDIT_CARD
+              destinationMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  type: WALLET
+                  walletId: e13c3242-57d3-473f-b98c-eb2768e4549c
+              transactionTotal:
+                total:
+                  amount: 6.99
+                  currency: USD
+                fee:
+                  amount: 0
+                  currency: USD
+                subtotal:
+                  amount: 6.99
+                  currency: USD
+              usdValue: 6.99
+              amount: 6.99
+              type: PAYMENT
+              clientMeta:
+                paymentMetadata: collection 1 publication fees
             schema:
               $ref: '#/components/schemas/executePaymentTransaction'
       callbacks:
@@ -1366,6 +1688,24 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              initiator:
+                type: PERSON
+              sourceTransferMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  type: WALLET
+                  walletId: dd2473b7-1afd-4f9c-a359-b4294587fef6
+              destinationTransferMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  type: WALLET
+                  walletId: 70cd9757-f288-41e5-8506-5c38b7c819e1
+              destination:
+                type: PERSON
+              amount: 200
+              usdValue: 200
+              type: TRANSFER
             schema:
               $ref: '#/components/schemas/executeTransferTransaction'
       callbacks:
@@ -1455,6 +1795,20 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              sourceMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  type: WALLET
+                  walletId: MySOLWallet
+              destinationMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  type: WALLET
+                  walletId: MyUSDWallet
+              amount: 0.5
+              usdValue: 113
+              type: TRADE
             schema:
               $ref: '#/components/schemas/executeTradeTransaction'
       callbacks:
@@ -1869,6 +2223,17 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              - itemReference: 57d6467c-6ae0-434f-8197-e7e9f86f2209
+                digitalItemType: NFT
+                itemDescription: Ultra Rare Elite Russell Wilson Level 1
+                itemTitle: 'QB, Mint Condition, #467/500 From Founders Set '
+                itemUSDValue: 10
+              - itemReference: 57d6467c-6ae0-434f-8197-e7e9f86f2210
+                digitalItemType: NFT
+                itemDescription: Ultra Rare Elite Peyton Manning Level 10
+                itemTitle: 'QB, Mint Condition, #468/500 From Founders Set'
+                itemUSDValue: 35
             schema:
               type: array
               maxItems: 100
@@ -1923,6 +2288,11 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              type: WALLET
+              walletId: c8768405-6129-4bda-8a10-8ef234dff30e
+              currency: ETH
+              network: Ethereum
             schema:
               $ref: '#/components/schemas/walletCreation'
       responses:
@@ -2098,6 +2468,9 @@ paths:
         required: true
         content:
           application/json:
+            example: 
+              amount: 100
+              paymentMethodType: ACH
             schema:
               $ref: '#/components/schemas/simulatePaymentRequest'
       responses:
@@ -2355,6 +2728,12 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              payload: '{}'
+              providerName: UNKNOWN
+              feedback: SETTLED
+              transactionId: UUID
+              date: 2024-12-13T18:46:40.666+0000
             schema:
               $ref: '#/components/schemas/transactionUpdate'
       responses:
@@ -3428,7 +3807,7 @@ components:
       example:
         id: 36dbe68f-2747-41c6-8748-559588fd3248
         link: >-
-          https://api.pticlient.com/v1/user/3121df47-7a05-4b42-9db3-d1ff8a29abf0/transactions/36dbe68f-2747-41c6-8748-559588fd3248
+          https://api.staging.fiant.io/v1/user/3121df47-7a05-4b42-9db3-d1ff8a29abf0/transactions/36dbe68f-2747-41c6-8748-559588fd3248
       additionalProperties: false
       properties:
         id:
@@ -3834,7 +4213,6 @@ components:
         - date
         - amount
         - initiator
-        - usdValue
       properties:
         transactionGroupId:
           $ref: '#/components/schemas/uuidLikeStrTransactionGroup'
@@ -4102,7 +4480,7 @@ components:
       additionalProperties: false
       example:
         url: >-
-          https://api.pticlient.com/v1/user/3121df47-7a05-4b42-9db3-d1ff8a29abf0/transactions/36dbe68f-2747-41c6-8748-559588fd3248
+          https://api.staging.fiant.io/v1/user/3121df47-7a05-4b42-9db3-d1ff8a29abf0/transactions/36dbe68f-2747-41c6-8748-559588fd3248
         method: GET
       properties:
         url:
@@ -4767,10 +5145,11 @@ components:
         items:
           - id: 36dbe68f-2747-41c6-8748-559588fd3248
             link: >-
-              https://api.pticlient.com/v1/user/36dbe68f-2747-41c6-8748-559588fd3248
+              https://api.staging.fiant.io/v1/user/36dbe68f-2747-41c6-8748-559588fd3248
           - id: 36dbe68f-2747-41c6-8748-559588fd3249
             link: >-
-              https://api.pticlient.com/v1/user/36dbe68f-2747-41c6-8748-559588fd3249
+              https://api.staging.fiant.io/v1/user/36dbe68f-2747-41c6-8748-559588fd3249
+              
       properties:
         page:
           type: integer
