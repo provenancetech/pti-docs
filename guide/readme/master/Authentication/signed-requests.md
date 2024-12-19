@@ -1,10 +1,10 @@
 ---
-title: "Signing a request"
+title: "Manually Signing a request"
 slug: "signed-requests"
 excerpt: "Signed requests require access to the private key to sign the request, so it is only possible to use this method when the API calls are made from a private client. Only your server backend should make signed requests."
 hidden: false
 createdAt: "Fri Dec 13 2024 14:10:24 GMT+0000 (Coordinated Universal Time)"
-updatedAt: "Fri Dec 13 2024 14:10:26 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 19 2024 20:17:29 GMT+0000 (Coordinated Universal Time)"
 ---
 ### Making signed requests
 

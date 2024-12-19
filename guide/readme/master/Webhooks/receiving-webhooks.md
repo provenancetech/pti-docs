@@ -4,7 +4,7 @@ slug: "receiving-webhooks"
 excerpt: "You need to expose a publicly accessible endpoint so Fiant can send you webhooks to update status of various operations that you initiate with the platform.\n\nFiant provides robust ways to protect your webhook against external attacks:"
 hidden: false
 createdAt: "Fri Dec 13 2024 14:10:24 GMT+0000 (Coordinated Universal Time)"
-updatedAt: "Wed Dec 18 2024 21:05:20 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 19 2024 20:27:14 GMT+0000 (Coordinated Universal Time)"
 ---
 ## Webhook content decryption
 
@@ -42,8 +42,7 @@ Sting content = sdk.decodeWebhookPayload(payload);
 
 ## Verify Fiant signature in the messages
 
-This step is optional but highly recommended, that enables you to ensure that the message really originates from Fiant.  
-You can find the sandbox public key [here](sandbox.pub) and the production one [here](prod.pub) 
+This step is optional but highly recommended, that enables you to ensure that the message really originates from Fiant.
 
 ### Raw code example
 

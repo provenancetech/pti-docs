@@ -4,7 +4,7 @@ slug: "front-end-sdk-usage"
 excerpt: ""
 hidden: false
 createdAt: "Fri Dec 13 2024 14:10:24 GMT+0000 (Coordinated Universal Time)"
-updatedAt: "Mon Dec 16 2024 22:23:10 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 19 2024 20:28:56 GMT+0000 (Coordinated Universal Time)"
 ---
 To simplify the integration of Fiant elements and enable the tracking of UI interactions,  
 Fiant provides a Web SDK that comes as a Javascript library.
@@ -30,7 +30,7 @@ Normally there should only be one call to the `PTI.init` function.
 
 {env}: Set to dev, staging, or platform for development, staging, or production environments, respectively.
 
-The `CLIENT_ID` must be set to the UUID provided by Fiant(PTI) when you did the [onboarding](https://fiant.readme.io/docs/keys#opening-your-account-with-fiant).
+The `CLIENT_ID` must be set to the UUID provided by Fiant(PTI) when you signed up.
 
 The `GENERATE_TOKEN_ENDPOINT` should be set to the url of your backend that will proxy the generation of [single use tokens](https://fiant.readme.io/docs/jwt)
 
@@ -165,7 +165,7 @@ The value of `USER_ID` is also under your control. It corresponds to the value y
 You must store the `this` value at user creation time to make sure you can associate your users with users in the platform.
 
 The value of `SCENARIO_ID` will select the scenario under which the transaction or User assessment will be made.  
-The scenario must have been configured previously as explained [here](https://dash.readme.com/project/fiant/v1.0.184/docs/user-assessment-2).  
+The scenario must have been configured previously as explained [here](https://fiant.readme.io/docs/definitions#scenarios).  
 Passing an unconfigured `SCENARIO_ID` value will result in an error.
 
 The value of `lang` is to specify which language strings should be used in the form. Default is `en` (English)
