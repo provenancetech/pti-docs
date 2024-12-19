@@ -4,7 +4,7 @@ slug: "user-assessment-2"
 excerpt: ""
 hidden: false
 createdAt: "Fri Dec 13 2024 14:10:24 GMT+0000 (Coordinated Universal Time)"
-updatedAt: "Fri Dec 13 2024 18:47:56 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 19 2024 20:22:02 GMT+0000 (Coordinated Universal Time)"
 ---
 In order to limit the amount of fraud and other nefarious activities, Fiant offers the possibility of performing a User assessment ( KYC, Know Your Customer ) flow for a specific user.  
 A KYC flow will require a set of information about the user and return a status. The status returned should be used to allow or deny the user to perform transactions.  
@@ -70,7 +70,7 @@ example using the SDK form function to display the KYC form.
 
 In the above example, the KYC form displayed will collect all the missing information on the user. 
 
-Under the hood, all the user information will be collected, the single-use token fetched and the call to the [Start user Assessment endpoint](https://fiant.readme.io/reference/startuserassessment) . The usdValue parameter is extremely important here because the element will call the [transaction validation endpoint](https://fiant.readme.io/reference/transactioninformationassessment) to populate itself.
+Under the hood, all the user information will be collected, the single-use token fetched and the call to the [Start user Assessment endpoint](https://fiant.readme.io/reference/startuserassessment) . The [usdValue](https://fiant.readme.io/docs/definitions#usdvalue) parameter is extremely important here because the element will call the [transaction validation endpoint](https://fiant.readme.io/reference/transactioninformationassessment) to populate itself.
 
 ### User Assessment via API calls
 

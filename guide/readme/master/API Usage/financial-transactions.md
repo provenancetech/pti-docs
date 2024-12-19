@@ -4,7 +4,7 @@ slug: "financial-transactions"
 excerpt: "Executing financial transactions on the Fiant platform is straightforward. \nUsing this set of endpoints is also taking care of compliance requirements for you."
 hidden: false
 createdAt: "Fri Dec 13 2024 14:10:24 GMT+0000 (Coordinated Universal Time)"
-updatedAt: "Wed Dec 18 2024 21:04:20 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 19 2024 20:23:15 GMT+0000 (Coordinated Universal Time)"
 ---
 Once your user has the required assessment level acceptance, you can execute transactions.  
 Again, you will need the `USER_ID` of the user originating the transaction. You must also provide a `REQUEST_ID` that you must store  

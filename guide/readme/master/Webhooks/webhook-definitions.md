@@ -4,7 +4,7 @@ slug: "webhook-definitions"
 excerpt: "This section provides the details on the possible messages that you can receive on your webhook endpoint."
 hidden: false
 createdAt: "Fri Dec 13 2024 14:10:24 GMT+0000 (Coordinated Universal Time)"
-updatedAt: "Wed Dec 18 2024 21:05:01 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 19 2024 20:26:49 GMT+0000 (Coordinated Universal Time)"
 ---
 ## User Status Update
 
@@ -18,9 +18,9 @@ updatedAt: "Wed Dec 18 2024 21:05:01 GMT+0000 (Coordinated Universal Time)"
 }
 ```
 
-The `CLIENT_ID` value will be set to the Client ID provided to you during [onboarding](fiant-onboarding)
+The `CLIENT_ID` value will be set to the Client ID provided to you during Onboarding
 
-The `USER_ID` corresponds to the user for which we are providing the status udate.
+The `USER_ID` corresponds to the user for which we are providing the status update.
 
 Here is the meaning of the possible statuses:
 
@@ -47,13 +47,13 @@ The `STATUS_REASON` value will provide more details on the reason why the status
 }
 ```
 
-The `REQUEST_ID` value will be set to the value you provided when you [initiated the user assessment](#initiating-a-user-assessment)
+The `REQUEST_ID` value will be set to the value you provided when you [initiated the user assessment](https://fiant.readme.io/reference/startuserassessment)
 
 The `USER_ID` corresponds to the user for which we are providing the KYC status and tier.
 
 Typically, you will receive 2 KYC result messages per KYC. The first one will have a `PENDING` status and the second one will be `ACCEPTED` or `REFUSED`.  
 A status of `REFUSED` means that your user has failed the KYC check and you should not allow transactions for that user. A status of `UNDER_REVIEW` means that a  
-compliance agent at PTI is analysing the information provided by your user and you should wait for the `ACCEPTED` status before allowing your user to perform  
+compliance agent at PTI is analyzing the information provided by your user and you should wait for the `ACCEPTED` status before allowing your user to perform  
 transactions.
 
 ## Transaction Monitoring Result
@@ -74,17 +74,17 @@ transactions.
 }
 ```
 
-The `REQUEST_ID` value will be set to the value you provided when you [logged the transaction](#monitoring-transactions)
+The `REQUEST_ID` value will be set to the value you provided when you started the transaction.
 
 The `USER_ID` corresponds to the user for which we are providing the transaction status.
 
 Typically, you will receive 2 transaction monitoring result messages per transaction. The first one will have a `PENDING` status and the second one will be `ACCEPT` or `DENY`.  
 A status of `DENY` means that the transaction is not allowed for that user. A status of `MANUAL_REVIEW` means that a  
-compliance agent at PTI is analysing the information provided and you should wait for the `ACCEPT` status before finalizing the transaction.
+compliance agent at PTI is analyzing the information provided and you should wait for the `ACCEPT` status before finalizing the transaction.
 
 In the case of a `DENY` status, the `complianceProviderResponseCode` will contain more detail on the reason for denial.
 
-The `TRANSACTION_DATE` will come in the form of an ISO 8601 compliant date string. 
+The `TRANSACTION_DATE` will come in the form of an ISO 8601-compliant date string. 
 
 ## Payment processing update
 
@@ -127,11 +127,11 @@ The `TRANSACTION_DATE` will come in the form of an ISO 8601 compliant date strin
 }
 ```
 
-The `REQUEST_ID` value will be set to the value you provided when you performed the your API call
+The `REQUEST_ID` value will be set to the value you provided when you performed your API call
 
 The `USER_ID` corresponds to the user who initiated the deposit request.
 
 You will receive multiple payment processing result messages. The first one will have a `PENDING` status will be followed by `AUTHORISZED` and `SETTLED` in the normal case.  
 A status of `REFUSED` means that the payment processor did not accept the transaction. The `transactionStatusDetail` field contains more details about the reason for the refusal.
 
-The `TRANSACTION_DATE` will come in the form of an ISO 8601 compliant date string.
+The `TRANSACTION_DATE` will come in the form of an ISO 8601-compliant date string.
