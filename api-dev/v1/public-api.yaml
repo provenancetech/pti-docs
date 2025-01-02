@@ -1114,7 +1114,7 @@ paths:
       operationId: deposit
       tags:
         - Transactions
-      summary: Execute a deposit (crypto/fiat -in)
+      summary: Create a Deposit (Fiat or Crypto)
       description: >-
         This endpoint is used to execute a deposit (crypto/fiat -in) transaction
         for a User. The transaction assessment and User information requirement
@@ -1451,7 +1451,7 @@ paths:
       - $ref: '#/components/parameters/clientIdHeaderParam'
     post:
       operationId: withdrawal
-      summary: Execute a withdrawal of fiat of crypto
+      summary: Create a Withdrawal (Fiat or Crypto)
       tags:
         - Transactions
       description: >-
@@ -1555,7 +1555,7 @@ paths:
       - $ref: '#/components/parameters/clientIdHeaderParam'
     post:
       operationId: payment
-      summary: Execute a generic payment of fiat of crypto
+      summary: Collect a Payment from a User
       tags:
         - Transactions
       description: >-
@@ -1670,7 +1670,7 @@ paths:
       - $ref: '#/components/parameters/clientIdHeaderParam'
     post:
       operationId: transfer
-      summary: Execute a transfer between Users
+      summary: Execute an Internal Transfer
       tags:
         - Transactions
       description: >-
@@ -1777,7 +1777,7 @@ paths:
       - $ref: '#/components/parameters/clientIdHeaderParam'
     post:
       operationId: trade
-      summary: Execute a Trade of liquidity between Wallets
+      summary: Execute a Trade
       tags:
         - Transactions
       description: >-
@@ -1974,7 +1974,7 @@ paths:
       operationId: getTransaction
       tags:
         - Transactions
-      summary: Get a transaction status
+      summary: Get a Transaction by ID
       responses:
         '200':
           description: OK
@@ -2004,7 +2004,7 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
     delete:
       operationId: deleteTransaction
-      summary: Cancel a transaction
+      summary: Delete a transaction
       tags:
         - Transactions
       responses:

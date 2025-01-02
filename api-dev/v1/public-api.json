@@ -1969,7 +1969,7 @@
     "/transactions/deposits" : {
       "post" : {
         "tags" : [ "Transactions" ],
-        "summary" : "Execute a deposit (crypto/fiat -in)",
+        "summary" : "Create a Deposit (Fiat or Crypto)",
         "description" : "This endpoint is used to execute a deposit (crypto/fiat -in) transaction for a User. The transaction assessment and User information requirement are evaluated before the transaction is executed.",
         "operationId" : "deposit",
         "parameters" : [ {
@@ -2609,7 +2609,7 @@
     "/transactions/withdrawals" : {
       "post" : {
         "tags" : [ "Transactions" ],
-        "summary" : "Execute a withdrawal of fiat of crypto",
+        "summary" : "Create a Withdrawal (Fiat or Crypto)",
         "description" : "This endpoint is used to execute a withdrawal of fiat or crypto transaction for a User. The Transaction Assessment and User information requirement are evaluated before the transaction is executed.",
         "operationId" : "withdrawal",
         "parameters" : [ {
@@ -2811,7 +2811,7 @@
     "/transactions/payments" : {
       "post" : {
         "tags" : [ "Transactions" ],
-        "summary" : "Execute a generic payment of fiat of crypto",
+        "summary" : "Collect a Payment from a User",
         "description" : "This endpoint is used to execute a generic payment of fiat or crypto transaction for a User. The Transaction Assessment and User information requirement are evaluated before the transaction is executed.",
         "operationId" : "payment",
         "parameters" : [ {
@@ -3029,7 +3029,7 @@
     "/transactions/transfers" : {
       "post" : {
         "tags" : [ "Transactions" ],
-        "summary" : "Execute a transfer between Users",
+        "summary" : "Execute an Internal Transfer",
         "description" : "This endpoint is used to execute a transfer between Users. The Transaction Assessment and User information requirement are evaluated before the transaction is executed.",
         "operationId" : "transfer",
         "parameters" : [ {
@@ -3235,7 +3235,7 @@
     "/transactions/trades" : {
       "post" : {
         "tags" : [ "Transactions" ],
-        "summary" : "Execute a Trade of liquidity between Wallets",
+        "summary" : "Execute a Trade",
         "description" : "This endpoint is used to execute a Trade between currencies and crypto. The Transaction Assessment and User Information requirement are evaluated before the Transaction is executed.",
         "operationId" : "trade",
         "parameters" : [ {
@@ -3616,7 +3616,7 @@
     "/transactions/{requestId}" : {
       "get" : {
         "tags" : [ "Transactions" ],
-        "summary" : "Get a transaction status",
+        "summary" : "Get a Transaction by ID",
         "operationId" : "getTransaction",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -3686,7 +3686,7 @@
       },
       "delete" : {
         "tags" : [ "Transactions" ],
-        "summary" : "Cancel a transaction",
+        "summary" : "Delete a transaction",
         "operationId" : "deleteTransaction",
         "parameters" : [ {
           "name" : "x-pti-client-id",
