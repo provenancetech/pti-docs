@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: Provenance technologies institutional API
-  version: '1.0.187'
+  version: '1.0.189'
   description: Provenance technologies institutional API specification
   license:
     name: Private
@@ -18,12 +18,16 @@ paths:
       - $ref: '#/components/parameters/clientIdHeaderParam'
     post:
       tags:
-        - Authorization
+        - Authentication
       operationId: getUserToken
-      summary: Get a user token
+      summary: Get a User Token
       requestBody:
         content:
           application/json:
+            example:
+              url: >-
+                https://api.staging.fiant.io/v1/user/3121df47-7a05-4b42-9db3-d1ff8a29abf0/transactions/36dbe68f-2747-41c6-8748-559588fd3248
+              method: GET
             schema:
               $ref: '#/components/schemas/userTokenRequest'
         required: true
@@ -61,7 +65,7 @@ paths:
       - $ref: '#/components/parameters/clientIdHeaderParam'
     get:
       operationId: getListOfAssets
-      summary: Get the list of the supported assets by the platform
+      summary: Get the list of the supported Assets
       tags:
         - Wallets
       responses:
@@ -111,13 +115,13 @@ paths:
       - $ref: '#/components/parameters/clientIdHeaderParam'
     get:
       operationId: getListOfUsers
-      summary: Get the list of your users
+      summary: Get the list of your Users
       parameters:
         - $ref: '#/components/parameters/offsetParam'
         - $ref: '#/components/parameters/pageSizeParam'
         - $ref: '#/components/parameters/sortByParam'
       tags:
-        - Collect User Data
+        - Users
       responses:
         '200':
           description: OK
@@ -141,13 +145,14 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
     post:
       operationId: addAUser
-      summary: Add a user
+      summary: Create a User
       tags:
-        - Collect User Data
+        - Users
       callbacks:
         userStatusUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives User status updates
               requestBody:
                 required: true
                 content:
@@ -157,10 +162,33 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       requestBody:
         required: true
         content:
           application/json:
+            example:
+              name:
+                firstName: John
+                lastName: Smith
+              id: 36dbe68f-2747-41c6-8748-559588fd3248
+              dateOfBirth: '1988-09-28'
+              emails:
+                - address: johnsmith@test.com
+                  default: true
+              phones:
+                - number: '12345678901'
+                  type: WORK
+                  default: true
+              addresses:
+                - streetAddress: '1, main street'
+                  city: New Hampshire
+                  postalCode: '10005'
+                  stateCode: US-NH
+                  country: US
+                  default: true
+              sourceOfFunds: Creator earnings
             schema:
               $ref: '#/components/schemas/oneOfUserSubTypes'
       responses:
@@ -198,9 +226,9 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
     put:
       operationId: updateUser
-      summary: Replace all informations for a user by the informations provided
+      summary: Overwrite all User’s information
       tags:
-        - Collect User Data
+        - Users
       requestBody:
         content:
           application/json:
@@ -238,9 +266,9 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
     patch:
       operationId: mergeUserInfo
-      summary: Add information to a user
+      summary: Add information to a User
       tags:
-        - Collect User Data
+        - Users
       requestBody:
         content:
           application/json:
@@ -288,13 +316,13 @@ paths:
         required: true
     get:
       operationId: getUser
-      summary: Get the information for a specific user.
+      summary: Get a User by ID
       description: >-
-        This endpoint is used to get the information for a specific user. The
-        information returned is the information that was collected for the user.
+        This endpoint is used to get the information for a specific User. The
+        information returned is the information that was collected for the User.
         PII information is not returned.
       tags:
-        - Collect User Data
+        - Users
       responses:
         '200':
           description: OK
@@ -336,13 +364,13 @@ paths:
       operationId: getUserPaymentInformations
       parameters:
         - $ref: '#/components/parameters/externalPaymentInformationTypeParam'
-      summary: Get all payment information for a specific user.
+      summary: Get a User’s Payment Information objects
       description: >-
-        This endpoint is used to get the payment information for a specific user. The
-        information returned is the information that was collected for the user.
-        You can filter by payment information type
+        This endpoint is used to get the Payment Information for a specific User. The
+        information returned is the information that was collected for the User.
+        You can filter by Payment Information type
       tags:
-        - Collect User Data
+        - Payment Information
       responses:
         '200':
           description: OK
@@ -375,11 +403,11 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
     post:
       operationId: addUserPaymentInformation
-      summary: Add a payment information for a specific user.
+      summary: Create a User’s Payment Information
       description: >-
-        This endpoint is used to add a payment information for a specific user.
+        This endpoint is used to add a Payment Information for a specific User.
       tags:
-        - Collect User Data
+        - Payment Information
       responses:
         '201':
           description: CREATED
@@ -388,7 +416,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/oneOfExternalPaymentInformation'
         '400':
-          description: Invalid payment information
+          description: Invalid Payment Information
           content:
             application/json:
               schema:
@@ -411,6 +439,23 @@ paths:
           description: unexpected error
           content:
             application/json:
+              example:
+                type: ENCRYPTED_CREDIT_CARD
+                creditCardLast4: '1234'
+                cvv: '789'
+                creditCardType: mastercard
+                expirationYear: '2030'
+                expirationMonth: '01'
+                creditCardBin: '123456'
+                cardHolderFirstName: John
+                cardHolderLastName: Smith
+                creditCardAddress:
+                  streetAddress: 1 Main street
+                  city: New York
+                  postalCode: '10001'
+                  stateCode: NY
+                  country: US
+                id: 6c61b7d4-3676-4903-a991-5eefba1f7a70
               schema:
                 $ref: '#/components/schemas/unmanagedError'
       requestBody:
@@ -438,11 +483,11 @@ paths:
         required: true
     get:
       operationId: getUserPaymentInformation
-      summary: Get a payment information for a specific user.
+      summary: Get a User’s Payment Information by ID
       description: >-
-        This endpoint is used to get a payment information for a specific user.
+        This endpoint is used to get a Payment Information for a specific User.
       tags:
-        - Collect User Data
+        - Payment Information
       responses:
         '200':
           description: OK
@@ -472,12 +517,12 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
     patch:
       operationId: updatePaymentInformation
-      summary: Update a payment information for a specific user.
+      summary: Update a User’s Payment Information
       description: >-
-        This endpoint is used to update a payment information for a specific user.
+        This endpoint is used to update a Payment Information for a specific User.
         Note: This endpoint does not support updating Credit Cards.
       tags:
-        - Collect User Data
+        - Payment Information
       responses:
         '201':
           description: OK
@@ -513,11 +558,11 @@ paths:
               $ref: '#/components/schemas/oneOfExternalPaymentInformation'
     delete:
       operationId: deleteUserPaymentInformations
-      summary: Delete a payment information for a specific user.
+      summary: Delete a User’s Payment Information
       description: >-
-        This endpoint is used to delete a payment information for a specific user.
+        This endpoint is used to delete a Payment Information for a specific User.
       tags:
-        - Collect User Data
+        - Payment Information
       responses:
         '204':
           description: NO CONTENT
@@ -547,8 +592,7 @@ paths:
     post:
       operationId: transactionInformationAssessment
       summary: >-
-        Validate that you have provided the necessary information or user
-        assessment to perform a transaction.
+        Validate that a User is allowed to perform a Transaction
       tags:
         - Transaction Assessment
       parameters:
@@ -560,6 +604,53 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              sourceMethod:
+                paymentMethodType: CREDIT_CARD
+                paymentInformation:
+                  id: 4b573a86-fd3f-475d-a90b-3658f2e79719
+                billingEmail: user@example.com
+              destinationMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  id: 3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82
+                billingEmail: user@example.com
+              type: DEPOSIT
+              transactionTotal:
+                fee:
+                  amount: 10
+                  currency: USD
+                total:
+                  amount: 100
+                  currency: USD
+                subtotal:
+                  amount: 90
+                  currency: USD
+              initiator:
+                name:
+                  firstName: john
+                  lastName: smith
+                id: 36dbe68f-2747-41c6-8748-559588fd3248
+                dateOfBirth: '1988-09-28'
+                emails:
+                  - address: johnsmith@test.com
+                    default: true
+                phones:
+                  - number: '12345678901'
+                    type: WORK
+                    default: true
+                addresses:
+                  - streetAddress: '1, main street'
+                    city: New Hampshire
+                    postalCode: '10005'
+                    stateCode: US-NH
+                    country: US
+                    default: true
+                sourceOfFunds: Creator earnings
+              transactionGroupId: c8d8ed2a-33df-463b-95af-e59ff6e16414
+              usdValue: 100
+              amount: 100
+              date: 2024-12-13T18:46:40.666+0000
             schema:
               $ref: '#/components/schemas/oneOfTransactionSubTypes'
       responses:
@@ -592,15 +683,15 @@ paths:
   /users/assessments:
     post:
       operationId: startUserAssessment
-      summary: Start user assessment
+      summary: Create a new User Assessment
       description: >-
-        This endpoint is used to assess a user. Depending on what information is
-        available on the user,  a tier level will be assigned to the assessment,
+        This endpoint is used to assess a User. Depending on what information is
+        available on the User,  a tier level will be assigned to the assessment,
         the higher the level is, the more permission he will get on your
         platform.  Please refer to PTI documentation for more information on the
         tier levels configuration and scenarios.
       tags:
-        - User Assessment
+        - Users
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
         - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
@@ -609,13 +700,35 @@ paths:
       requestBody:
         content:
           application/json:
+            example:
+              name:
+                firstName: john
+                lastName: smith
+              id: 36dbe68f-2747-41c6-8748-559588fd3248
+              dateOfBirth: '1988-09-28'
+              emails:
+                - address: johnsmith@test.com
+                  default: true
+              phones:
+                - number: '12345678901'
+                  type: WORK
+                  default: true
+              addresses:
+                - streetAddress: '1, main street'
+                  city: New Hampshire
+                  postalCode: '10005'
+                  stateCode: US-NH
+                  country: US
+                  default: true
+              sourceOfFunds: Creator earnings
             schema:
               $ref: '#/components/schemas/kycRequest'
         required: true
       callbacks:
         userAssessUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint to receive User Assessments updates
               requestBody:
                 required: true
                 content:
@@ -625,6 +738,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: started
@@ -645,7 +760,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
         '403':
-          description: Forbidden. Happens when the targeted user is not active.
+          description: Forbidden. Happens when the targeted User is not active.
           content:
             application/json:
               schema:
@@ -659,8 +774,8 @@ paths:
         '422':
           description: >-
             One of these 2 cases: More information about the User is needed in
-            order to approve the transaction. There is no approved assessment
-            for this user that enables him to perform the operation.
+            order to approve the Transaction. There is no approved assessment
+            for this User that enables him to perform the operation.
           content:
             application/json:
               schema:
@@ -685,9 +800,9 @@ paths:
         required: true
     get:
       operationId: getLastKyc
-      summary: Get a the latest assessment for a user
+      summary: Get a User’s latest Assessment
       tags:
-        - User Assessment
+        - Users
       responses:
         '200':
           description: OK
@@ -720,11 +835,11 @@ paths:
       - $ref: '#/components/parameters/clientIdHeaderParam'
     post:
       operationId: assessTransaction
-      summary: Assess a transaction
+      summary: Assess a Transaction
       description: >-
-        This endpoint is used to assess a transaction. The transaction
-        assessment and user information requirement are evaluated. This step is
-        also done when executing a transaction, but it can be called as a
+        This endpoint is used to assess a Transaction. The Transaction
+        Assessment and User information requirement are evaluated. This step is
+        also done when executing a Transaction, but it can be called as a
         standalone.
       tags:
         - Transaction Assessment
@@ -737,12 +852,60 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              sourceMethod:
+                paymentMethodType: CREDIT_CARD
+                paymentInformation:
+                  id: 4b573a86-fd3f-475d-a90b-3658f2e79719
+                billingEmail: user@example.com
+              destinationMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  id: 3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82
+                billingEmail: user@example.com
+              type: DEPOSIT
+              transactionTotal:
+                fee:
+                  amount: 10
+                  currency: USD
+                total:
+                  amount: 100
+                  currency: USD
+                subtotal:
+                  amount: 90
+                  currency: USD
+              initiator:
+                name:
+                  firstName: john
+                  lastName: smith
+                id: 36dbe68f-2747-41c6-8748-559588fd3248
+                dateOfBirth: '1988-09-28'
+                emails:
+                  - address: johnsmith@test.com
+                    default: true
+                phones:
+                  - number: '12345678901'
+                    type: WORK
+                    default: true
+                addresses:
+                  - streetAddress: '1, main street'
+                    city: New Hampshire
+                    postalCode: '10005'
+                    stateCode: US-NH
+                    country: US
+                    default: true
+                sourceOfFunds: Creator earnings
+              transactionGroupId: c8d8ed2a-33df-463b-95af-e59ff6e16414
+              usdValue: 100
+              amount: 100
+              date: 2024-12-13T18:46:40.666+0000              
             schema:
               $ref: '#/components/schemas/oneOfTransactionSubTypes'
       callbacks:
         transactionAssessUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives transaction assessment updates
               requestBody:
                 required: true
                 content:
@@ -752,6 +915,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: Successfully added transaction log
@@ -773,7 +938,7 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
         '403':
           description: >-
-            Forbidden. Happens when a user involved in the transaction is not
+            Forbidden. Happens when a User involved in the transaction is not
             active.
           content:
             application/json:
@@ -789,7 +954,7 @@ paths:
           description: >-
             One of these 2 cases: More information about the User is needed in
             order to approve the transaction. There is no approved assessment
-            for this user that enables him to perform the operation.
+            for this User that enables him to perform the operation.
           content:
             application/json:
               schema:
@@ -848,12 +1013,59 @@ paths:
     post:
       operationId: estimationTransactionCost
       tags:
-        - Estimate Transaction Cost
-      summary: Estimate a transaction cost
+        - Transactions
+      summary: Estimate the Fill Price of a Trade
       requestBody:
         required: true
         content:
           application/json:
+            example:
+              sourceMethod:
+                paymentMethodType: CREDIT_CARD
+                paymentInformation:
+                  id: 4b573a86-fd3f-475d-a90b-3658f2e79719
+                billingEmail: user@example.com
+              destinationMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  id: 3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82
+                billingEmail: user@example.com
+              type: DEPOSIT
+              transactionTotal:
+                fee:
+                  amount: 10
+                  currency: USD
+                total:
+                  amount: 100
+                  currency: USD
+                subtotal:
+                  amount: 90
+                  currency: USD
+              initiator:
+                name:
+                  firstName: john
+                  lastName: smith
+                id: 36dbe68f-2747-41c6-8748-559588fd3248
+                dateOfBirth: '1988-09-28'
+                emails:
+                  - address: johnsmith@test.com
+                    default: true
+                phones:
+                  - number: '12345678901'
+                    type: WORK
+                    default: true
+                addresses:
+                  - streetAddress: '1, main street'
+                    city: New Hampshire
+                    postalCode: '10005'
+                    stateCode: US-NH
+                    country: US
+                    default: true
+                sourceOfFunds: Creator earnings
+              transactionGroupId: c8d8ed2a-33df-463b-95af-e59ff6e16414
+              usdValue: 100
+              amount: 100
+              date: 2024-12-13T18:46:40.666+0000
             schema:
               $ref: '#/components/schemas/tradeTransaction'
       responses:
@@ -876,7 +1088,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
         '403':
-          description: Forbidden. Happens when the targeted user is not active.
+          description: Forbidden. Happens when the targeted User is not active.
           content:
             application/json:
               schema:
@@ -901,11 +1113,11 @@ paths:
     post:
       operationId: deposit
       tags:
-        - Execute Transaction
-      summary: Execute a deposit (crypto/fiat -in)
+        - Transactions
+      summary: Create a Deposit (Fiat or Crypto)
       description: >-
         This endpoint is used to execute a deposit (crypto/fiat -in) transaction
-        for a user. The transaction assessment and user information requirement
+        for a User. The transaction assessment and User information requirement
         are evaluated before the transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
@@ -917,12 +1129,50 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              sourceMethod:
+                paymentMethodType: CREDIT_CARD
+                paymentInformation:
+                  id: 4b573a86-fd3f-475d-a90b-3658f2e79719
+                billingEmail: user@example.com
+              destinationMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  id: 3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82
+                billingEmail: user@example.com
+              type: DEPOSIT
+              initiator:
+                name:
+                  firstName: john
+                  lastName: smith
+                id: 36dbe68f-2747-41c6-8748-559588fd3248
+                dateOfBirth: '1988-09-28'
+                emails:
+                  - address: johnsmith@test.com
+                    default: true
+                phones:
+                  - number: '12345678901'
+                    type: WORK
+                    default: true
+                addresses:
+                  - streetAddress: '1, main street'
+                    city: New Hampshire
+                    postalCode: '10005'
+                    stateCode: US-NH
+                    country: US
+                    default: true
+                sourceOfFunds: Creator earnings
+              transactionGroupId: c8d8ed2a-33df-463b-95af-e59ff6e16414
+              usdValue: 100
+              amount: 100
+              date: 2024-12-13T18:46:40.666+0000
             schema:
               $ref: '#/components/schemas/executeDepositTransaction'
       callbacks:
         transactionUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives transaction status updates 
               requestBody:
                 required: true
                 content:
@@ -932,6 +1182,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: Successfully initiated the transaction
@@ -952,7 +1204,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
         '403':
-          description: Forbidden. Happens when the targeted user is not active.
+          description: Forbidden. Happens when the targeted User is not active.
           content:
             application/json:
               schema:
@@ -967,7 +1219,7 @@ paths:
           description: >-
             One of these 2 cases: More information about the User is needed in
             order to approve the transaction. There is no approved assessment
-            for this user that enables him to perform the operation.
+            for this User that enables him to perform the operation.
           content:
             application/json:
               schema:
@@ -989,9 +1241,9 @@ paths:
         - Marketplace
       summary: 'Execute a buy (token, nft, other)'
       description: >-
-        This endpoint is used to execute a digital item buy (token, nft, other)
-        transaction for a user. The transaction assessment and user information
-        requirement are evaluated before the transaction is executed.
+        This endpoint is used to execute a Digital Item buy (token, nft, other)
+        transaction for a User. The Transaction Assessment and User information
+        requirement are evaluated before the Transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
         - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
@@ -1002,12 +1254,32 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              initiator:
+                id: c5c4b077-0c9a-4d5f-84fd-439a6123cdd2
+                type: PERSON
+              sourceMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  type: WALLET
+                  walletId: 1de3e77b-e673-4e44-8b69-4931364c4e76
+              digitalItem:
+                digitalItemType: NFT
+                itemReference: 21d7c009-8469-41ae-83d7-393085fd6fef
+              seller:
+                id: f0714c92-d5bf-4ed2-9636-e9ab3743fcb6
+                type: PERSON
+              date: 2024-12-13T18:46:40.666+0000
+              usdValue: 5
+              amount: 5
+              type: BUY
             schema:
               $ref: '#/components/schemas/executeBuyTransaction'
       callbacks:
         transactionUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives transaction status update
               requestBody:
                 required: true
                 content:
@@ -1017,6 +1289,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: Successfully initiated the transaction
@@ -1037,7 +1311,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
         '403':
-          description: Forbidden. Happens when the targeted user is not active.
+          description: Forbidden. Happens when the targeted User is not active.
           content:
             application/json:
               schema:
@@ -1052,7 +1326,7 @@ paths:
           description: >-
             One of these 2 cases: More information about the User is needed in
             order to approve the transaction. There is no approved assessment
-            for this user that enables him to perform the operation.
+            for this User that enables him to perform the operation.
           content:
             application/json:
               schema:
@@ -1074,8 +1348,8 @@ paths:
       tags:
         - Marketplace
       description: >-
-        This endpoint is used to execute a digital item sell (token, nft, other)
-        transaction for a user. The transaction assessment and user information
+        This endpoint is used to execute a Digital Item sell (token, nft, other)
+        transaction for a User. The Transaction Assessment and User information
         requirement are evaluated before the transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
@@ -1087,12 +1361,32 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              initiator:
+                id: 2903c06b-6291-4cc8-b568-fe93064a5a8c
+                type: PERSON
+              digitalItem:
+                digitalItemType: NFT
+                itemReference: f5511285-9d0b-41fd-8ae7-0817bb7462ba
+              buyer:
+                id: be975fae-fb15-4b70-80ba-e59968ae48c3
+                type: PERSON
+              destinationMethod:
+                paymentInformation:
+                  type: WALLET
+                  walletId: c5b2cca7-a1ac-4aad-a461-be8903c695d9
+                paymentMethodType: WALLET
+              date: 2024-12-13T18:46:40.666+0000
+              usdValue: 5
+              amount: 5
+              type: SELL
             schema:
               $ref: '#/components/schemas/executeSellTransaction'
       callbacks:
         transactionUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives transaction status updates
               requestBody:
                 required: true
                 content:
@@ -1102,6 +1396,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: Successfully initiated the transaction
@@ -1122,7 +1418,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
         '403':
-          description: Forbidden. Happens when the targeted user is not active.
+          description: Forbidden. Happens when the targeted User is not active.
           content:
             application/json:
               schema:
@@ -1137,7 +1433,7 @@ paths:
           description: >-
             One of these 2 cases: More information about the User is needed in
             order to approve the transaction. There is no approved assessment
-            for this user that enables him to perform the operation.
+            for this User that enables him to perform the operation.
           content:
             application/json:
               schema:
@@ -1155,12 +1451,12 @@ paths:
       - $ref: '#/components/parameters/clientIdHeaderParam'
     post:
       operationId: withdrawal
-      summary: Execute a withdrawal of fiat of crypto
+      summary: Create a Withdrawal (Fiat or Crypto)
       tags:
-        - Execute Transaction
+        - Transactions
       description: >-
         This endpoint is used to execute a withdrawal of fiat or crypto
-        transaction for a user. The transaction assessment and user information
+        transaction for a User. The Transaction Assessment and User information
         requirement are evaluated before the transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
@@ -1172,12 +1468,29 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              sourceMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  type: WALLET
+                  walletId: a8e99100-f562-4e5b-b86f-9142dc2bc9f0
+              destinationMethod:
+                paymentMethodType: TOKEN
+                paymentInformation:
+                  type: TOKEN
+                  tokenAddress: '0xfecf1d73653c4231a6781770c7b44eda'
+                  tokenType: ETH
+                  blockchain: ETHEREUM
+              amount: 1
+              usdValue: 3999.54
+              type: WITHDRAWAL
             schema:
               $ref: '#/components/schemas/executeWithdrawalTransaction'
       callbacks:
         transactionUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives transaction status updates
               requestBody:
                 required: true
                 content:
@@ -1187,6 +1500,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: Successfully initiated the transaction
@@ -1207,7 +1522,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
         '403':
-          description: Forbidden. Happens when the targeted user is not active.
+          description: Forbidden. Happens when the targeted User is not active.
           content:
             application/json:
               schema:
@@ -1222,7 +1537,7 @@ paths:
           description: >-
             One of these 2 cases: More information about the User is needed in
             order to approve the transaction. There is no approved assessment
-            for this user that enables him to perform the operation.
+            for this User that enables him to perform the operation.
           content:
             application/json:
               schema:
@@ -1240,12 +1555,12 @@ paths:
       - $ref: '#/components/parameters/clientIdHeaderParam'
     post:
       operationId: payment
-      summary: Execute a generic payment of fiat of crypto
+      summary: Collect a Payment from a User
       tags:
-        - Execute Transaction
+        - Transactions
       description: >-
         This endpoint is used to execute a generic payment of fiat or crypto
-        transaction for a user. The transaction assessment and user information
+        transaction for a User. The Transaction Assessment and User information
         requirement are evaluated before the transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
@@ -1257,12 +1572,40 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              sourceMethod:
+                currency: USD
+                paymentInformation:
+                  type: ENCRYPTED_CREDIT_CARD
+                  id: 79a0da5f-d24b-4ed8-a194-f8e0db32cf05
+                paymentMethodType: CREDIT_CARD
+              destinationMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  type: WALLET
+                  walletId: e13c3242-57d3-473f-b98c-eb2768e4549c
+              transactionTotal:
+                total:
+                  amount: 6.99
+                  currency: USD
+                fee:
+                  amount: 0
+                  currency: USD
+                subtotal:
+                  amount: 6.99
+                  currency: USD
+              usdValue: 6.99
+              amount: 6.99
+              type: PAYMENT
+              clientMeta:
+                paymentMetadata: collection 1 publication fees
             schema:
               $ref: '#/components/schemas/executePaymentTransaction'
       callbacks:
         transactionUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives transaction status updates
               requestBody:
                 required: true
                 content:
@@ -1272,6 +1615,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: Successfully initiated the transaction
@@ -1292,7 +1637,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
         '403':
-          description: Forbidden. Happens when the targeted user is not active.
+          description: Forbidden. Happens when the targeted User is not active.
           content:
             application/json:
               schema:
@@ -1307,7 +1652,7 @@ paths:
           description: >-
             One of these 2 cases: More information about the User is needed in
             order to approve the transaction. There is no approved assessment
-            for this user that enables him to perform the operation.
+            for this User that enables him to perform the operation.
           content:
             application/json:
               schema:
@@ -1325,12 +1670,12 @@ paths:
       - $ref: '#/components/parameters/clientIdHeaderParam'
     post:
       operationId: transfer
-      summary: Execute a transfer between users
+      summary: Execute an Internal Transfer
       tags:
-        - Execute Transaction
+        - Transactions
       description: >-
-        This endpoint is used to execute a transfer between users. The
-        transaction assessment and user information requirement are evaluated
+        This endpoint is used to execute a transfer between Users. The
+        Transaction Assessment and User information requirement are evaluated
         before the transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
@@ -1342,12 +1687,31 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              initiator:
+                type: PERSON
+              sourceTransferMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  type: WALLET
+                  walletId: dd2473b7-1afd-4f9c-a359-b4294587fef6
+              destinationTransferMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  type: WALLET
+                  walletId: 70cd9757-f288-41e5-8506-5c38b7c819e1
+              destination:
+                type: PERSON
+              amount: 200
+              usdValue: 200
+              type: TRANSFER
             schema:
               $ref: '#/components/schemas/executeTransferTransaction'
       callbacks:
         transactionUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives transaction status updates
               requestBody:
                 required: true
                 content:
@@ -1357,6 +1721,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: Successfully initiated the transaction
@@ -1377,7 +1743,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
         '403':
-          description: Forbidden. Happens when the targeted user is not active.
+          description: Forbidden. Happens when the targeted User is not active.
           content:
             application/json:
               schema:
@@ -1392,7 +1758,7 @@ paths:
           description: >-
             One of these 2 cases: More information about the User is needed in
             order to approve the transaction. There is no approved assessment
-            for this user that enables him to perform the operation.
+            for this User that enables him to perform the operation.
           content:
             application/json:
               schema:
@@ -1411,13 +1777,13 @@ paths:
       - $ref: '#/components/parameters/clientIdHeaderParam'
     post:
       operationId: trade
-      summary: Execute a trade of liquidity between wallets
+      summary: Execute a Trade
       tags:
-        - Execute Transaction
+        - Transactions
       description: >-
-        This endpoint is used to execute a trade between currencies and crypto.
-        The transaction assessment and user information requirement are
-        evaluated before the transaction is executed.
+        This endpoint is used to execute a Trade between currencies and crypto.
+        The Transaction Assessment and User Information requirement are
+        evaluated before the Transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
         - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
@@ -1428,12 +1794,27 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              sourceMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  type: WALLET
+                  walletId: MySOLWallet
+              destinationMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  type: WALLET
+                  walletId: MyUSDWallet
+              amount: 0.5
+              usdValue: 113
+              type: TRADE
             schema:
               $ref: '#/components/schemas/executeTradeTransaction'
       callbacks:
         transactionUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives transaction status updates
               requestBody:
                 required: true
                 content:
@@ -1443,6 +1824,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: Successfully initiated the transaction
@@ -1463,7 +1846,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
         '403':
-          description: Forbidden. Happens when the targeted user is not active.
+          description: Forbidden. Happens when the targeted User is not active.
           content:
             application/json:
               schema:
@@ -1478,7 +1861,7 @@ paths:
           description: >-
             One of these 2 cases: More information about the User is needed in
             order to approve the transaction. There is no approved assessment
-            for this user that enables him to perform the operation.
+            for this User that enables him to perform the operation.
           content:
             application/json:
               schema:
@@ -1498,10 +1881,10 @@ paths:
       operationId: mint
       summary: Execute a mint transaction
       tags:
-        - Execute Transaction
+        - Transactions
       description: >-
-        This endpoint is used to execute a mint transaction for a user. The
-        transaction assessment and user information requirement are evaluated
+        This endpoint is used to execute a mint transaction for a User. The
+        Transaction Assessment and User information requirement are evaluated
         before the transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
@@ -1517,8 +1900,9 @@ paths:
               $ref: '#/components/schemas/executeMintTransaction'
       callbacks:
         transactionUpdate:
-          '${yourWebhookAddress}':
+          '{$url}':
             post:
+              summary: Endpoint that receives transaction status updates
               requestBody:
                 required: true
                 content:
@@ -1528,6 +1912,8 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
       responses:
         '201':
           description: Successfully initiated the transaction
@@ -1548,7 +1934,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
         '403':
-          description: Forbidden. Happens when the targeted user is not active.
+          description: Forbidden. Happens when the targeted User is not active.
           content:
             application/json:
               schema:
@@ -1563,7 +1949,7 @@ paths:
           description: >-
             One of these 2 cases: More information about the User is needed in
             order to approve the transaction. There is no approved assessment
-            for this user that enables him to perform the operation.
+            for this User that enables him to perform the operation.
           content:
             application/json:
               schema:
@@ -1587,8 +1973,8 @@ paths:
     get:
       operationId: getTransaction
       tags:
-        - Execute Transaction
-      summary: Get a transaction status
+        - Transactions
+      summary: Get a Transaction by ID
       responses:
         '200':
           description: OK
@@ -1618,9 +2004,9 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
     delete:
       operationId: deleteTransaction
-      summary: Cancel a transaction
+      summary: Delete a transaction
       tags:
-        - Execute Transaction
+        - Transactions
       responses:
         '204':
           description: NO CONTENT
@@ -1657,10 +2043,9 @@ paths:
     post:
       operationId: uploadDocument
       summary: >-
-        Upload a digital document in a user profile (Passport, Company document,
-        etc)
+        Upload a User’s Document (Passport, License, etc)
       tags:
-        - Collect User Data
+        - Users
       requestBody:
         content:
           multipart/form-data:
@@ -1797,7 +2182,7 @@ paths:
         - $ref: '#/components/parameters/pageSizeParam'
         - $ref: '#/components/parameters/sortByParam'
       operationId: getDigitalItems
-      summary: Get a list of digital items for the user
+      summary: Get a list of Digital Items for the User
       tags:
         - Marketplace
       responses:
@@ -1829,13 +2214,24 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
     post:
       operationId: createDigitalItems
-      summary: Create a list of digital items for the user
+      summary: Create a list of Digital Items for the User
       tags:
         - Marketplace
       requestBody:
         required: true
         content:
           application/json:
+            example:
+              - itemReference: 57d6467c-6ae0-434f-8197-e7e9f86f2209
+                digitalItemType: NFT
+                itemDescription: Ultra Rare Elite Russell Wilson Level 1
+                itemTitle: 'QB, Mint Condition, #467/500 From Founders Set '
+                itemUSDValue: 10
+              - itemReference: 57d6467c-6ae0-434f-8197-e7e9f86f2210
+                digitalItemType: NFT
+                itemDescription: Ultra Rare Elite Peyton Manning Level 10
+                itemTitle: 'QB, Mint Condition, #468/500 From Founders Set'
+                itemUSDValue: 35
             schema:
               type: array
               maxItems: 100
@@ -1883,24 +2279,29 @@ paths:
         required: true
     post:
       operationId: createWallet
-      summary: Create a wallet for the user
+      summary: Create a Wallet for a User
       tags:
         - Wallets
       requestBody:
         required: true
         content:
           application/json:
+            example:
+              type: WALLET
+              walletId: c8768405-6129-4bda-8a10-8ef234dff30e
+              currency: ETH
+              network: Ethereum
             schema:
               $ref: '#/components/schemas/walletCreation'
       responses:
         '201':
-          description: Successfully created a wallet
+          description: Successfully created a Wallet
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/wallet'
         '400':
-          description: Missing required fields on wallet
+          description: Missing required fields on Wallet
           content:
             application/json:
               schema:
@@ -1927,7 +2328,7 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
     get:
       operationId: getWallets
-      summary: Get a list of wallets for the user
+      summary: Get a list of a User's wallets
       tags:
         - Wallets
       responses:
@@ -1961,7 +2362,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
   '/users/{userId}/wallets/{walletId}':
-    summary: Delete a wallet for the user
+    summary: Delete a Wallet
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
       - name: userId
@@ -1980,7 +2381,7 @@ paths:
         required: true
     delete:
       operationId: deleteWallet
-      summary: Delete a wallet
+      summary: Delete a Wallet
       tags:
         - Wallets
       responses:
@@ -1999,7 +2400,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
         '404':
-          description: User or wallet not found
+          description: User or Wallet not found
           content:
             application/json:
               schema:
@@ -2014,7 +2415,7 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
     get:
       operationId: getWallet
-      summary: Get a wallet details
+      summary: Get a Wallet by ID
       tags:
         - Wallets
       responses:
@@ -2057,7 +2458,7 @@ paths:
         required: true
     post:
       operationId: simulateWalletPayment
-      summary: Simulate a payment to a wallet
+      summary: Simulate a Deposit to a Wallet
       tags:
         - Wallets
       requestBody:
@@ -2065,12 +2466,15 @@ paths:
         required: true
         content:
           application/json:
+            example: 
+              amount: 100
+              paymentMethodType: ACH
             schema:
               $ref: '#/components/schemas/simulatePaymentRequest'
       responses:
         '201':
           description: >-
-            Successfully created a simulated payment to the wallet.
+            Successfully created a simulated payment to the Wallet.
         '401':
           description: unauthorized
           content:
@@ -2080,7 +2484,7 @@ paths:
         '403':
           description: forbidden
         '404':
-          description: User or wallet not found
+          description: User or Wallet not found
           content:
             application/json:
               schema:
@@ -2095,7 +2499,7 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
 
   '/users/{userId}/wallets/{walletId}/deposit-address':
-    summary: Manage deposit address
+    summary: Generate a Wallet’s Deposit Address
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
       - name: userId
@@ -2128,7 +2532,7 @@ paths:
         '201':
           description: >-
             Successfully created a crypto deposit address.
-            The wallet with its deposit instruction is returned
+            The Wallet with its deposit instruction is returned
           content:
             application/json:
               schema:
@@ -2142,7 +2546,7 @@ paths:
         '403':
           description: forbidden
         '404':
-          description: User or wallet not found
+          description: User or Wallet not found
           content:
             application/json:
               schema:
@@ -2156,7 +2560,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
   '/users/{userId}/wallets/{walletId}/virtual-bank-account':
-    summary: Manage deposit address
+    summary: Generate a Wallet’s Virtual Bank Account
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
       - name: userId
@@ -2175,7 +2579,7 @@ paths:
         required: true
     post:
       operationId: createWalletVirtualBankAccount
-      summary: Create a virtual bank account for a wallet
+      summary: Create a virtual bank account for a Wallet
       tags:
         - Wallets
       requestBody:
@@ -2187,8 +2591,8 @@ paths:
       responses:
         '201':
           description: >-
-            Successfully created a wallet virtual bank account.
-            The wallet with its deposit instruction is returned
+            Successfully created a Wallet virtual bank account.
+            The Wallet with its deposit instruction is returned
           content:
             application/json:
               schema:
@@ -2202,7 +2606,7 @@ paths:
         '403':
           description: forbidden
         '404':
-          description: User or wallet not found
+          description: User or Wallet not found
           content:
             application/json:
               schema:
@@ -2234,7 +2638,7 @@ paths:
         required: true
     get:
       operationId: getWalletHistory
-      summary: Retrieve the history of a wallet
+      summary: Retrieve the balance history of a Wallet
       tags:
         - Wallets
       parameters:
@@ -2256,7 +2660,7 @@ paths:
         '403':
           description: forbidden
         '404':
-          description: User or wallet not found
+          description: User or Wallet not found
           content:
             application/json:
               schema:
@@ -2282,7 +2686,7 @@ paths:
       operationId: provideFeedback
       summary: Update status on existing transaction
       tags:
-        - Execute Transaction
+        - Transactions
       description: >
         This endpoint allows adding feedback information to an existing
         transaction. Here are the possible feedback values with their meaning:
@@ -2322,6 +2726,12 @@ paths:
         required: true
         content:
           application/json:
+            example:
+              payload: '{}'
+              providerName: UNKNOWN
+              feedback: SETTLED
+              transactionId: UUID
+              date: 2024-12-13T18:46:40.666+0000
             schema:
               $ref: '#/components/schemas/transactionUpdate'
       responses:
@@ -2376,6 +2786,7 @@ components:
       properties:
         multiWalletAddress:
           type: boolean
+          default: true
 
     simulatePaymentRequest:
       type: object
@@ -2448,7 +2859,7 @@ components:
         accountBankName:
           type: string
           maxLength: 1024
-          description: 'Name of the bank of the account, Required for OUTGOING WIRE transactions, persisted as part of the payment information'
+          description: 'Name of the bank of the account, Required for OUTGOING WIRE transactions, persisted as part of the Payment Information'
           pattern: '^[ -~]*$'
     bii:
       type: object
@@ -2909,8 +3320,8 @@ components:
       required:
         - sourceMethod
       description: >-
-        Fund a wallet with crypto. SourceMethod: external crypto wallet.
-        DestinationMethod: wallet on the platform.
+        Fund a Wallet with crypto. SourceMethod: external crypto Wallet.
+        DestinationMethod: Wallet on the platform.
       allOf:
         - $ref: '#/components/schemas/transactionType'
       properties:
@@ -2976,9 +3387,9 @@ components:
         - destinationTransferMethod
         - destination
       description: >-
-        Transfer between two users. SourceMethod: wallet on the platform.
-        DestinationMethod: wallet on the platform. Destination: destination
-        user.
+        Transfer between two Users. SourceMethod: Wallet on the platform.
+        DestinationMethod: Wallet on the platform. Destination: destination
+        User.
       allOf:
         - $ref: '#/components/schemas/transactionType'
       example:
@@ -3017,7 +3428,7 @@ components:
       required:
         - sourceMethod
       description: >-
-        Buy digital item in the platform. SourceMethod: wallet, token, fiat.
+        Buy digital item in the platform. SourceMethod: Wallet, token, fiat.
         DigitalItem: NFT or OTHER.
       allOf:
         - $ref: '#/components/schemas/transactionType'
@@ -3086,7 +3497,7 @@ components:
       required:
         - destinationMethod
       description: >-
-        Sell digital item in the platform. DestinationMethod: wallet, fiat,
+        Sell digital item in the platform. DestinationMethod: Wallet, fiat,
         token. DigitalItem: NFT, OTHER.
       allOf:
         - $ref: '#/components/schemas/transactionType'
@@ -3139,7 +3550,7 @@ components:
       required:
         - destinationMethod
       description: >-
-        Withdraw from a wallet to fiat destination. SourceMethod: wallet on the
+        Withdraw from a Wallet to fiat destination. SourceMethod: Wallet on the
         platform. DestinationMethod: fiat payment method.
       allOf:
         - $ref: '#/components/schemas/transactionType'
@@ -3173,8 +3584,8 @@ components:
         - sourceMethod
         - destinationMethod
       description: >-
-        Trade currency/crypto for another. SourceMethod: wallet.
-        DestinationMethod: wallet.
+        Trade currency/crypto for another. SourceMethod: Wallet.
+        DestinationMethod: Wallet.
       allOf:
         - $ref: '#/components/schemas/transactionType'
       properties:
@@ -3204,8 +3615,8 @@ components:
       required:
         - sourceMethod
       description: >-
-        Collect payment from the initiator, the beneficiary is the client platform's 
-        specified wallet in the destinationMethod(if specified).
+        Collect payment from the initiator, the beneficiary is the Client platform's 
+        specified Wallet in the destinationMethod(if specified).
       allOf:
         - $ref: '#/components/schemas/transactionType'
       properties:
@@ -3236,8 +3647,8 @@ components:
         - destination
         - destinationMethod
       description: >-
-        Mint some value on behalf of a user in a wallet. DestinationMethod:
-        wallet on the platform. destination: destination user.
+        Mint some value on behalf of a User in a Wallet. DestinationMethod:
+        Wallet on the platform. destination: destination User.
       allOf:
         - $ref: '#/components/schemas/transactionType'
       example:
@@ -3368,25 +3779,6 @@ components:
           maxLength: 11
           description: 'itin number, properly formatted, example 911-83-1111'
           pattern: '^9\d{2}-?((5[0-9]|6[0-5])|(8[3-8])|(9[0-2])|(9[4-9]))-?\d{4}$'
-    kyc:
-      type: object
-      additionalProperties: false
-      properties:
-        status:
-          enum:
-            - ACCEPTED
-            - REFUSED
-            - MANUAL_REVIEW
-            - REQUESTED_MORE_INFORMATION
-          type: string
-        tier:
-          type: integer
-          description: related kyc tier level
-        clientMeta:
-          type: object
-          description: key/value map of extra meta data for this kyc
-        requestId:
-          $ref: '#/components/schemas/uuidLikeStr'
     name:
       type: object
       additionalProperties: false
@@ -3414,7 +3806,7 @@ components:
       example:
         id: 36dbe68f-2747-41c6-8748-559588fd3248
         link: >-
-          https://api.pticlient.com/v1/user/3121df47-7a05-4b42-9db3-d1ff8a29abf0/transactions/36dbe68f-2747-41c6-8748-559588fd3248
+          https://api.staging.fiant.io/v1/user/3121df47-7a05-4b42-9db3-d1ff8a29abf0/transactions/36dbe68f-2747-41c6-8748-559588fd3248
       additionalProperties: false
       properties:
         id:
@@ -3647,7 +4039,7 @@ components:
           type: string
           pattern: '^[a-z0-9_-]{3,40}$'
           maxLength: 40
-          description: 'Unique identifier for the payment information, must be used to refer to a payment information for a payment'
+          description: 'Unique identifier for the Payment Information, must be used to refer to a Payment Information for a payment'
     person:
       type: object
       allOf:
@@ -3764,12 +4156,12 @@ components:
           type: string
           pattern: '^[ -~]*$'
           maxLength: 1050
-          description: Blockchain address for the wallet
+          description: Blockchain address for the Wallet
         currency:
           type: string
           pattern: '^([A-Za-z]{3})$'
           maxLength: 25
-          description: Token symbol that your user is trading
+          description: Token symbol that your User is trading
         network:
           type: string
           pattern: .*
@@ -3788,13 +4180,13 @@ components:
             subtoken asset is involved
     cryptoPaymentMethodDestination:
       type: object
-      description: 'The destination payment method of the trade(wallet), if available'
+      description: 'The destination payment method of the Trade(wallet), if available'
       properties:
         paymentInformation:
           $ref: '#/components/schemas/cryptoPaymentInformation'
     cryptoPaymentMethodSource:
       type: object
-      description: 'The source payment method of the trade(wallet), if available'
+      description: 'The source payment method of the Trade(wallet), if available'
       properties:
         paymentInformation:
           $ref: '#/components/schemas/cryptoPaymentInformation'
@@ -3820,7 +4212,6 @@ components:
         - date
         - amount
         - initiator
-        - usdValue
       properties:
         transactionGroupId:
           $ref: '#/components/schemas/uuidLikeStrTransactionGroup'
@@ -3896,8 +4287,8 @@ components:
           $ref: '#/components/schemas/oneOfUserSubTypes'
     paymentTransaction:
       description: >-
-        Payment transaction, often this is not initiated by a user itself
-        The destination can be specified, and needs to belong to the root user.
+        Payment transaction, often this is not initiated by a User itself
+        The destination can be specified, and needs to belong to the root User.
       type: object
       allOf:
         - $ref: '#/components/schemas/transactionType'
@@ -3906,9 +4297,9 @@ components:
           $ref: '#/components/schemas/oneOfPaymentMethod'
     mintTransaction:
       description: >-
-        The action of minting, often this is not initiated by a user itself, so
+        The action of minting, often this is not initiated by a User itself, so
         the initiator property is optional. The destination is the beneficiary
-        of the minting action. You can specify the target wallet in the
+        of the minting action. You can specify the target Wallet in the
         destination method if available.
       type: object
       allOf:
@@ -3921,7 +4312,7 @@ components:
     tradeTransaction:
       type: object
       description: >-
-        The action of doing a token trade. Source and destination wallet are
+        The action of doing a token Trade. Source and destination Wallet are
         provided through the source and destination methods properties.
       allOf:
         - $ref: '#/components/schemas/transactionType'
@@ -3973,10 +4364,10 @@ components:
         - BLOCKED
       type: string
       description: >
-        Status of the user. Only ACTIVE users can appear in API calls.  Calls
-        containing INACTIVE or BLOCKED users will result in an error.  The
-        status cannot be set via API calls that create or update users.  If it
-        is passed in user creation or modification calls, it will be silently
+        Status of the User. Only ACTIVE Users can appear in API calls.  Calls
+        containing INACTIVE or BLOCKED Users will result in an error.  The
+        status cannot be set via API calls that create or update Users.  If it
+        is passed in User creation or modification calls, it will be silently
         ignored.
     user:
       type: object
@@ -4011,8 +4402,8 @@ components:
           pattern: '^[a-z0-9_-]{3,255}$'
           maxLength: 255
           description: >-
-            Unique identifier for this user. This value MUST be chosen and
-            stored at user creation time.
+            Unique identifier for this User. This value MUST be chosen and
+            stored at User creation time.
         status:
           $ref: '#/components/schemas/userStatus'
         statusReason:
@@ -4023,7 +4414,7 @@ components:
           items:
             $ref: '#/components/schemas/tagsType'
           description: >-
-            Tag that characterizes the user. Used for internal classification
+            Tag that characterizes the User. Used for internal classification
             purposes.
         paymentInformation:
           type: array
@@ -4037,7 +4428,7 @@ components:
         userCreationDate:
           type: string
           description: >-
-            Optional ISO-8601 value. Used to provide the date the user was
+            Optional ISO-8601 value. Used to provide the date the User was
             created in your system. If left empty, it will be populated at
             current time.
           pattern: >-
@@ -4057,7 +4448,7 @@ components:
         - PERSON
         - BUSINESS
       description: >-
-        Type of user which represents the legal entity involved in the API
+        Type of User which represents the legal entity involved in the API
         action
     userToken:
       required:
@@ -4088,7 +4479,7 @@ components:
       additionalProperties: false
       example:
         url: >-
-          https://api.pticlient.com/v1/user/3121df47-7a05-4b42-9db3-d1ff8a29abf0/transactions/36dbe68f-2747-41c6-8748-559588fd3248
+          https://api.staging.fiant.io/v1/user/3121df47-7a05-4b42-9db3-d1ff8a29abf0/transactions/36dbe68f-2747-41c6-8748-559588fd3248
         method: GET
       properties:
         url:
@@ -4178,7 +4569,7 @@ components:
           required:
             - type
           description: >-
-            External reference to the wallet(could be bank account number, or blockchain address)
+            External reference to the Wallet(could be bank account number, or blockchain address)
         createDateTime:
           type: string
           pattern: >-
@@ -4291,7 +4682,7 @@ components:
           maximum: 999999
           format: double
           description: >-
-            The value of the transaction that the user is intending to perform
+            The value of the transaction that the User is intending to perform
             in USD
         ptiMeta:
           additionalProperties: true
@@ -4386,7 +4777,7 @@ components:
         itemUSDValue:
           type: number
           format: double
-          description: 'Mandatory when more than one item is provided in the payload. The cost of the item being paid by the user, or the estimated value of the item in question.'
+          description: 'Mandatory when more than one item is provided in the payload. The cost of the item being paid by the User, or the estimated value of the item in question.'
         digitalItemType:
           $ref: '#/components/schemas/digitalItemType'
       example:
@@ -4575,7 +4966,7 @@ components:
     userStatusObject:
       type: object
       description: >-
-        Update in the status of a user. You will receive this when the user
+        Update in the status of a User. You will receive this when the User
         status changes from the value initially recorded in the system.
       example:
         resourceType: USER_UPDATE
@@ -4725,24 +5116,24 @@ components:
             change: 5.99
             targetOperation: IN_FLIGHT_BALANCE
             createDateTime: '2024-12-05T12:00:00Z'
-        properties:
-          page:
-            type: integer
-            minimum: 0
-            maximum: 9999999
-          pageSize:
-            type: integer
-            minimum: 1
-            maximum: 100
-          total:
-            type: integer
-            minimum: 0
-            maximum: 99999999
+      properties:
+        page:
+          type: integer
+          minimum: 0
+          maximum: 9999999
+        pageSize:
+          type: integer
+          minimum: 1
+          maximum: 100
+        total:
+          type: integer
+          minimum: 0
+          maximum: 99999999
+        items:
+          type: array
+          maxItems: 100
           items:
-            type: array
-            maxItems: 100
-            items:
-              $ref: '#/components/schemas/walletHistory'
+            $ref: '#/components/schemas/walletHistory'
     objectReferencePage:
       type: object
       additionalProperties: false
@@ -4753,10 +5144,11 @@ components:
         items:
           - id: 36dbe68f-2747-41c6-8748-559588fd3248
             link: >-
-              https://api.pticlient.com/v1/user/36dbe68f-2747-41c6-8748-559588fd3248
+              https://api.staging.fiant.io/v1/user/36dbe68f-2747-41c6-8748-559588fd3248
           - id: 36dbe68f-2747-41c6-8748-559588fd3249
             link: >-
-              https://api.pticlient.com/v1/user/36dbe68f-2747-41c6-8748-559588fd3249
+              https://api.staging.fiant.io/v1/user/36dbe68f-2747-41c6-8748-559588fd3249
+              
       properties:
         page:
           type: integer
@@ -4788,7 +5180,7 @@ components:
     userAssessStatusObject:
       type: object
       description: >-
-        Status of a user assessment request. The date property is the date that
+        Status of a User Assessment request. The date property is the date that
         the assessment has been initiated.
       allOf:
         - $ref: '#/components/schemas/actionStatus'
@@ -4914,8 +5306,8 @@ components:
     mandatoryScenarioIdHeaderParam:
       name: x-pti-scenario-id
       description: >-
-        Represents a user action under which transaction amounts will
-        accumulated and will control the User assessment requirements. The
+        Represents a User action under which transaction amounts will
+        accumulated and will control the User Assessment requirements. The
         values this header can take must be agreed upon and communicated to PTI.
         Setting unknown values here will generate an error.
       schema:
@@ -4926,10 +5318,7 @@ components:
       name: x-pti-disable-webhook
       description: Set to true to disable webhook calls for this request.
       schema:
-        type: string
-        enum:
-          - true
-          - false
+        type: boolean
       in: header
       required: false
     providerNameHeaderParam:
@@ -4958,7 +5347,7 @@ components:
     sessionIdHeaderParam:
       name: x-pti-session-id
       description: >-
-        Session ID associated to a UI session for a specific user. Should match
+        Session ID associated to a UI session for a specific User. Should match
         the value passed to the PTI SDK at initialization.
       schema:
         $ref: '#/components/schemas/uuidLikeStr'
@@ -4977,8 +5366,8 @@ components:
     externalPaymentInformationTypeParam:
       name: type
       description: >-
-        Type of external payment information. If not specified, the default value is
-        ENCRYPTED_CREDIT_CARD. This is used to filter the external payment information by type.
+        Type of external Payment Information. If not specified, the default value is
+        ENCRYPTED_CREDIT_CARD. This is used to filter the external Payment Information by type.
       schema:
         $ref: '#/components/schemas/externalPaymentInformationType'
       in: query
