@@ -3822,9 +3822,9 @@ components:
       type: object
       example:
         walletId: 6d9e99eb-95e2-44c3-a790-c61dde3952ad
-        balanceBefore: 100.00
+        availableBalanceBefore: 100.00
         change: 5.99
-        targetOperation: BALANCE
+        targetOperation: AVAILABLE_BALANCE
         createDateTime: '2024-12-05T12:00:00Z'
       required:
         - walletId
@@ -3834,12 +3834,22 @@ components:
           type: string
           maxLength: 255
           pattern: '^[A-Za-z]+(?:_[A-Za-z]+)*$'
-        balanceBefore:
+        pendingBalanceBefore:
           type: number
           minimum: 0
           maximum: 999999
           format: double
-        inFlightBalanceBefore:
+        totalBalanceBefore:
+          type: number
+          minimum: 0
+          maximum: 999999
+          format: double
+        availableBalanceBefore:
+          type: number
+          minimum: 0
+          maximum: 999999
+          format: double  
+        lockedBalanceBefore:
           type: number
           minimum: 0
           maximum: 999999
@@ -3858,8 +3868,10 @@ components:
         operationTarget:
           type: string
           enum:
-            - BALANCE
-            - IN_FLIGHT_BALANCE
+            - AVAILABLE_BALANCE
+            - LOCKED_BALANCE
+            - PENDING_BALANCE
+            - TOTAL_BALANCE
         requestId:
           $ref: '#/components/schemas/uuidLikeStr'
     oneOfBiiSubTypes:
@@ -4549,17 +4561,22 @@ components:
           $ref: '#/components/schemas/currencyEnum'
         network:
           $ref: '#/components/schemas/blockChainEnum'  
-        balance:
-          type: number
-          minimum: 0
-          maximum: 999999
-          format: double
-        inflightBalance:
-          type: number
-          minimum: 0
-          maximum: 999999
-          format: double
         availableBalance:
+          type: number
+          minimum: 0
+          maximum: 999999
+          format: double
+        lockedBalance:
+          type: number
+          minimum: 0
+          maximum: 999999
+          format: double
+        pendingBalance:
+          type: number
+          minimum: 0
+          maximum: 999999
+          format: double
+        totalBalance:
           type: number
           minimum: 0
           maximum: 999999
@@ -4589,7 +4606,7 @@ components:
         type: WALLET
         depositInstruction: { "type": "CRYPTO_ADDRESS", "address": "0x128ZuOfgu9LZYkKjrOLLSExMELO6otneF2", "blockchain": "Bitcoin", currency: "BTC" }
         createDateTime: '2021-09-28T12:00:00Z'
-        balance: 1000
+        availableBalance: 1000
     withdrawalTransaction:
       type: object
       allOf:
@@ -5107,14 +5124,14 @@ components:
         total: 2
         items:
           - walletId: 6d9e99eb-95e2-44c3-a790-c61dde3952ad
-            balanceBefore: 100.00
+            availableBalanceBefore: 100.00
             change: 5.99
-            targetOperation: BALANCE
+            targetOperation: AVAILABLE_BALANCE
             createDateTime: '2024-12-05T12:00:00Z'
           - walletId: 6d9e99eb-95e2-44c3-a790-c61dde3952ad
-            inFlightBalanceBefore: 0.00
+            lockedBalanceBefore: 0.00
             change: 5.99
-            targetOperation: IN_FLIGHT_BALANCE
+            targetOperation: LOCKED_BALANCE
             createDateTime: '2024-12-05T12:00:00Z'
       properties:
         page:

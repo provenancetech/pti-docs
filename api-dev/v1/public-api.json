@@ -6206,13 +6206,25 @@
             "pattern" : "^[A-Za-z]+(?:_[A-Za-z]+)*$",
             "type" : "string"
           },
-          "balanceBefore" : {
+          "pendingBalanceBefore" : {
             "maximum" : 999999,
             "minimum" : 0,
             "type" : "number",
             "format" : "double"
           },
-          "inFlightBalanceBefore" : {
+          "totalBalanceBefore" : {
+            "maximum" : 999999,
+            "minimum" : 0,
+            "type" : "number",
+            "format" : "double"
+          },
+          "availableBalanceBefore" : {
+            "maximum" : 999999,
+            "minimum" : 0,
+            "type" : "number",
+            "format" : "double"
+          },
+          "lockedBalanceBefore" : {
             "maximum" : 999999,
             "minimum" : 0,
             "type" : "number",
@@ -6232,7 +6244,7 @@
           },
           "operationTarget" : {
             "type" : "string",
-            "enum" : [ "BALANCE", "IN_FLIGHT_BALANCE" ]
+            "enum" : [ "AVAILABLE_BALANCE", "LOCKED_BALANCE", "PENDING_BALANCE", "TOTAL_BALANCE" ]
           },
           "requestId" : {
             "$ref" : "#/components/schemas/uuidLikeStr"
@@ -6241,9 +6253,9 @@
         "additionalProperties" : false,
         "example" : {
           "walletId" : "6d9e99eb-95e2-44c3-a790-c61dde3952ad",
-          "balanceBefore" : 100.0,
+          "availableBalanceBefore" : 100.0,
           "change" : 5.99,
-          "targetOperation" : "BALANCE",
+          "targetOperation" : "AVAILABLE_BALANCE",
           "createDateTime" : "2024-12-05T12:00:00Z"
         }
       },
@@ -7068,19 +7080,25 @@
           "network" : {
             "$ref" : "#/components/schemas/blockChainEnum"
           },
-          "balance" : {
-            "maximum" : 999999,
-            "minimum" : 0,
-            "type" : "number",
-            "format" : "double"
-          },
-          "inflightBalance" : {
-            "maximum" : 999999,
-            "minimum" : 0,
-            "type" : "number",
-            "format" : "double"
-          },
           "availableBalance" : {
+            "maximum" : 999999,
+            "minimum" : 0,
+            "type" : "number",
+            "format" : "double"
+          },
+          "lockedBalance" : {
+            "maximum" : 999999,
+            "minimum" : 0,
+            "type" : "number",
+            "format" : "double"
+          },
+          "pendingBalance" : {
+            "maximum" : 999999,
+            "minimum" : 0,
+            "type" : "number",
+            "format" : "double"
+          },
+          "totalBalance" : {
             "maximum" : 999999,
             "minimum" : 0,
             "type" : "number",
@@ -7117,7 +7135,7 @@
             "currency" : "BTC"
           },
           "createDateTime" : "2021-09-28T12:00:00Z",
-          "balance" : 1000
+          "availableBalance" : 1000
         }
       },
       "withdrawalTransaction" : {
@@ -7706,15 +7724,15 @@
           "total" : 2,
           "items" : [ {
             "walletId" : "6d9e99eb-95e2-44c3-a790-c61dde3952ad",
-            "balanceBefore" : 100.0,
+            "availableBalanceBefore" : 100.0,
             "change" : 5.99,
-            "targetOperation" : "BALANCE",
+            "targetOperation" : "AVAILABLE_BALANCE",
             "createDateTime" : "2024-12-05T12:00:00Z"
           }, {
             "walletId" : "6d9e99eb-95e2-44c3-a790-c61dde3952ad",
-            "inFlightBalanceBefore" : 0.0,
+            "lockedBalanceBefore" : 0.0,
             "change" : 5.99,
-            "targetOperation" : "IN_FLIGHT_BALANCE",
+            "targetOperation" : "LOCKED_BALANCE",
             "createDateTime" : "2024-12-05T12:00:00Z"
           } ]
         }
