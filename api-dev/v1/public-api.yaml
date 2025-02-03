@@ -4841,6 +4841,7 @@ components:
         - REQUESTED_MORE_INFORMATION
         - ACCEPTED
         - REFUSED
+        - INVALID
     transactionStatus:
       type: string
       additionalProperties: false

@@ -7376,7 +7376,7 @@
       "userAssessStatus" : {
         "type" : "string",
         "additionalProperties" : false,
-        "enum" : [ "PENDING", "ERROR", "UNDER_REVIEW", "REQUESTED_MORE_INFORMATION", "ACCEPTED", "REFUSED" ]
+        "enum" : [ "PENDING", "ERROR", "UNDER_REVIEW", "REQUESTED_MORE_INFORMATION", "ACCEPTED", "REFUSED", "INVALID" ]
       },
       "transactionStatus" : {
         "type" : "string",
