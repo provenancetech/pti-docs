@@ -1,4 +1,5 @@
 openapi: 3.0.2
+
 info:
   title: Provenance technologies institutional API
   version: 'master'
@@ -6,13 +7,26 @@ info:
   license:
     name: Private
     url: 'https://provenancetech.io'
+
+tags:
+  - name: Authentication
+  - name: Users
+  - name: Wallets
+  - name: Payment Information
+  - name: Transaction Assessment
+  - name: Transactions
+  - name: Marketplace
+
 servers:
   - url: 'https://api.staging.fiant.io/v1'
   - url: 'https://api.platform.fiant.io/v1'
+
 security:
   - signature: [ ]
   - userToken: [ ]
+
 paths:
+  # Authentication
   /auth/jwt:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -60,56 +74,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
-  /assets:
-    parameters:
-      - $ref: '#/components/parameters/clientIdHeaderParam'
-    get:
-      operationId: getListOfAssets
-      summary: Get the list of the supported Assets
-      tags:
-        - Wallets
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                maxItems: 100
-                items:
-                  $ref: '#/components/schemas/currencyAsset'
-                example: [
-                  {
-                    "currency": "BTC",
-                    "networks": [ "BITCOIN" ],
-                    "type": "CRYPTO"
-                  },
-                  {
-                    "currency": "USDC",
-                    "networks": [ "ETHEREUM", "POLYGON", "SOLANA" ],
-                    "type": "CRYPTO"
-                  },
-                  {
-                    "currency": "USD",
-                    "type": "FIAT"
-                  }
-                ]
-        
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '429':
-          description: Too many requests
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-  
+
+  # Users
   /users:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -350,6 +316,674 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
+  /users/assessments:
+    post:
+      operationId: startUserAssessment
+      summary: Create a new User Assessment
+      description: >-
+        This endpoint is used to assess a User. Depending on what information is
+        available on the User,  a tier level will be assigned to the assessment,
+        the higher the level is, the more permission he will get on your
+        platform.  Please refer to PTI documentation for more information on the
+        tier levels configuration and scenarios.
+      tags:
+        - Users
+      parameters:
+        - $ref: '#/components/parameters/requestIdHeaderParam'
+        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
+        - $ref: '#/components/parameters/sessionIdHeaderParam'
+        - $ref: '#/components/parameters/disableWebhookHeaderParam'
+      requestBody:
+        content:
+          application/json:
+            example:
+              name:
+                firstName: john
+                lastName: smith
+              id: 36dbe68f-2747-41c6-8748-559588fd3248
+              dateOfBirth: '1988-09-28'
+              emails:
+                - address: johnsmith@test.com
+                  default: true
+              phones:
+                - number: '12345678901'
+                  type: WORK
+                  default: true
+              addresses:
+                - streetAddress: '1, main street'
+                  city: New Hampshire
+                  postalCode: '10005'
+                  stateCode: US-NH
+                  country: US
+                  default: true
+              sourceOfFunds: Creator earnings
+            schema:
+              $ref: '#/components/schemas/kycRequest'
+        required: true
+      callbacks:
+        userAssessUpdate:
+          '{$url}':
+            post:
+              summary: Endpoint to receive User Assessments updates
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/userAssessStatusObject'
+              responses:
+                '200':
+                  description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
+      responses:
+        '201':
+          description: started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/objectReference'
+        '400':
+          description: User invalid or missing fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidRequestError'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '403':
+          description: Forbidden. Happens when the targeted User is not active.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '422':
+          description: >-
+            One of these 2 cases: More information about the User is needed in
+            order to approve the Transaction. There is no approved assessment
+            for this User that enables him to perform the operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/oneOfAssessmentValidationError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+  '/users/{userId}/assessments':
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+      - name: userId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+    get:
+      operationId: getLastKyc
+      summary: Get a User’s latest Assessment
+      tags:
+        - Users
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userAssessStatusObject'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+  '/users/{userId}/documents':
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+      - name: userId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+    post:
+      operationId: uploadDocument
+      summary: >-
+        Upload a User’s Document (Passport, License, etc)
+      tags:
+        - Users
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                metaInformation:
+                  $ref: '#/components/schemas/documentMetaInformation'
+                idDocumentMetaData:
+                  $ref: '#/components/schemas/idDocumentMetadata'
+                document:
+                  type: string
+                  format: binary
+                  maxLength: 5242880
+      responses:
+        '201':
+          description: Successfully uploaded the document
+        '400':
+          description: Missing required fields on document
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidRequestError'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+
+  # Wallets
+  /assets:
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+    get:
+      operationId: getListOfAssets
+      summary: Get the list of the supported Assets
+      tags:
+        - Wallets
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 100
+                items:
+                  $ref: '#/components/schemas/currencyAsset'
+                example: [
+                  {
+                    "currency": "BTC",
+                    "networks": [ "BITCOIN" ],
+                    "type": "CRYPTO"
+                  },
+                  {
+                    "currency": "USDC",
+                    "networks": [ "ETHEREUM", "POLYGON", "SOLANA" ],
+                    "type": "CRYPTO"
+                  },
+                  {
+                    "currency": "USD",
+                    "type": "FIAT"
+                  }
+                ]
+
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+  '/users/{userId}/wallets':
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+      - name: userId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+    post:
+      operationId: createWallet
+      summary: Create a Wallet for a User
+      tags:
+        - Wallets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              type: WALLET
+              walletId: c8768405-6129-4bda-8a10-8ef234dff30e
+              currency: ETH
+              network: Ethereum
+            schema:
+              $ref: '#/components/schemas/walletCreation'
+      responses:
+        '201':
+          description: Successfully created a Wallet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/wallet'
+        '400':
+          description: Missing required fields on Wallet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidRequestError'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+    get:
+      operationId: getWallets
+      summary: Get a list of a User's wallets
+      tags:
+        - Wallets
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 100
+                items:
+                  $ref: '#/components/schemas/wallet'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+  '/users/{userId}/wallets/{walletId}':
+    summary: Delete a Wallet
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+      - name: userId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+      - name: walletId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+    delete:
+      operationId: deleteWallet
+      summary: Delete a Wallet
+      tags:
+        - Wallets
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidRequestError'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
+          description: User or Wallet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+    get:
+      operationId: getWallet
+      summary: Get a Wallet by ID
+      tags:
+        - Wallets
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/wallet'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+  '/users/{userId}/wallets/{walletId}/simulate-payment':
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+      - name: userId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+      - name: walletId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+    post:
+      operationId: simulateWalletPayment
+      summary: Simulate a Deposit to a Wallet
+      tags:
+        - Wallets
+      requestBody:
+        description: amount of the payment and type of payment method
+        required: true
+        content:
+          application/json:
+            example:
+              amount: 100
+              paymentMethodType: ACH
+            schema:
+              $ref: '#/components/schemas/simulatePaymentRequest'
+      responses:
+        '201':
+          description: >-
+            Successfully created a simulated payment to the Wallet.
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '403':
+          description: forbidden
+        '404':
+          description: User or Wallet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+  '/users/{userId}/wallets/{walletId}/deposit-address':
+    summary: Generate a Wallet’s Deposit Address
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+      - name: userId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+      - name: walletId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+    post:
+      operationId: createWalletDepositAddress
+      summary: Create a crypto deposit address
+      tags:
+        - Wallets
+      requestBody:
+        description: Deposit address request parameters
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/depositAddressRequest'
+      responses:
+        '201':
+          description: >-
+            Successfully created a crypto deposit address.
+            The Wallet with its deposit instruction is returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/wallet'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '403':
+          description: forbidden
+        '404':
+          description: User or Wallet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+  '/users/{userId}/wallets/{walletId}/virtual-bank-account':
+    summary: Generate a Wallet’s Virtual Bank Account
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+      - name: userId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+      - name: walletId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+    post:
+      operationId: createWalletVirtualBankAccount
+      summary: Create a virtual bank account for a Wallet
+      tags:
+        - Wallets
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: >-
+            Successfully created a Wallet virtual bank account.
+            The Wallet with its deposit instruction is returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/wallet'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '403':
+          description: forbidden
+        '404':
+          description: User or Wallet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+  '/users/{userId}/wallets/{walletId}/history':
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+      - name: userId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+      - name: walletId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+    get:
+      operationId: getWalletHistory
+      summary: Retrieve the balance history of a Wallet
+      tags:
+        - Wallets
+      parameters:
+        - $ref: '#/components/parameters/offsetParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/walletHistoryPage'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '403':
+          description: forbidden
+        '404':
+          description: User or Wallet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+
+  # Payment Information
   /users/{userId}/payment-information:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -586,250 +1220,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
-  /transactions/validations:
-    parameters:
-      - $ref: '#/components/parameters/clientIdHeaderParam'
-    post:
-      operationId: transactionInformationAssessment
-      summary: >-
-        Validate that a User is allowed to perform a Transaction
-      tags:
-        - Transaction Assessment
-      parameters:
-        - $ref: '#/components/parameters/requestIdHeaderParam'
-        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
-        - $ref: '#/components/parameters/sessionIdHeaderParam'
-        - $ref: '#/components/parameters/disableWebhookHeaderParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            example:
-              sourceMethod:
-                paymentMethodType: CREDIT_CARD
-                paymentInformation:
-                  id: 4b573a86-fd3f-475d-a90b-3658f2e79719
-                billingEmail: user@example.com
-              destinationMethod:
-                paymentMethodType: WALLET
-                paymentInformation:
-                  id: 3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82
-                billingEmail: user@example.com
-              type: DEPOSIT
-              transactionTotal:
-                fee:
-                  amount: 10
-                  currency: USD
-                total:
-                  amount: 100
-                  currency: USD
-                subtotal:
-                  amount: 90
-                  currency: USD
-              initiator:
-                name:
-                  firstName: john
-                  lastName: smith
-                id: 36dbe68f-2747-41c6-8748-559588fd3248
-                dateOfBirth: '1988-09-28'
-                emails:
-                  - address: johnsmith@test.com
-                    default: true
-                phones:
-                  - number: '12345678901'
-                    type: WORK
-                    default: true
-                addresses:
-                  - streetAddress: '1, main street'
-                    city: New Hampshire
-                    postalCode: '10005'
-                    stateCode: US-NH
-                    country: US
-                    default: true
-                sourceOfFunds: Creator earnings
-              transactionGroupId: c8d8ed2a-33df-463b-95af-e59ff6e16414
-              usdValue: 100
-              amount: 100
-              date: 2024-12-13T18:46:40.666+0000
-            schema:
-              $ref: '#/components/schemas/oneOfTransactionSubTypes'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/oneOfAssessmentValidationError'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '404':
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '429':
-          description: Too many requests
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-  /users/assessments:
-    post:
-      operationId: startUserAssessment
-      summary: Create a new User Assessment
-      description: >-
-        This endpoint is used to assess a User. Depending on what information is
-        available on the User,  a tier level will be assigned to the assessment,
-        the higher the level is, the more permission he will get on your
-        platform.  Please refer to PTI documentation for more information on the
-        tier levels configuration and scenarios.
-      tags:
-        - Users
-      parameters:
-        - $ref: '#/components/parameters/requestIdHeaderParam'
-        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
-        - $ref: '#/components/parameters/sessionIdHeaderParam'
-        - $ref: '#/components/parameters/disableWebhookHeaderParam'
-      requestBody:
-        content:
-          application/json:
-            example:
-              name:
-                firstName: john
-                lastName: smith
-              id: 36dbe68f-2747-41c6-8748-559588fd3248
-              dateOfBirth: '1988-09-28'
-              emails:
-                - address: johnsmith@test.com
-                  default: true
-              phones:
-                - number: '12345678901'
-                  type: WORK
-                  default: true
-              addresses:
-                - streetAddress: '1, main street'
-                  city: New Hampshire
-                  postalCode: '10005'
-                  stateCode: US-NH
-                  country: US
-                  default: true
-              sourceOfFunds: Creator earnings
-            schema:
-              $ref: '#/components/schemas/kycRequest'
-        required: true
-      callbacks:
-        userAssessUpdate:
-          '{$url}':
-            post:
-              summary: Endpoint to receive User Assessments updates
-              requestBody:
-                required: true
-                content:
-                  application/json:
-                    schema:
-                      $ref: '#/components/schemas/userAssessStatusObject'
-              responses:
-                '200':
-                  description: Your server returns this code if it accepts the callback
-                '422':
-                  description: Your server returns an error
-      responses:
-        '201':
-          description: started
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/objectReference'
-        '400':
-          description: User invalid or missing fields
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidRequestError'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '403':
-          description: Forbidden. Happens when the targeted User is not active.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '404':
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '422':
-          description: >-
-            One of these 2 cases: More information about the User is needed in
-            order to approve the Transaction. There is no approved assessment
-            for this User that enables him to perform the operation.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/oneOfAssessmentValidationError'
-        '429':
-          description: Too many requests
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-  '/users/{userId}/assessments':
-    parameters:
-      - $ref: '#/components/parameters/clientIdHeaderParam'
-      - name: userId
-        schema:
-          type: string
-          pattern: '^[a-z0-9_-]{3,255}$'
-          maxLength: 255
-        in: path
-        required: true
-    get:
-      operationId: getLastKyc
-      summary: Get a User’s latest Assessment
-      tags:
-        - Users
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/userAssessStatusObject'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '404':
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '429':
-          description: Too many requests
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
+
+  # Transaction Assessment
   /transactions/assessments:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -1007,6 +1399,102 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
+  /transactions/validations:
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+    post:
+      operationId: transactionInformationAssessment
+      summary: >-
+        Validate that a User is allowed to perform a Transaction
+      tags:
+        - Transaction Assessment
+      parameters:
+        - $ref: '#/components/parameters/requestIdHeaderParam'
+        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
+        - $ref: '#/components/parameters/sessionIdHeaderParam'
+        - $ref: '#/components/parameters/disableWebhookHeaderParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              sourceMethod:
+                paymentMethodType: CREDIT_CARD
+                paymentInformation:
+                  id: 4b573a86-fd3f-475d-a90b-3658f2e79719
+                billingEmail: user@example.com
+              destinationMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  id: 3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82
+                billingEmail: user@example.com
+              type: DEPOSIT
+              transactionTotal:
+                fee:
+                  amount: 10
+                  currency: USD
+                total:
+                  amount: 100
+                  currency: USD
+                subtotal:
+                  amount: 90
+                  currency: USD
+              initiator:
+                name:
+                  firstName: john
+                  lastName: smith
+                id: 36dbe68f-2747-41c6-8748-559588fd3248
+                dateOfBirth: '1988-09-28'
+                emails:
+                  - address: johnsmith@test.com
+                    default: true
+                phones:
+                  - number: '12345678901'
+                    type: WORK
+                    default: true
+                addresses:
+                  - streetAddress: '1, main street'
+                    city: New Hampshire
+                    postalCode: '10005'
+                    stateCode: US-NH
+                    country: US
+                    default: true
+                sourceOfFunds: Creator earnings
+              transactionGroupId: c8d8ed2a-33df-463b-95af-e59ff6e16414
+              usdValue: 100
+              amount: 100
+              date: 2024-12-13T18:46:40.666+0000
+            schema:
+              $ref: '#/components/schemas/oneOfTransactionSubTypes'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/oneOfAssessmentValidationError'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+
+  # Transactions
   /transactions/trades/price-estimation:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -1173,220 +1661,6 @@ paths:
           '{$url}':
             post:
               summary: Endpoint that receives transaction status updates 
-              requestBody:
-                required: true
-                content:
-                  application/json:
-                    schema:
-                      $ref: '#/components/schemas/transactionStatusObject'
-              responses:
-                '200':
-                  description: Your server returns this code if it accepts the callback
-                '422':
-                  description: Your server returns an error
-      responses:
-        '201':
-          description: Successfully initiated the transaction
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/objectReference'
-        '400':
-          description: Invalid fields on Transaction
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidRequestError'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '403':
-          description: Forbidden. Happens when the targeted User is not active.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '404':
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '422':
-          description: >-
-            One of these 2 cases: More information about the User is needed in
-            order to approve the transaction. There is no approved assessment
-            for this User that enables him to perform the operation.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/oneOfAssessmentValidationError'
-        '429':
-          description: Too many requests
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-  /transactions/purchases:
-    parameters:
-      - $ref: '#/components/parameters/clientIdHeaderParam'
-    post:
-      operationId: digitalItemBuy
-      tags:
-        - Marketplace
-      summary: 'Execute a buy (token, nft, other)'
-      description: >-
-        This endpoint is used to execute a Digital Item buy (token, nft, other)
-        transaction for a User. The Transaction Assessment and User information
-        requirement are evaluated before the Transaction is executed.
-      parameters:
-        - $ref: '#/components/parameters/requestIdHeaderParam'
-        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
-        - $ref: '#/components/parameters/sessionIdHeaderParam'
-        - $ref: '#/components/parameters/disableWebhookHeaderParam'
-        - $ref: '#/components/parameters/providerNameHeaderParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            example:
-              initiator:
-                id: c5c4b077-0c9a-4d5f-84fd-439a6123cdd2
-                type: PERSON
-              sourceMethod:
-                paymentMethodType: WALLET
-                paymentInformation:
-                  type: WALLET
-                  walletId: 1de3e77b-e673-4e44-8b69-4931364c4e76
-              digitalItem:
-                digitalItemType: NFT
-                itemReference: 21d7c009-8469-41ae-83d7-393085fd6fef
-              seller:
-                id: f0714c92-d5bf-4ed2-9636-e9ab3743fcb6
-                type: PERSON
-              date: 2024-12-13T18:46:40.666+0000
-              usdValue: 5
-              amount: 5
-              type: BUY
-            schema:
-              $ref: '#/components/schemas/executeBuyTransaction'
-      callbacks:
-        transactionUpdate:
-          '{$url}':
-            post:
-              summary: Endpoint that receives transaction status update
-              requestBody:
-                required: true
-                content:
-                  application/json:
-                    schema:
-                      $ref: '#/components/schemas/transactionStatusObject'
-              responses:
-                '200':
-                  description: Your server returns this code if it accepts the callback
-                '422':
-                  description: Your server returns an error
-      responses:
-        '201':
-          description: Successfully initiated the transaction
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/objectReference'
-        '400':
-          description: Invalid fields on Transaction
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidRequestError'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '403':
-          description: Forbidden. Happens when the targeted User is not active.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '404':
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '422':
-          description: >-
-            One of these 2 cases: More information about the User is needed in
-            order to approve the transaction. There is no approved assessment
-            for this User that enables him to perform the operation.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/oneOfAssessmentValidationError'
-        '429':
-          description: Too many requests
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-  /transactions/sales:
-    parameters:
-      - $ref: '#/components/parameters/clientIdHeaderParam'
-    post:
-      operationId: digitalItemSell
-      summary: 'Execute a sell (token, nft, other)'
-      tags:
-        - Marketplace
-      description: >-
-        This endpoint is used to execute a Digital Item sell (token, nft, other)
-        transaction for a User. The Transaction Assessment and User information
-        requirement are evaluated before the transaction is executed.
-      parameters:
-        - $ref: '#/components/parameters/requestIdHeaderParam'
-        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
-        - $ref: '#/components/parameters/sessionIdHeaderParam'
-        - $ref: '#/components/parameters/disableWebhookHeaderParam'
-        - $ref: '#/components/parameters/providerNameHeaderParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            example:
-              initiator:
-                id: 2903c06b-6291-4cc8-b568-fe93064a5a8c
-                type: PERSON
-              digitalItem:
-                digitalItemType: NFT
-                itemReference: f5511285-9d0b-41fd-8ae7-0817bb7462ba
-              buyer:
-                id: be975fae-fb15-4b70-80ba-e59968ae48c3
-                type: PERSON
-              destinationMethod:
-                paymentInformation:
-                  type: WALLET
-                  walletId: c5b2cca7-a1ac-4aad-a461-be8903c695d9
-                paymentMethodType: WALLET
-              date: 2024-12-13T18:46:40.666+0000
-              usdValue: 5
-              amount: 5
-              type: SELL
-            schema:
-              $ref: '#/components/schemas/executeSellTransaction'
-      callbacks:
-        transactionUpdate:
-          '{$url}':
-            post:
-              summary: Endpoint that receives transaction status updates
               requestBody:
                 required: true
                 content:
@@ -2030,42 +2304,78 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
-  '/users/{userId}/documents':
+  '/transactions/{requestId}/updates':
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
-      - name: userId
+      - name: requestId
+        description: Request ID used when the transaction was initially logged
         schema:
-          type: string
-          pattern: '^[a-z0-9_-]{3,255}$'
-          maxLength: 255
+          $ref: '#/components/schemas/uuidLikeStr'
         in: path
         required: true
     post:
-      operationId: uploadDocument
-      summary: >-
-        Upload a User’s Document (Passport, License, etc)
+      operationId: provideFeedback
+      summary: Update status on existing transaction
       tags:
-        - Users
+        - Transactions
+      description: >
+        This endpoint allows adding feedback information to an existing
+        transaction. Here are the possible feedback values with their meaning:
+
+
+        | Feedback | Meaning |
+
+        |----------|---------|
+
+        | `ACCEPTED` | The transaction was accepted by the processor and is
+        deemed to be in a pending state. This feedback is not a final state and
+        should be followed by antoher feedback such as `SETTLED` or `CANCELLED`
+        |
+
+        | `SETTLED`  | The transaction was accepted and fully finalized by the
+        processor. The transfer of value has occured. |
+
+        | `CANCELLED`  | The transaction was accepted but cancelled prior to
+        being settled |
+        
+        | `AWAITING_PAYMENT` | A deposit transaction is being processed and is in
+        a state where it is waiting for the user to complete the payment by funding
+        the target address provided or making a deposit using the specified payment
+        method.
+        |
+
+        | `REJECTED` | The transaction was declined by the processor |
+
+        | `REFUNDED` | An intentional, settled transaction was refunded |
+
+        | `CHARGED_BACK` | A settled transaction was disputed and refunded |
+
+        | `ERROR` | The processor returned an error, the transaction is assumed
+        to be non existent from the processor standpoint |
       requestBody:
+        description: Feedback to associate to the existing transaction
+        required: true
         content:
-          multipart/form-data:
+          application/json:
+            example:
+              payload: '{}'
+              providerName: UNKNOWN
+              feedback: SETTLED
+              transactionId: UUID
+              date: 2024-12-13T18:46:40.666+0000
             schema:
-              type: object
-              additionalProperties: false
-              properties:
-                metaInformation:
-                  $ref: '#/components/schemas/documentMetaInformation'
-                idDocumentMetaData:
-                  $ref: '#/components/schemas/idDocumentMetadata'
-                document:
-                  type: string
-                  format: binary
-                  maxLength: 5242880
+              $ref: '#/components/schemas/transactionUpdate'
       responses:
         '201':
-          description: Successfully uploaded the document
+          description: >-
+            Successfully added transaction feedback. Returns the requestId in
+            the id value of the response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/objectReference'
         '400':
-          description: Missing required fields on document
+          description: Missing required fields on transaction feedback
           content:
             application/json:
               schema:
@@ -2077,11 +2387,227 @@ paths:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
         '404':
+          description: Transaction identified by requestId not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+
+  # Marketplace
+  /transactions/purchases:
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+    post:
+      operationId: digitalItemBuy
+      tags:
+        - Marketplace
+      summary: 'Execute a buy (token, nft, other)'
+      description: >-
+        This endpoint is used to execute a Digital Item buy (token, nft, other)
+        transaction for a User. The Transaction Assessment and User information
+        requirement are evaluated before the Transaction is executed.
+      parameters:
+        - $ref: '#/components/parameters/requestIdHeaderParam'
+        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
+        - $ref: '#/components/parameters/sessionIdHeaderParam'
+        - $ref: '#/components/parameters/disableWebhookHeaderParam'
+        - $ref: '#/components/parameters/providerNameHeaderParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              initiator:
+                id: c5c4b077-0c9a-4d5f-84fd-439a6123cdd2
+                type: PERSON
+              sourceMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  type: WALLET
+                  walletId: 1de3e77b-e673-4e44-8b69-4931364c4e76
+              digitalItem:
+                digitalItemType: NFT
+                itemReference: 21d7c009-8469-41ae-83d7-393085fd6fef
+              seller:
+                id: f0714c92-d5bf-4ed2-9636-e9ab3743fcb6
+                type: PERSON
+              date: 2024-12-13T18:46:40.666+0000
+              usdValue: 5
+              amount: 5
+              type: BUY
+            schema:
+              $ref: '#/components/schemas/executeBuyTransaction'
+      callbacks:
+        transactionUpdate:
+          '{$url}':
+            post:
+              summary: Endpoint that receives transaction status update
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/transactionStatusObject'
+              responses:
+                '200':
+                  description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
+      responses:
+        '201':
+          description: Successfully initiated the transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/objectReference'
+        '400':
+          description: Invalid fields on Transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidRequestError'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '403':
+          description: Forbidden. Happens when the targeted User is not active.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
           description: User not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
+        '422':
+          description: >-
+            One of these 2 cases: More information about the User is needed in
+            order to approve the transaction. There is no approved assessment
+            for this User that enables him to perform the operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/oneOfAssessmentValidationError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+  /transactions/sales:
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+    post:
+      operationId: digitalItemSell
+      summary: 'Execute a sell (token, nft, other)'
+      tags:
+        - Marketplace
+      description: >-
+        This endpoint is used to execute a Digital Item sell (token, nft, other)
+        transaction for a User. The Transaction Assessment and User information
+        requirement are evaluated before the transaction is executed.
+      parameters:
+        - $ref: '#/components/parameters/requestIdHeaderParam'
+        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
+        - $ref: '#/components/parameters/sessionIdHeaderParam'
+        - $ref: '#/components/parameters/disableWebhookHeaderParam'
+        - $ref: '#/components/parameters/providerNameHeaderParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              initiator:
+                id: 2903c06b-6291-4cc8-b568-fe93064a5a8c
+                type: PERSON
+              digitalItem:
+                digitalItemType: NFT
+                itemReference: f5511285-9d0b-41fd-8ae7-0817bb7462ba
+              buyer:
+                id: be975fae-fb15-4b70-80ba-e59968ae48c3
+                type: PERSON
+              destinationMethod:
+                paymentInformation:
+                  type: WALLET
+                  walletId: c5b2cca7-a1ac-4aad-a461-be8903c695d9
+                paymentMethodType: WALLET
+              date: 2024-12-13T18:46:40.666+0000
+              usdValue: 5
+              amount: 5
+              type: SELL
+            schema:
+              $ref: '#/components/schemas/executeSellTransaction'
+      callbacks:
+        transactionUpdate:
+          '{$url}':
+            post:
+              summary: Endpoint that receives transaction status updates
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/transactionStatusObject'
+              responses:
+                '200':
+                  description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
+      responses:
+        '201':
+          description: Successfully initiated the transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/objectReference'
+        '400':
+          description: Invalid fields on Transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidRequestError'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '403':
+          description: Forbidden. Happens when the targeted User is not active.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '422':
+          description: >-
+            One of these 2 cases: More information about the User is needed in
+            order to approve the transaction. There is no approved assessment
+            for this User that enables him to perform the operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/oneOfAssessmentValidationError'
         '429':
           description: Too many requests
         default:
@@ -2267,508 +2793,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
-  '/users/{userId}/wallets':
-    parameters:
-      - $ref: '#/components/parameters/clientIdHeaderParam'
-      - name: userId
-        schema:
-          type: string
-          pattern: '^[a-z0-9_-]{3,255}$'
-          maxLength: 255
-        in: path
-        required: true
-    post:
-      operationId: createWallet
-      summary: Create a Wallet for a User
-      tags:
-        - Wallets
-      requestBody:
-        required: true
-        content:
-          application/json:
-            example:
-              type: WALLET
-              walletId: c8768405-6129-4bda-8a10-8ef234dff30e
-              currency: ETH
-              network: Ethereum
-            schema:
-              $ref: '#/components/schemas/walletCreation'
-      responses:
-        '201':
-          description: Successfully created a Wallet
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/wallet'
-        '400':
-          description: Missing required fields on Wallet
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidRequestError'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '404':
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '429':
-          description: Too many requests
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-    get:
-      operationId: getWallets
-      summary: Get a list of a User's wallets
-      tags:
-        - Wallets
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                maxItems: 100
-                items:
-                  $ref: '#/components/schemas/wallet'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '404':
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '429':
-          description: Too many requests
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-  '/users/{userId}/wallets/{walletId}':
-    summary: Delete a Wallet
-    parameters:
-      - $ref: '#/components/parameters/clientIdHeaderParam'
-      - name: userId
-        schema:
-          type: string
-          pattern: '^[a-z0-9_-]{3,255}$'
-          maxLength: 255
-        in: path
-        required: true
-      - name: walletId
-        schema:
-          type: string
-          pattern: '^[a-z0-9_-]{3,255}$'
-          maxLength: 255
-        in: path
-        required: true
-    delete:
-      operationId: deleteWallet
-      summary: Delete a Wallet
-      tags:
-        - Wallets
-      responses:
-        '204':
-          description: No Content
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidRequestError'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '404':
-          description: User or Wallet not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '429':
-          description: Too many requests
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-    get:
-      operationId: getWallet
-      summary: Get a Wallet by ID
-      tags:
-        - Wallets
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/wallet'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '429':
-          description: Too many requests
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-  '/users/{userId}/wallets/{walletId}/simulate-payment':
-    parameters:
-      - $ref: '#/components/parameters/clientIdHeaderParam'
-      - name: userId
-        schema:
-          type: string
-          pattern: '^[a-z0-9_-]{3,255}$'
-          maxLength: 255
-        in: path
-        required: true
-      - name: walletId
-        schema:
-          type: string
-          pattern: '^[a-z0-9_-]{3,255}$'
-          maxLength: 255
-        in: path
-        required: true
-    post:
-      operationId: simulateWalletPayment
-      summary: Simulate a Deposit to a Wallet
-      tags:
-        - Wallets
-      requestBody:
-        description: amount of the payment and type of payment method
-        required: true
-        content:
-          application/json:
-            example: 
-              amount: 100
-              paymentMethodType: ACH
-            schema:
-              $ref: '#/components/schemas/simulatePaymentRequest'
-      responses:
-        '201':
-          description: >-
-            Successfully created a simulated payment to the Wallet.
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '403':
-          description: forbidden
-        '404':
-          description: User or Wallet not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '429':
-          description: Too many requests
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
 
-  '/users/{userId}/wallets/{walletId}/deposit-address':
-    summary: Generate a Wallet’s Deposit Address
-    parameters:
-      - $ref: '#/components/parameters/clientIdHeaderParam'
-      - name: userId
-        schema:
-          type: string
-          pattern: '^[a-z0-9_-]{3,255}$'
-          maxLength: 255
-        in: path
-        required: true
-      - name: walletId
-        schema:
-          type: string
-          pattern: '^[a-z0-9_-]{3,255}$'
-          maxLength: 255
-        in: path
-        required: true
-    post:
-      operationId: createWalletDepositAddress
-      summary: Create a crypto deposit address
-      tags:
-        - Wallets
-      requestBody:
-        description: Deposit address request parameters
-        required: false
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/depositAddressRequest'
-      responses:
-        '201':
-          description: >-
-            Successfully created a crypto deposit address.
-            The Wallet with its deposit instruction is returned
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/wallet'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '403':
-          description: forbidden
-        '404':
-          description: User or Wallet not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '429':
-          description: Too many requests
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-  '/users/{userId}/wallets/{walletId}/virtual-bank-account':
-    summary: Generate a Wallet’s Virtual Bank Account
-    parameters:
-      - $ref: '#/components/parameters/clientIdHeaderParam'
-      - name: userId
-        schema:
-          type: string
-          pattern: '^[a-z0-9_-]{3,255}$'
-          maxLength: 255
-        in: path
-        required: true
-      - name: walletId
-        schema:
-          type: string
-          pattern: '^[a-z0-9_-]{3,255}$'
-          maxLength: 255
-        in: path
-        required: true
-    post:
-      operationId: createWalletVirtualBankAccount
-      summary: Create a virtual bank account for a Wallet
-      tags:
-        - Wallets
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        '201':
-          description: >-
-            Successfully created a Wallet virtual bank account.
-            The Wallet with its deposit instruction is returned
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/wallet'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '403':
-          description: forbidden
-        '404':
-          description: User or Wallet not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '429':
-          description: Too many requests
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-  '/users/{userId}/wallets/{walletId}/history':
-    parameters:
-      - $ref: '#/components/parameters/clientIdHeaderParam'
-      - name: userId
-        schema:
-          type: string
-          pattern: '^[a-z0-9_-]{3,255}$'
-          maxLength: 255
-        in: path
-        required: true
-      - name: walletId
-        schema:
-          type: string
-          pattern: '^[a-z0-9_-]{3,255}$'
-          maxLength: 255
-        in: path
-        required: true
-    get:
-      operationId: getWalletHistory
-      summary: Retrieve the balance history of a Wallet
-      tags:
-        - Wallets
-      parameters:
-        - $ref: '#/components/parameters/offsetParam'
-        - $ref: '#/components/parameters/pageSizeParam'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/walletHistoryPage'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '403':
-          description: forbidden
-        '404':
-          description: User or Wallet not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '429':
-          description: Too many requests
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-  '/transactions/{requestId}/updates':
-    parameters:
-      - $ref: '#/components/parameters/clientIdHeaderParam'
-      - name: requestId
-        description: Request ID used when the transaction was initially logged
-        schema:
-          $ref: '#/components/schemas/uuidLikeStr'
-        in: path
-        required: true
-    post:
-      operationId: provideFeedback
-      summary: Update status on existing transaction
-      tags:
-        - Transactions
-      description: >
-        This endpoint allows adding feedback information to an existing
-        transaction. Here are the possible feedback values with their meaning:
-
-
-        | Feedback | Meaning |
-
-        |----------|---------|
-
-        | `ACCEPTED` | The transaction was accepted by the processor and is
-        deemed to be in a pending state. This feedback is not a final state and
-        should be followed by antoher feedback such as `SETTLED` or `CANCELLED`
-        |
-
-        | `SETTLED`  | The transaction was accepted and fully finalized by the
-        processor. The transfer of value has occured. |
-
-        | `CANCELLED`  | The transaction was accepted but cancelled prior to
-        being settled |
-        
-        | `AWAITING_PAYMENT` | A deposit transaction is being processed and is in
-        a state where it is waiting for the user to complete the payment by funding
-        the target address provided or making a deposit using the specified payment
-        method.
-        |
-
-        | `REJECTED` | The transaction was declined by the processor |
-
-        | `REFUNDED` | An intentional, settled transaction was refunded |
-
-        | `CHARGED_BACK` | A settled transaction was disputed and refunded |
-
-        | `ERROR` | The processor returned an error, the transaction is assumed
-        to be non existent from the processor standpoint |
-      requestBody:
-        description: Feedback to associate to the existing transaction
-        required: true
-        content:
-          application/json:
-            example:
-              payload: '{}'
-              providerName: UNKNOWN
-              feedback: SETTLED
-              transactionId: UUID
-              date: 2024-12-13T18:46:40.666+0000
-            schema:
-              $ref: '#/components/schemas/transactionUpdate'
-      responses:
-        '201':
-          description: >-
-            Successfully added transaction feedback. Returns the requestId in
-            the id value of the response.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/objectReference'
-        '400':
-          description: Missing required fields on transaction feedback
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/invalidRequestError'
-        '401':
-          description: unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '404':
-          description: Transaction identified by requestId not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
-        '429':
-          description: Too many requests
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/unmanagedError'
 components:
   schemas:
     
