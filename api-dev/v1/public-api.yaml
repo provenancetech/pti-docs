@@ -3141,7 +3141,11 @@ components:
         - FUNDING_FROM_CRYPTO_ONLY
         - WITHDRAWAL_FROM_WALLET_TO_CRYPTO
         - SOURCE_WALLET_CURRENCY_DIFFERENT_THAN_DESTINATION_TOKEN_CURRENCY
-    
+        - FUNDING_FROM_ACH_ONLY
+        - WITHDRAWING_FROM_WALLET_ONLY
+        - WITHDRAWING_TO_ACH_WIRE_ONLY
+        - FUNDING_TO_WALLET_ONLY
+
     oneOfAssessmentValidationError:
       oneOf:
         - $ref: '#/components/schemas/missingInformationError'
