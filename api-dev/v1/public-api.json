@@ -5137,6 +5137,11 @@
             "description" : "Type of bank account, Required for ACH and WIRE",
             "enum" : [ "CHECKING", "SAVINGS" ]
           },
+          "accountHolderName" : {
+            "maxLength" : 1024,
+            "type" : "string",
+            "description" : "Full name of the holder of the bank account. Required on creation."
+          },
           "bankSwiftCode" : {
             "maxLength" : 11,
             "pattern" : "[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?",

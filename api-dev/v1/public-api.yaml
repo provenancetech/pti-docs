@@ -2864,6 +2864,10 @@ components:
             - CHECKING
             - SAVINGS
           description: 'Type of bank account, Required for ACH and WIRE'
+        accountHolderName:
+          type: string
+          maxLength: 1024
+          description: 'Full name of the holder of the bank account. Required on creation.'
         bankSwiftCode:
           type: string
           maxLength: 11
