@@ -598,7 +598,7 @@ paths:
           application/json:
             example:
               type: WALLET
-              walletId: c8768405-6129-4bda-8a10-8ef234dff30e
+              id: c8768405-6129-4bda-8a10-8ef234dff30e
               currency: ETH
               network: Ethereum
             schema:
@@ -1747,7 +1747,7 @@ paths:
                 paymentMethodType: WALLET
                 paymentInformation:
                   type: WALLET
-                  walletId: a8e99100-f562-4e5b-b86f-9142dc2bc9f0
+                  id: a8e99100-f562-4e5b-b86f-9142dc2bc9f0
               destinationMethod:
                 paymentMethodType: TOKEN
                 paymentInformation:
@@ -1857,7 +1857,7 @@ paths:
                 paymentMethodType: WALLET
                 paymentInformation:
                   type: WALLET
-                  walletId: e13c3242-57d3-473f-b98c-eb2768e4549c
+                  id: e13c3242-57d3-473f-b98c-eb2768e4549c
               transactionTotal:
                 total:
                   amount: 6.99
@@ -1968,12 +1968,12 @@ paths:
                 paymentMethodType: WALLET
                 paymentInformation:
                   type: WALLET
-                  walletId: dd2473b7-1afd-4f9c-a359-b4294587fef6
+                  id: dd2473b7-1afd-4f9c-a359-b4294587fef6
               destinationTransferMethod:
                 paymentMethodType: WALLET
                 paymentInformation:
                   type: WALLET
-                  walletId: 70cd9757-f288-41e5-8506-5c38b7c819e1
+                  id: 70cd9757-f288-41e5-8506-5c38b7c819e1
               destination:
                 type: PERSON
               amount: 200
@@ -2073,12 +2073,12 @@ paths:
                 paymentMethodType: WALLET
                 paymentInformation:
                   type: WALLET
-                  walletId: MySOLWallet
+                  id: MySOLWallet
               destinationMethod:
                 paymentMethodType: WALLET
                 paymentInformation:
                   type: WALLET
-                  walletId: MyUSDWallet
+                  id: MyUSDWallet
               amount: 0.5
               usdValue: 113
               type: TRADE
@@ -2432,7 +2432,7 @@ paths:
                 paymentMethodType: WALLET
                 paymentInformation:
                   type: WALLET
-                  walletId: 1de3e77b-e673-4e44-8b69-4931364c4e76
+                  id: 1de3e77b-e673-4e44-8b69-4931364c4e76
               digitalItem:
                 digitalItemType: NFT
                 itemReference: 21d7c009-8469-41ae-83d7-393085fd6fef
@@ -2544,7 +2544,7 @@ paths:
               destinationMethod:
                 paymentInformation:
                   type: WALLET
-                  walletId: c5b2cca7-a1ac-4aad-a461-be8903c695d9
+                  id: c5b2cca7-a1ac-4aad-a461-be8903c695d9
                 paymentMethodType: WALLET
               date: 2024-12-13T18:46:40.666+0000
               usdValue: 5
@@ -3394,7 +3394,7 @@ components:
           paymentMethodType: WALLET
           paymentInformation:
             type: WALLET
-            walletId: MyUSDWallet
+            id: MyUSDWallet
         amount: 200
         date: '2024-06-03T08:30:00.000Z'
         transactionTotal: {
@@ -3433,12 +3433,12 @@ components:
           paymentMethodType: WALLET
           paymentInformation:
             type: WALLET
-            walletId: MyUSDWallet
+            id: MyUSDWallet
         destinationTransferMethod:
           paymentMethodType: WALLET
           paymentInformation:
             type: WALLET
-            walletId: MyUSDWallet2
+            id: MyUSDWallet2
         destination:
           id: 99dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
@@ -3497,7 +3497,7 @@ components:
           paymentMethodType: WALLET
           paymentInformation:
             type: WALLET
-            walletId: MyUSDWallet
+            id: MyUSDWallet
         seller:
           id: 99dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
@@ -3565,7 +3565,7 @@ components:
           paymentMethodType: WALLET
           paymentInformation:
             type: WALLET
-            walletId: MyUSDWallet
+            id: MyUSDWallet
         buyer:
           id: 99dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
@@ -3607,7 +3607,7 @@ components:
           paymentMethodType: WALLET
           paymentInformation:
             type: WALLET
-            walletId: db36f561-f20d-47b9-80b8-89dc1ecb4903
+            id: db36f561-f20d-47b9-80b8-89dc1ecb4903
         amount: 200
         usdValue: 200
         type: WITHDRAWAL
@@ -3634,12 +3634,12 @@ components:
           paymentMethodType: WALLET
           paymentInformation:
             type: WALLET
-            walletId: MyUSDWallet
+            id: MyUSDWallet
         destinationMethod:
           paymentMethodType: WALLET
           paymentInformation:
             type: WALLET
-            walletId: MyBTCWallet
+            id: MyBTCWallet
         amount: 200
         usdValue: 200
         type: TRADE
@@ -3665,12 +3665,12 @@ components:
           paymentMethodType: WALLET
           paymentInformation:
             type: WALLET
-            walletId: MyUSDWallet
+            id: MyUSDWallet
         destinationMethod:
           paymentMethodType: WALLET
           paymentInformation:
             type: WALLET
-            walletId: client_subscriptions
+            id: client_subscriptions
         amount: 200
         usdValue: 200
         type: PAYMENT
@@ -3692,7 +3692,7 @@ components:
           paymentMethodType: WALLET
           paymentInformation:
             type: WALLET
-            walletId: MyBTCWallet
+            id: MyBTCWallet
         amount: 0.55
         usdValue: 200
         type: MINT
@@ -4023,12 +4023,12 @@ components:
           paymentMethodType: WALLET
           paymentInformation:
             type: WALLET
-            walletId: MyUSDWallet
+            id: MyUSDWallet
         destinationMethod:
           paymentMethodType: WALLET
           paymentInformation:
             type: WALLET
-            walletId: MyUSDWallet2
+            id: MyUSDWallet2
         destination:
           id: 99dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
@@ -4258,6 +4258,11 @@ components:
         - amount
         - initiator
       properties:
+        id:
+          description: The id of the transaction/payment. Optional, will be populated with the value provided in the x-pti-request-id header.
+          type: string
+          pattern: '^[a-z0-9_-]{3,64}$'
+          maxLength: 64
         transactionGroupId:
           $ref: '#/components/schemas/uuidLikeStrTransactionGroup'
         subClientId:
@@ -4548,7 +4553,7 @@ components:
         - currency
         - type
       properties:
-        walletId:
+        id:
           type: string
           maxLength: 255
           pattern: '^[A-Za-z]+(?:_[A-Za-z]+)*$'
@@ -4574,7 +4579,7 @@ components:
           maxLength: 40
           nullable: true
       example:
-        walletId: 6c870027-01d8-4804-8867-6a08e8a37e49
+        id: 6c870027-01d8-4804-8867-6a08e8a37e49
         label: MyUSDWallet
         type: WALLET
         currency: USD
@@ -4582,7 +4587,7 @@ components:
     wallet:
       type: object
       properties:
-        walletId:
+        id:
           type: string
           maxLength: 255
           pattern: '^[A-Za-z]+(?:_[A-Za-z]+)*$'
@@ -4633,7 +4638,7 @@ components:
           enum:
             - WALLET
       example:
-        walletId: MyUSDWallet
+        id: MyUSDWallet
         label: MyUSDWallet
         currency: USD
         type: WALLET
@@ -4807,6 +4812,8 @@ components:
         - itemDescription
         - digitalItemType
       properties:
+        id:
+          $ref: '#/components/schemas/uuidLikeStr'
         itemReference:
           type: string
           description: >-
