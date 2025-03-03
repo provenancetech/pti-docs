@@ -3520,7 +3520,7 @@ components:
         usdValue: 200
         type: BUY
         feeRecipients:
-          - feeRecipientId: 3d85a4fc-b98f-4ab7-96fe-4cc1779fc9c2
+          - id: 3d85a4fc-b98f-4ab7-96fe-4cc1779fc9c2
             walletId: USDCreatorWallet
             currency: USD
             feeRecipientType: COMMISSION
@@ -3572,7 +3572,7 @@ components:
         amount: 200
         usdValue: 200
         feeRecipients:
-          - feeRecipientId: 3d85a4fc-b98f-4ab7-96fe-4cc1779fc9c2
+          - id: 3d85a4fc-b98f-4ab7-96fe-4cc1779fc9c2
             walletId: USDCreatorWallet
             currency: USD
             feeRecipientType: COMMISSION
@@ -4769,13 +4769,13 @@ components:
       type: object
       additionalProperties: false
       required:
-        - feeRecipientId
+        - id
         - walletId
         - currency
         - amount
         - feeRecipientType
       properties:
-        feeRecipientId:
+        id:
           type: string
           description: >-
             User ID of the Commission Recipient
@@ -4798,7 +4798,7 @@ components:
             - COMMISSION
             - BUSINESS
       example:
-        feeRecipientId: MyUserId
+        id: MyUserId
         walletId: MyWalletId
         currency: USD
         amount: 100

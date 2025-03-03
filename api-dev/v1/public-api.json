@@ -5799,7 +5799,7 @@
           "usdValue" : 200,
           "type" : "BUY",
           "feeRecipients" : [ {
-            "feeRecipientId" : "3d85a4fc-b98f-4ab7-96fe-4cc1779fc9c2",
+            "id" : "3d85a4fc-b98f-4ab7-96fe-4cc1779fc9c2",
             "walletId" : "USDCreatorWallet",
             "currency" : "USD",
             "feeRecipientType" : "COMMISSION",
@@ -5865,7 +5865,7 @@
           "amount" : 200,
           "usdValue" : 200,
           "feeRecipients" : [ {
-            "feeRecipientId" : "3d85a4fc-b98f-4ab7-96fe-4cc1779fc9c2",
+            "id" : "3d85a4fc-b98f-4ab7-96fe-4cc1779fc9c2",
             "walletId" : "USDCreatorWallet",
             "currency" : "USD",
             "feeRecipientType" : "COMMISSION",
@@ -7303,10 +7303,10 @@
         "description" : "If your system performs transactions that are together part of an overall transaction group, use this to tie them together"
       },
       "feeRecipient" : {
-        "required" : [ "amount", "currency", "feeRecipientId", "feeRecipientType", "walletId" ],
+        "required" : [ "amount", "currency", "feeRecipientType", "id", "walletId" ],
         "type" : "object",
         "properties" : {
-          "feeRecipientId" : {
+          "id" : {
             "type" : "string",
             "description" : "User ID of the Commission Recipient"
           },
@@ -7333,7 +7333,7 @@
         },
         "additionalProperties" : false,
         "example" : {
-          "feeRecipientId" : "MyUserId",
+          "id" : "MyUserId",
           "walletId" : "MyWalletId",
           "currency" : "USD",
           "amount" : 100,
