@@ -6238,12 +6238,6 @@
             "type" : "number",
             "format" : "double"
           },
-          "availableBalanceBefore" : {
-            "maximum" : 999999,
-            "minimum" : 0,
-            "type" : "number",
-            "format" : "double"
-          },
           "lockedBalanceBefore" : {
             "maximum" : 999999,
             "minimum" : 0,
@@ -6264,7 +6258,7 @@
           },
           "operationTarget" : {
             "type" : "string",
-            "enum" : [ "AVAILABLE_BALANCE", "LOCKED_BALANCE", "PENDING_BALANCE", "TOTAL_BALANCE" ]
+            "enum" : [ "LOCKED_BALANCE", "PENDING_BALANCE", "TOTAL_BALANCE" ]
           },
           "requestId" : {
             "$ref" : "#/components/schemas/uuidLikeStr"
@@ -6273,9 +6267,9 @@
         "additionalProperties" : false,
         "example" : {
           "walletId" : "6d9e99eb-95e2-44c3-a790-c61dde3952ad",
-          "availableBalanceBefore" : 100.0,
+          "totalBalanceBefore" : 100.0,
           "change" : 5.99,
-          "targetOperation" : "AVAILABLE_BALANCE",
+          "targetOperation" : "TOTAL_BALANCE",
           "createDateTime" : "2024-12-05T12:00:00Z"
         }
       },

@@ -3855,9 +3855,9 @@ components:
       type: object
       example:
         walletId: 6d9e99eb-95e2-44c3-a790-c61dde3952ad
-        availableBalanceBefore: 100.00
+        totalBalanceBefore: 100.00
         change: 5.99
-        targetOperation: AVAILABLE_BALANCE
+        targetOperation: TOTAL_BALANCE
         createDateTime: '2024-12-05T12:00:00Z'
       required:
         - walletId
@@ -3877,11 +3877,6 @@ components:
           minimum: 0
           maximum: 999999
           format: double
-        availableBalanceBefore:
-          type: number
-          minimum: 0
-          maximum: 999999
-          format: double  
         lockedBalanceBefore:
           type: number
           minimum: 0
@@ -3901,7 +3896,6 @@ components:
         operationTarget:
           type: string
           enum:
-            - AVAILABLE_BALANCE
             - LOCKED_BALANCE
             - PENDING_BALANCE
             - TOTAL_BALANCE
