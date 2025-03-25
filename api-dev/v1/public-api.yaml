@@ -5307,6 +5307,9 @@ components:
         - POL
         - USDC
         - USD
+        - TRX
+        - LTC
+        - ADA
     
     blockChainEnum:
       type: string
@@ -5315,6 +5318,9 @@ components:
         - BITCOIN
         - SOLANA
         - POLYGON
+        - TRON
+        - LITECOIN
+        - CARDANO
     
     currencyType:
       type: string

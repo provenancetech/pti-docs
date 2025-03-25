@@ -7884,11 +7884,11 @@
       },
       "currencyEnum" : {
         "type" : "string",
-        "enum" : [ "BTC", "ETH", "SOL", "POL", "USDC", "USD" ]
+        "enum" : [ "BTC", "ETH", "SOL", "POL", "USDC", "USD", "TRX", "LTC", "ADA" ]
       },
       "blockChainEnum" : {
         "type" : "string",
-        "enum" : [ "ETHEREUM", "BITCOIN", "SOLANA", "POLYGON" ]
+        "enum" : [ "ETHEREUM", "BITCOIN", "SOLANA", "POLYGON", "TRON", "LITECOIN", "CARDANO" ]
       },
       "currencyType" : {
         "type" : "string",
