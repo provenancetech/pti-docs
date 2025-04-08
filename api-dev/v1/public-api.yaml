@@ -906,6 +906,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/wallet'
+        '400':
+          description: Missing User or Bank Account Information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidRequestError'
         '401':
           description: unauthorized
           content:
@@ -3303,6 +3309,7 @@ components:
             WITHDRAWING_FROM_WALLET_ONLY(4006)
             WITHDRAWING_TO_ACH_WIRE_ONLY(4007)
             FUNDING_TO_WALLET_ONLY(4008)
+            MISSING_TAX_INFO(4009)
             MANDATORY_IP_ADDRESS(5000)
             MANDATORY_EMAIL_ADDRESS(5001)
             MISSING_CC_INFO(5002)
