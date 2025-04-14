@@ -5574,13 +5574,13 @@
         "additionalProperties" : true
       },
       "transactionUpdate" : {
-        "required" : [ "feedback", "providerName" ],
+        "required" : [ "feedback" ],
         "type" : "object",
         "properties" : {
           "payload" : {
             "type" : "string",
             "format" : "escaped_json",
-            "example" : "{\"status\":\"SETTLED\",\"exchangeInfo\":{\"amountDebited\":150.0,\"amountCredited\":1.5},\"providerName\":\"CLIENT_MANAGED_SERVICE\"}"
+            "example" : "{\"status\":\"SETTLED\",\"exchangeInfo\":{\"amountDebited\":150.0,\"amountCredited\":1.5},\"providerName\":\"UNKNOWN\"}"
           },
           "providerName" : {
             "type" : "string",

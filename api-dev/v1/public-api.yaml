@@ -3342,14 +3342,13 @@ components:
       description: Set of possible transaction feedbacks
       type: object
       required:
-        - providerName
         - feedback
       additionalProperties: false
       properties:
         payload:
           format: escaped_json
           type: string
-          example: "{\"status\":\"SETTLED\",\"exchangeInfo\":{\"amountDebited\":150.0,\"amountCredited\":1.5},\"providerName\":\"CLIENT_MANAGED_SERVICE\"}"
+          example: "{\"status\":\"SETTLED\",\"exchangeInfo\":{\"amountDebited\":150.0,\"amountCredited\":1.5},\"providerName\":\"UNKNOWN\"}"
         providerName:
           enum:
             - PTI_LEDGER
