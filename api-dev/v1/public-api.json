@@ -5616,17 +5616,7 @@
             "$ref" : "#/components/schemas/oneOfExternalPaymentMethod"
           },
           "destinationMethod" : {
-            "allOf" : [ {
-              "$ref" : "#/components/schemas/walletPaymentMethod"
-            }, {
-              "type" : "object",
-              "properties" : {
-                "paymentMethodType" : {
-                  "type" : "string",
-                  "enum" : [ "WALLET" ]
-                }
-              }
-            } ]
+            "$ref" : "#/components/schemas/walletPaymentMethodWrapper"
           }
         },
         "description" : "Fund a Wallet with crypto. SourceMethod: external crypto Wallet. DestinationMethod: Wallet on the platform.",
@@ -5698,30 +5688,10 @@
         "type" : "object",
         "properties" : {
           "sourceTransferMethod" : {
-            "allOf" : [ {
-              "$ref" : "#/components/schemas/walletPaymentMethod"
-            }, {
-              "type" : "object",
-              "properties" : {
-                "paymentMethodType" : {
-                  "type" : "string",
-                  "enum" : [ "WALLET" ]
-                }
-              }
-            } ]
+            "$ref" : "#/components/schemas/walletPaymentMethodWrapper"
           },
           "destinationTransferMethod" : {
-            "allOf" : [ {
-              "$ref" : "#/components/schemas/walletPaymentMethod"
-            }, {
-              "type" : "object",
-              "properties" : {
-                "paymentMethodType" : {
-                  "type" : "string",
-                  "enum" : [ "WALLET" ]
-                }
-              }
-            } ]
+            "$ref" : "#/components/schemas/walletPaymentMethodWrapper"
           },
           "destination" : {
             "$ref" : "#/components/schemas/oneOfUserSubTypes"
@@ -5922,17 +5892,7 @@
             "$ref" : "#/components/schemas/oneOfExternalPaymentMethod"
           },
           "sourceMethod" : {
-            "allOf" : [ {
-              "$ref" : "#/components/schemas/walletPaymentMethod"
-            }, {
-              "type" : "object",
-              "properties" : {
-                "paymentMethodType" : {
-                  "type" : "string",
-                  "enum" : [ "WALLET" ]
-                }
-              }
-            } ]
+            "$ref" : "#/components/schemas/walletPaymentMethodWrapper"
           }
         },
         "description" : "Withdraw from a Wallet to fiat destination. SourceMethod: Wallet on the platform. DestinationMethod: fiat payment method.",
@@ -5970,30 +5930,10 @@
         "type" : "object",
         "properties" : {
           "sourceMethod" : {
-            "allOf" : [ {
-              "$ref" : "#/components/schemas/walletPaymentMethod"
-            }, {
-              "type" : "object",
-              "properties" : {
-                "paymentMethodType" : {
-                  "type" : "string",
-                  "enum" : [ "WALLET" ]
-                }
-              }
-            } ]
+            "$ref" : "#/components/schemas/walletPaymentMethodWrapper"
           },
           "destinationMethod" : {
-            "allOf" : [ {
-              "$ref" : "#/components/schemas/walletPaymentMethod"
-            }, {
-              "type" : "object",
-              "properties" : {
-                "paymentMethodType" : {
-                  "type" : "string",
-                  "enum" : [ "WALLET" ]
-                }
-              }
-            } ]
+            "$ref" : "#/components/schemas/walletPaymentMethodWrapper"
           }
         },
         "description" : "Trade currency/crypto for another. SourceMethod: Wallet. DestinationMethod: Wallet.",
@@ -6032,17 +5972,7 @@
             "$ref" : "#/components/schemas/oneOfPaymentMethod"
           },
           "destinationMethod" : {
-            "allOf" : [ {
-              "$ref" : "#/components/schemas/walletPaymentMethod"
-            }, {
-              "type" : "object",
-              "properties" : {
-                "paymentMethodType" : {
-                  "type" : "string",
-                  "enum" : [ "WALLET" ]
-                }
-              }
-            } ]
+            "$ref" : "#/components/schemas/walletPaymentMethodWrapper"
           }
         },
         "description" : "Collect payment from the initiator, the beneficiary is the Client platform's  specified Wallet in the destinationMethod(if specified).",
@@ -6081,17 +6011,7 @@
             "$ref" : "#/components/schemas/oneOfUserSubTypes"
           },
           "destinationMethod" : {
-            "allOf" : [ {
-              "$ref" : "#/components/schemas/walletPaymentMethod"
-            }, {
-              "type" : "object",
-              "properties" : {
-                "paymentMethodType" : {
-                  "type" : "string",
-                  "enum" : [ "WALLET" ]
-                }
-              }
-            } ]
+            "$ref" : "#/components/schemas/walletPaymentMethodWrapper"
           }
         },
         "description" : "Mint some value on behalf of a User in a Wallet. DestinationMethod: Wallet on the platform. destination: destination User.",
@@ -6210,6 +6130,19 @@
           }
         },
         "additionalProperties" : true
+      },
+      "walletPaymentMethodWrapper" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/walletPaymentMethod"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "paymentMethodType" : {
+              "type" : "string",
+              "enum" : [ "WALLET" ]
+            }
+          }
+        } ]
       },
       "walletPaymentMethod" : {
         "required" : [ "paymentMethodType" ],

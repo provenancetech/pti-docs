@@ -3394,13 +3394,7 @@ components:
         sourceMethod:
           $ref: '#/components/schemas/oneOfExternalPaymentMethod'
         destinationMethod:
-          allOf:
-            - $ref: '#/components/schemas/walletPaymentMethod'
-            - type: object
-              properties:
-                paymentMethodType:
-                  type: string
-                  enum: [ "WALLET" ]
+          $ref: '#/components/schemas/walletPaymentMethodWrapper'
 
       example:
         initiator:
@@ -3488,21 +3482,9 @@ components:
         type: TRANSFER
       properties:
         sourceTransferMethod:
-          allOf:
-            - $ref: '#/components/schemas/walletPaymentMethod'
-            - type: object
-              properties:
-                paymentMethodType:
-                  type: string
-                  enum: [ "WALLET" ]
+          $ref: '#/components/schemas/walletPaymentMethodWrapper'
         destinationTransferMethod:
-          allOf:
-            - $ref: '#/components/schemas/walletPaymentMethod'
-            - type: object
-              properties:
-                paymentMethodType:
-                  type: string
-                  enum: [ "WALLET" ]
+          $ref: '#/components/schemas/walletPaymentMethodWrapper'
         destination:
           $ref: '#/components/schemas/oneOfUserSubTypes'
         destinationClientId:
@@ -3643,13 +3625,7 @@ components:
         destinationMethod:
           $ref: '#/components/schemas/oneOfExternalPaymentMethod'
         sourceMethod:
-          allOf:
-            - $ref: '#/components/schemas/walletPaymentMethod'
-            - type: object
-              properties:
-                paymentMethodType:
-                  type: string
-                  enum: [ "WALLET" ]
+          $ref: '#/components/schemas/walletPaymentMethodWrapper'
       example:
         initiator:
           id: 36dbe68f-2747-41c6-8748-559588fd3248
@@ -3681,21 +3657,9 @@ components:
         - $ref: '#/components/schemas/transactionType'
       properties:
         sourceMethod:
-          allOf:
-            - $ref: '#/components/schemas/walletPaymentMethod'
-            - type: object
-              properties:
-                paymentMethodType:
-                  type: string
-                  enum: [ "WALLET" ]
+          $ref: '#/components/schemas/walletPaymentMethodWrapper'
         destinationMethod:
-          allOf:
-            - $ref: '#/components/schemas/walletPaymentMethod'
-            - type: object
-              properties:
-                paymentMethodType:
-                  type: string
-                  enum: [ "WALLET" ]
+          $ref: '#/components/schemas/walletPaymentMethodWrapper'
       example:
         initiator:
           id: 36dbe68f-2747-41c6-8748-559588fd3248
@@ -3726,13 +3690,7 @@ components:
         sourceMethod:
           $ref: '#/components/schemas/oneOfPaymentMethod'
         destinationMethod:
-          allOf:
-            - $ref: '#/components/schemas/walletPaymentMethod'
-            - type: object
-              properties:
-                paymentMethodType:
-                  type: string
-                  enum: [ "WALLET" ]
+          $ref: '#/components/schemas/walletPaymentMethodWrapper'
       example:
         initiator:
           id: 36dbe68f-2747-41c6-8748-559588fd3248
@@ -3776,13 +3734,7 @@ components:
         destination:
           $ref: '#/components/schemas/oneOfUserSubTypes'
         destinationMethod:
-          allOf:
-            - $ref: '#/components/schemas/walletPaymentMethod'
-            - type: object
-              properties:
-                paymentMethodType:
-                  type: string
-                  enum: [ "WALLET" ]
+          $ref: '#/components/schemas/walletPaymentMethodWrapper'
     achPaymentMethod:
       type: object
       additionalProperties: true
@@ -3860,6 +3812,16 @@ components:
           maxLength: 320
         paymentInformation:
           $ref: '#/components/schemas/oneOfFiatPaymentInformation'
+
+    walletPaymentMethodWrapper:
+      allOf:
+        - $ref: '#/components/schemas/walletPaymentMethod'
+        - type: object
+          properties:
+            paymentMethodType:
+              type: string
+              enum: [ "WALLET" ]
+
     walletPaymentMethod:
       type: object
       additionalProperties: false
