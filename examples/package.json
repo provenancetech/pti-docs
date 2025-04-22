@@ -8,7 +8,7 @@
     "express": "^4.21.2",
     "glob-parent": "^6.0.2",
     "nth-check": "^2.1.1",
-    "postcss": "^8.4.44",
+    "postcss": "^8.5.3",
     "serialize-javascript": "^6.0.2"
   }
 }
