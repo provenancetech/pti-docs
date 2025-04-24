@@ -1,8 +1,8 @@
 {
   "openapi" : "3.0.2",
   "info" : {
-    "title" : "Provenance technologies institutional API",
-    "description" : "Provenance technologies institutional API specification",
+    "title" : "Fiant institutional API",
+    "description" : "Fiant institutional API specification",
     "license" : {
       "name" : "Private",
       "url" : "https://provenancetech.io"
@@ -141,7 +141,8 @@
             "maximum" : 9999999,
             "minimum" : 0,
             "type" : "integer",
-            "format" : "int32"
+            "format" : "int32",
+            "default" : 0
           }
         }, {
           "name" : "size",
@@ -154,17 +155,19 @@
             "maximum" : 100,
             "minimum" : 0,
             "type" : "integer",
-            "format" : "int32"
+            "format" : "int32",
+            "default" : 20
           }
         }, {
           "name" : "sortBy",
           "in" : "query",
-          "description" : "Sort by field. If not specified, the default value is creation date.",
+          "description" : "Sort by field. If not specified, the default value is creationDate.",
           "required" : false,
           "style" : "form",
           "explode" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "default" : "creationDate"
           }
         } ],
         "responses" : {
@@ -299,11 +302,12 @@
                 "$ref" : "#/components/schemas/oneOfUserSubTypes"
               },
               "example" : {
+                "id" : "ffffffff-2747-41c6-8748-559588fd3248",
+                "type" : "PERSON",
                 "name" : {
                   "firstName" : "John",
                   "lastName" : "Smith"
                 },
-                "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
                 "dateOfBirth" : "1988-09-28",
                 "emails" : [ {
                   "address" : "johnsmith@test.com",
@@ -615,11 +619,12 @@
                 "$ref" : "#/components/schemas/kycRequest"
               },
               "example" : {
+                "id" : "ffffffff-2747-41c6-8748-559588fd3248",
+                "type" : "PERSON",
                 "name" : {
                   "firstName" : "john",
                   "lastName" : "smith"
                 },
-                "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
                 "dateOfBirth" : "1988-09-28",
                 "emails" : [ {
                   "address" : "johnsmith@test.com",
@@ -1088,7 +1093,7 @@
               },
               "example" : {
                 "type" : "WALLET",
-                "id" : "c8768405-6129-4bda-8a10-8ef234dff30e",
+                "id" : "ffffffff-6129-4bda-8a10-8ef234dff30e",
                 "currency" : "ETH",
                 "network" : "Ethereum"
               }
@@ -1668,7 +1673,8 @@
             "maximum" : 9999999,
             "minimum" : 0,
             "type" : "integer",
-            "format" : "int32"
+            "format" : "int32",
+            "default" : 0
           }
         }, {
           "name" : "size",
@@ -1681,7 +1687,8 @@
             "maximum" : 100,
             "minimum" : 0,
             "type" : "integer",
-            "format" : "int32"
+            "format" : "int32",
+            "default" : 20
           }
         } ],
         "responses" : {
@@ -2286,11 +2293,12 @@
                   }
                 },
                 "initiator" : {
+                  "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
+                  "type" : "PERSON",
                   "name" : {
                     "firstName" : "john",
                     "lastName" : "smith"
                   },
-                  "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
                   "dateOfBirth" : "1988-09-28",
                   "emails" : [ {
                     "address" : "johnsmith@test.com",
@@ -2589,11 +2597,12 @@
                   }
                 },
                 "initiator" : {
+                  "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
+                  "type" : "PERSON",
                   "name" : {
                     "firstName" : "john",
                     "lastName" : "smith"
                   },
-                  "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
                   "dateOfBirth" : "1988-09-28",
                   "emails" : [ {
                     "address" : "johnsmith@test.com",
@@ -2723,11 +2732,12 @@
                   }
                 },
                 "initiator" : {
+                  "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
+                  "type" : "PERSON",
                   "name" : {
                     "firstName" : "john",
                     "lastName" : "smith"
                   },
-                  "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
                   "dateOfBirth" : "1988-09-28",
                   "emails" : [ {
                     "address" : "johnsmith@test.com",
@@ -2914,11 +2924,12 @@
                 },
                 "type" : "DEPOSIT",
                 "initiator" : {
+                  "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
+                  "type" : "PERSON",
                   "name" : {
                     "firstName" : "john",
                     "lastName" : "smith"
                   },
-                  "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
                   "dateOfBirth" : "1988-09-28",
                   "emails" : [ {
                     "address" : "johnsmith@test.com",
@@ -4894,7 +4905,8 @@
             "maximum" : 9999999,
             "minimum" : 0,
             "type" : "integer",
-            "format" : "int32"
+            "format" : "int32",
+            "default" : 0
           }
         }, {
           "name" : "size",
@@ -4907,17 +4919,19 @@
             "maximum" : 100,
             "minimum" : 0,
             "type" : "integer",
-            "format" : "int32"
+            "format" : "int32",
+            "default" : 20
           }
         }, {
           "name" : "sortBy",
           "in" : "query",
-          "description" : "Sort by field. If not specified, the default value is creation date.",
+          "description" : "Sort by field. If not specified, the default value is creationDate.",
           "required" : false,
           "style" : "form",
           "explode" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "default" : "creationDate"
           }
         } ],
         "responses" : {
@@ -5003,13 +5017,13 @@
                 }
               },
               "example" : [ {
-                "itemReference" : "57d6467c-6ae0-434f-8197-e7e9f86f2209",
+                "itemReference" : "ffffffff-6ae0-434f-8197-e7e9f86f2209",
                 "digitalItemType" : "NFT",
                 "itemDescription" : "Ultra Rare Elite Russell Wilson Level 1",
                 "itemTitle" : "QB, Mint Condition, #467/500 From Founders Set ",
                 "itemUSDValue" : 10
               }, {
-                "itemReference" : "57d6467c-6ae0-434f-8197-e7e9f86f2210",
+                "itemReference" : "ffffffff-6ae0-434f-8197-e7e9f86f2210",
                 "digitalItemType" : "NFT",
                 "itemDescription" : "Ultra Rare Elite Peyton Manning Level 10",
                 "itemTitle" : "QB, Mint Condition, #468/500 From Founders Set",
@@ -6972,6 +6986,7 @@
         },
         "example" : {
           "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
+          "type" : "PERSON",
           "dateOfBirth" : "1988-09-28",
           "name" : {
             "firstName" : "test",
@@ -8067,7 +8082,8 @@
           "maximum" : 100,
           "minimum" : 0,
           "type" : "integer",
-          "format" : "int32"
+          "format" : "int32",
+          "default" : 20
         }
       },
       "externalPaymentInformationTypeParam" : {
@@ -8092,18 +8108,20 @@
           "maximum" : 9999999,
           "minimum" : 0,
           "type" : "integer",
-          "format" : "int32"
+          "format" : "int32",
+          "default" : 0
         }
       },
       "sortByParam" : {
         "name" : "sortBy",
         "in" : "query",
-        "description" : "Sort by field. If not specified, the default value is creation date.",
+        "description" : "Sort by field. If not specified, the default value is creationDate.",
         "required" : false,
         "style" : "form",
         "explode" : true,
         "schema" : {
-          "type" : "string"
+          "type" : "string",
+          "default" : "creationDate"
         }
       },
       "clientIdHeaderParam" : {

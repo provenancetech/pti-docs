@@ -1,9 +1,9 @@
 openapi: 3.0.2
 
 info:
-  title: Provenance technologies institutional API
+  title: Fiant institutional API
   version: 'master'
-  description: Provenance technologies institutional API specification
+  description: Fiant institutional API specification
   license:
     name: Private
     url: 'https://provenancetech.io'
@@ -135,10 +135,11 @@ paths:
         content:
           application/json:
             example:
+              id: ffffffff-2747-41c6-8748-559588fd3248
+              type: PERSON
               name:
                 firstName: John
                 lastName: Smith
-              id: 36dbe68f-2747-41c6-8748-559588fd3248
               dateOfBirth: '1988-09-28'
               emails:
                 - address: johnsmith@test.com
@@ -337,10 +338,11 @@ paths:
         content:
           application/json:
             example:
+              id: ffffffff-2747-41c6-8748-559588fd3248
+              type: PERSON
               name:
                 firstName: john
                 lastName: smith
-              id: 36dbe68f-2747-41c6-8748-559588fd3248
               dateOfBirth: '1988-09-28'
               emails:
                 - address: johnsmith@test.com
@@ -598,7 +600,7 @@ paths:
           application/json:
             example:
               type: WALLET
-              id: c8768405-6129-4bda-8a10-8ef234dff30e
+              id: ffffffff-6129-4bda-8a10-8ef234dff30e
               currency: ETH
               network: Ethereum
             schema:
@@ -1273,10 +1275,11 @@ paths:
                   amount: 90
                   currency: USD
               initiator:
+                id: 36dbe68f-2747-41c6-8748-559588fd3248
+                type: PERSON
                 name:
                   firstName: john
                   lastName: smith
-                id: 36dbe68f-2747-41c6-8748-559588fd3248
                 dateOfBirth: '1988-09-28'
                 emails:
                   - address: johnsmith@test.com
@@ -1446,10 +1449,11 @@ paths:
                   amount: 90
                   currency: USD
               initiator:
+                id: 36dbe68f-2747-41c6-8748-559588fd3248
+                type: PERSON
                 name:
                   firstName: john
                   lastName: smith
-                id: 36dbe68f-2747-41c6-8748-559588fd3248
                 dateOfBirth: '1988-09-28'
                 emails:
                   - address: johnsmith@test.com
@@ -1536,10 +1540,11 @@ paths:
                   amount: 90
                   currency: USD
               initiator:
+                id: 36dbe68f-2747-41c6-8748-559588fd3248
+                type: PERSON
                 name:
                   firstName: john
                   lastName: smith
-                id: 36dbe68f-2747-41c6-8748-559588fd3248
                 dateOfBirth: '1988-09-28'
                 emails:
                   - address: johnsmith@test.com
@@ -1636,10 +1641,11 @@ paths:
                 billingEmail: user@example.com
               type: DEPOSIT
               initiator:
+                id: 36dbe68f-2747-41c6-8748-559588fd3248
+                type: PERSON
                 name:
                   firstName: john
                   lastName: smith
-                id: 36dbe68f-2747-41c6-8748-559588fd3248
                 dateOfBirth: '1988-09-28'
                 emails:
                   - address: johnsmith@test.com
@@ -2754,12 +2760,12 @@ paths:
         content:
           application/json:
             example:
-              - itemReference: 57d6467c-6ae0-434f-8197-e7e9f86f2209
+              - itemReference: ffffffff-6ae0-434f-8197-e7e9f86f2209
                 digitalItemType: NFT
                 itemDescription: Ultra Rare Elite Russell Wilson Level 1
                 itemTitle: 'QB, Mint Condition, #467/500 From Founders Set '
                 itemUSDValue: 10
-              - itemReference: 57d6467c-6ae0-434f-8197-e7e9f86f2210
+              - itemReference: ffffffff-6ae0-434f-8197-e7e9f86f2210
                 digitalItemType: NFT
                 itemDescription: Ultra Rare Elite Peyton Manning Level 10
                 itemTitle: 'QB, Mint Condition, #468/500 From Founders Set'
@@ -4463,6 +4469,7 @@ components:
         - id
       example:
         id: 36dbe68f-2747-41c6-8748-559588fd3248
+        type: PERSON
         dateOfBirth: '1988-09-28'
         name:
           firstName: test
@@ -5460,9 +5467,10 @@ components:
       description: 'Page size for pagination. If not specified, the default value is 20.'
       schema:
         type: integer
+        format: int32
         minimum: 0
         maximum: 100
-        format: int32
+        default: 20
       in: query
       required: false
     externalPaymentInformationTypeParam:
@@ -5479,16 +5487,18 @@ components:
       description: 'Offset for pagination. If not specified, the default value is 0.'
       schema:
         type: integer
+        format: int32
         minimum: 0
         maximum: 9999999
-        format: int32
+        default: 0
       in: query
       required: false
     sortByParam:
       name: sortBy
-      description: 'Sort by field. If not specified, the default value is creation date.'
+      description: 'Sort by field. If not specified, the default value is creationDate.'
       schema:
         type: string
+        default: creationDate
       in: query
       required: false
     clientIdHeaderParam:
