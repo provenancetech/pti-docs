@@ -1320,11 +1320,11 @@
         }
       }
     },
-    "/users/{userId}/wallets/{walletId}/simulate-payment" : {
+    "/users/{userId}/wallets/{walletId}/simulate-deposit" : {
       "post" : {
         "tags" : [ "Wallets" ],
         "summary" : "Simulate a Deposit to a Wallet",
-        "operationId" : "simulateWalletPayment",
+        "operationId" : "simulateWalletDeposit",
         "parameters" : [ {
           "name" : "x-pti-client-id",
           "in" : "header",
@@ -1363,7 +1363,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/simulatePaymentRequest"
+                "$ref" : "#/components/schemas/simulateDepositRequest"
               },
               "example" : {
                 "amount" : 100,
@@ -5100,7 +5100,7 @@
           }
         }
       },
-      "simulatePaymentRequest" : {
+      "simulateDepositRequest" : {
         "type" : "object",
         "properties" : {
           "amount" : {

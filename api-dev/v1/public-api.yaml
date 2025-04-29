@@ -751,7 +751,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
-  '/users/{userId}/wallets/{walletId}/simulate-payment':
+  '/users/{userId}/wallets/{walletId}/simulate-deposit':
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
       - name: userId
@@ -769,7 +769,7 @@ paths:
         in: path
         required: true
     post:
-      operationId: simulateWalletPayment
+      operationId: simulateWalletDeposit
       summary: Simulate a Deposit to a Wallet
       tags:
         - Wallets
@@ -782,7 +782,7 @@ paths:
               amount: 100
               paymentMethodType: ACH
             schema:
-              $ref: '#/components/schemas/simulatePaymentRequest'
+              $ref: '#/components/schemas/simulateDepositRequest'
       responses:
         '201':
           description: >-
@@ -2825,7 +2825,7 @@ components:
           type: boolean
           default: true
 
-    simulatePaymentRequest:
+    simulateDepositRequest:
       type: object
       properties:
         amount:
