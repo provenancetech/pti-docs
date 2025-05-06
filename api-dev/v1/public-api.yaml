@@ -3356,10 +3356,7 @@ components:
           type: string
           example: "{\"status\":\"SETTLED\",\"exchangeInfo\":{\"amountDebited\":150.0,\"amountCredited\":1.5},\"providerName\":\"UNKNOWN\"}"
         providerName:
-          enum:
-            - PTI_LEDGER
-            - UNKNOWN
-          type: string
+          $ref: '#/components/schemas/providerName'
         feedback:
           enum:
             - SETTLED
@@ -4892,6 +4889,13 @@ components:
       type: string
       maxLength: 64
       pattern: '^[A-Za-z0-9\-_]{3,64}$'
+      description: >
+        A provider identifier. Can be any alphanumeric string (3-64 chars),
+        but the following are commonly used values:
+        PTI_LEDGER, UNKNOWN, WORLDPAY, TRMLABS, SARDINE, CIRCLE, TABAPAY,
+        AU10TIX, OPEN_SANCTION, COINBASE_PRIME, COINBASE_EXCHANGE, CHECKOUT,
+        FORTE, M_AND_T, CROSS_RIVER_BANK, FIREBLOCKS, BANKING
+        example: PTI_LEDGER
     transactionAssessStatus:
       type: string
       additionalProperties: false
