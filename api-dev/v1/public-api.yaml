@@ -936,6 +936,72 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
+  '/users/{userId}/wallets/{walletId}/wire-instructions':
+    summary: Generate wire instructions for a wallet
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+      - name: userId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+      - name: walletId
+        schema:
+          type: string
+          pattern: '^[a-z0-9_-]{3,255}$'
+          maxLength: 255
+        in: path
+        required: true
+    post:
+      operationId: generateWireInstructions
+      summary: Generate wire instructions for a Wallet
+      tags:
+        - Wallets
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: >-
+            Successfully created a Wallet wire instructions.
+            The Wallet with its deposit instruction is returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/wallet'
+        '400':
+          description: Missing User or Bank Account Information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidRequestError'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '403':
+          description: forbidden
+        '404':
+          description: User or Wallet not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
   '/users/{userId}/wallets/{walletId}/history':
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'

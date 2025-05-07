@@ -1625,6 +1625,115 @@
         }
       }
     },
+    "/users/{userId}/wallets/{walletId}/wire-instructions" : {
+      "summary" : "Generate wire instructions for a wallet",
+      "post" : {
+        "tags" : [ "Wallets" ],
+        "summary" : "Generate wire instructions for a Wallet",
+        "operationId" : "generateWireInstructions",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        }, {
+          "name" : "walletId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Successfully created a Wallet wire instructions. The Wallet with its deposit instruction is returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/wallet"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Missing User or Bank Account Information",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/invalidRequestError"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "forbidden"
+          },
+          "404" : {
+            "description" : "User or Wallet not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/users/{userId}/wallets/{walletId}/history" : {
       "get" : {
         "tags" : [ "Wallets" ],
