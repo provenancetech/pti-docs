@@ -5431,6 +5431,8 @@ components:
         - TRX
         - LTC
         - ADA
+        - XRP
+        - XLM
     
     blockChainEnum:
       type: string
@@ -5442,6 +5444,8 @@ components:
         - TRON
         - LITECOIN
         - CARDANO
+        - RIPPLE
+        - STELLAR
     
     currencyType:
       type: string
