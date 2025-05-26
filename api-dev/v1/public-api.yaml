@@ -781,6 +781,7 @@ paths:
             example:
               amount: 100
               paymentMethodType: ACH
+              status: COMPLETED
             schema:
               $ref: '#/components/schemas/simulateDepositRequest'
       responses:
@@ -2900,6 +2901,14 @@ components:
           maximum: 999999
         paymentMethodType:
           $ref: '#/components/schemas/paymentMethodType'
+        status:
+          type: string
+          maxLength: 255
+          pattern: '^[ -~]*$'
+        requestId:
+          type: string
+          maxLength: 255
+          pattern: '^[ -~]*$'
     address:
       type: object
       additionalProperties: false

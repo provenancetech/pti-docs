@@ -1367,7 +1367,8 @@
               },
               "example" : {
                 "amount" : 100,
-                "paymentMethodType" : "ACH"
+                "paymentMethodType" : "ACH",
+                "status" : "COMPLETED"
               }
             }
           },
@@ -5219,6 +5220,16 @@
           },
           "paymentMethodType" : {
             "$ref" : "#/components/schemas/paymentMethodType"
+          },
+          "status" : {
+            "maxLength" : 255,
+            "pattern" : "^[ -~]*$",
+            "type" : "string"
+          },
+          "requestId" : {
+            "maxLength" : 255,
+            "pattern" : "^[ -~]*$",
+            "type" : "string"
           }
         }
       },
