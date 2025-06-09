@@ -2356,13 +2356,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
     delete:
-      operationId: deleteTransaction
-      summary: Delete a transaction
+      operationId: cancelTransaction
+      summary: Cancel a transaction
+      description: This endpoint is used to attempt a Transaction cancellation. If the call is successful, it means we were able to cancel the Transaction
       tags:
         - Transactions
       responses:
         '204':
           description: NO CONTENT
+        '400':
+          description: Invalid fields on Transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidRequestError'
         '401':
           description: unauthorized
           content:
@@ -3237,6 +3244,7 @@ components:
         - EXCEEDED_ACH_PULL_DEPOSIT_LIMIT
         - USER_EXCEEDED_ACH_PULL_DEPOSIT_LIMIT
         - MAXIMUM_ACH_PULL_LIMIT_EXCEEDED
+        - TRANSACTION_CANNOT_BE_CANCELED
         - BANK_ONLY
         - MISSING_EMAIL_ADDRESS
         - MISSING_BANK_ACCOUNT_INFORMATION
@@ -3387,6 +3395,7 @@ components:
             EXCEEDED_ACH_PULL_DEPOSIT_LIMIT(3018)
             EXCEEDED_ACH_PULL_DEPOSIT_LIMIT(3019)
             MAXIMUM_ACH_PULL_LIMIT_EXCEEDED(3020)
+            TRANSACTION_CANNOT_BE_CANCELED(3021)
             BANK_ONLY(4000)
             MISSING_EMAIL_ADDRESS(4001)
             MISSING_BANK_ACCOUNT_INFORMATION(4002)
