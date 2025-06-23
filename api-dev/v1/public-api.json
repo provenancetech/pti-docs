@@ -8050,11 +8050,11 @@
       },
       "currencyEnum" : {
         "type" : "string",
-        "enum" : [ "BTC", "ETH", "SOL", "POL", "USDC", "USD", "TRX", "LTC", "ADA", "XRP", "XLM" ]
+        "enum" : [ "BTC", "ETH", "SOL", "POL", "USDC", "USD", "TRX", "LTC", "ADA", "XRP", "XLM", "DOGE", "TON", "AVAX", "HBAR" ]
       },
       "blockChainEnum" : {
         "type" : "string",
-        "enum" : [ "ETHEREUM", "BITCOIN", "SOLANA", "POLYGON", "TRON", "LITECOIN", "CARDANO", "RIPPLE", "STELLAR" ]
+        "enum" : [ "ETHEREUM", "BITCOIN", "SOLANA", "POLYGON", "TRON", "LITECOIN", "CARDANO", "RIPPLE", "STELLAR", "DOGECOIN", "AVALANCHE", "TONCOIN", "HEDERA" ]
       },
       "currencyType" : {
         "type" : "string",
