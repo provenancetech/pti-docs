@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Box, CircularProgress, Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import { create } from "zustand";
 import styled from "styled-components";
@@ -11,44 +11,47 @@ import { showErrorSnackAlert } from "../snackAlert/SnackAlert";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 
 const CloseButton = styled(IconButton)`
-  &.MuiIconButton-root {
-    margin: 12px 16px;
-  }
+    &.MuiIconButton-root {
+        margin: 12px 16px;
+    }
 `;
 
 const DialogContentStyled = styled(DialogContent)`
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 `;
 
-const IFrame = styled(Box)`
-  align-items: center;
-  background-color: #f2f2f2;
-  display: flex;
-  height:100%;
-  justify-content: center;
-  min-width: 550px;
+const IFrameContainer = styled(Box)`
+    align-items: center;
+    background-color: #f2f2f2;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    min-width: 550px;
 `;
 
 const useSimpleDialogStore = create((set) => ({
   open: false,
   sdkInit: false,
+  sdkLoading: true,
   type: "",
   userId: "",
   requestId: "",
   amount: "",
   scenarioId: "",
   lang: "",
-  closeHandler: () => set({ open: false }),
-  setSdkInit: (value) => set({ sdkInit: value }),
+  closeHandler: () => set({open: false}),
+  setSdkInit: (value) => set({sdkInit: value}),
+  setSdkLoading: (value) => set({sdkLoading: value}),
 }));
 
 export const openSimpleDialog = (type, userId, requestId, amount, scenarioId, lang) => {
   useSimpleDialogStore.setState({
     open: true,
     sdkInit: false,
+    sdkLoading: true,
     type,
     userId,
     requestId,
@@ -59,16 +62,36 @@ export const openSimpleDialog = (type, userId, requestId, amount, scenarioId, la
 };
 
 const SimpleDialog = () => {
-  const { open, sdkInit, type, userId, requestId, amount, scenarioId, lang, closeHandler, setSdkInit } =
-    useSimpleDialogStore();
+  const {
+    open,
+    sdkInit,
+    sdkLoading,
+    type,
+    userId,
+    requestId,
+    amount,
+    scenarioId,
+    lang,
+    closeHandler,
+    setSdkInit,
+    setSdkLoading
+  } = useSimpleDialogStore();
+  const iframeContainerRef = useRef(null);
 
-  const iframeRef = (event) => {
-    if (event && !sdkInit && open) {
+  useEffect(() => {
+    if (!open || sdkInit) return;
+
+    const timeoutId = setTimeout(() => {
+      const element = iframeContainerRef.current;
+      if (!element) return;
+      console.log("Initialise PTI Iframe SDK");
+      setSdkInit(true);
+
       const params = {
         amount,
         lang,
-        metaInformation: { var3: "value3", var4: "value4" },
-        parentElement: document.getElementById(event.id),
+        metaInformation: {var3: "value3", var4: "value4"},
+        parentElement: element,
         requestId,
         userId,
         usdValue: amount,
@@ -83,10 +106,12 @@ const SimpleDialog = () => {
 
       if (Object.values(actionType).includes(type)) params.type = type;
       PTI.form(params)
-        .then(() => setSdkInit(true))
+        .then(() => setSdkLoading(false))
         .catch(() => showErrorSnackAlert(`Error while loading the ${convertConstToStr(type)} form`));
-    }
-  };
+    }, 0);
+
+    return () => clearTimeout(timeoutId);
+  }, [open, sdkInit]);
 
   return (
     <Dialog fullScreen={true} open={open}>
@@ -95,19 +120,19 @@ const SimpleDialog = () => {
           <Box>
             {convertConstToStr(type)} - {`${amount}$`}
           </Box>
-          <FieldCopy label={"Client Id:"} value={ptiConfig.clientId} variant={"outlined"} style={{ width: "340px" }} />
-          <FieldCopy label={"User Id:"} value={userId} variant={"outlined"} style={{ width: "340px" }} />
-          <FieldCopy label={"Request Id:"} value={requestId} variant={"outlined"} style={{ width: "340px" }} />
-          <FieldCopy label={"Scenario Id:"} value={scenarioId} variant={"outlined"} style={{ width: "200px" }} />
+          <FieldCopy label={"Client Id:"} value={ptiConfig.clientId} variant={"outlined"} style={{width: "340px"}}/>
+          <FieldCopy label={"User Id:"} value={userId} variant={"outlined"} style={{width: "340px"}}/>
+          <FieldCopy label={"Request Id:"} value={requestId} variant={"outlined"} style={{width: "340px"}}/>
+          <FieldCopy label={"Scenario Id:"} value={scenarioId} variant={"outlined"} style={{width: "200px"}}/>
         </DialogTitle>
         <CloseButton onClick={closeHandler}>
-          <CloseOutlinedIcon />
+          <CloseOutlinedIcon/>
         </CloseButton>
       </Box>
       <DialogContentStyled>
-        <IFrame id={`${type}PlaceHolder`} ref={iframeRef}>
-          {!sdkInit && <CircularProgress />}
-        </IFrame>
+        <IFrameContainer id={`${type}PlaceHolder`} ref={iframeContainerRef}>
+          {sdkLoading && <CircularProgress/>}
+        </IFrameContainer>
       </DialogContentStyled>
     </Dialog>
   );

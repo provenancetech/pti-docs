@@ -24,6 +24,12 @@
       window.ptiAsyncInit = function() {
         PTI.init(ptiConfig);
       }
+
+      window.addEventListener('error', (event) => {
+        if (event.message.includes('ResizeObserver loop')) {
+          event.stopImmediatePropagation();
+        }
+      });
     </script>
   </body>
 </html>
