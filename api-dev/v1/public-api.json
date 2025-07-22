@@ -4428,6 +4428,130 @@
         }
       }
     },
+    "/wallets/" : {
+      "get" : {
+        "tags" : [ "Marketplace" ],
+        "summary" : "Retrieve a paged list of ids and links to wallets belonging to your users",
+        "operationId" : "searchClientWallets",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Offset for pagination. If not specified, the default value is 0.",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "maximum" : 9999999,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 0
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Page size for pagination. If not specified, the default value is 20.",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "maximum" : 100,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 20
+          }
+        }, {
+          "name" : "sortBy",
+          "in" : "query",
+          "description" : "Sort by field. If not specified, the default value is creationDate.",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "creationDate"
+          }
+        }, {
+          "name" : "sortDirection",
+          "in" : "query",
+          "description" : "Sort direction field. ASC or DESC, default value is DESC.",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "DESC"
+          }
+        }, {
+          "name" : "filters",
+          "in" : "query",
+          "description" : "Allows you to apply different filters on your users Wallets.\nbalance: Filter for wallets with an available balance above a numerical value. currency: Filter for wallets matching given currency. network: Filter for wallets belonging to the specified network. userId: Filter on a list of specific users in a comma separated value format.\nMultiple different filters can be used and acts like an AND between them.\nExample: filters=userIds:123,324;currency:ETH;network:Ethereum Should return all wallets belonging to users 123 or 324 having network Ethereum and currency ETH",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "maxLength" : 255,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/objectReferencePage"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/transactions/purchases" : {
       "post" : {
         "tags" : [ "Marketplace" ],
@@ -8253,6 +8377,18 @@
         "schema" : {
           "type" : "string",
           "default" : "creationDate"
+        }
+      },
+      "sortDirectionParam" : {
+        "name" : "sortDirection",
+        "in" : "query",
+        "description" : "Sort direction field. ASC or DESC, default value is DESC.",
+        "required" : false,
+        "style" : "form",
+        "explode" : true,
+        "schema" : {
+          "type" : "string",
+          "default" : "DESC"
         }
       },
       "clientIdHeaderParam" : {

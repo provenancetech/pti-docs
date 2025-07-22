@@ -2488,6 +2488,65 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
 
   # Marketplace
+  /wallets/:
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+    get:
+      operationId: searchClientWallets
+      parameters:
+        - $ref: '#/components/parameters/offsetParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/sortByParam'
+        - $ref: '#/components/parameters/sortDirectionParam'
+        - name: filters
+          schema:
+            type: string
+            maxLength: 255
+          description: >-
+              Allows you to apply different filters on your users Wallets.
+              
+              balance: Filter for wallets with an available balance above a numerical value.
+              currency: Filter for wallets matching given currency.
+              network: Filter for wallets belonging to the specified network.
+              userId: Filter on a list of specific users in a comma separated value format.
+              
+              Multiple different filters can be used and acts like an AND between them.
+            
+              Example: filters=userIds:123,324;currency:ETH;network:Ethereum
+              Should return all wallets belonging to users 123 or 324 having network Ethereum and currency ETH
+              
+          in: query
+          required: false
+      tags:
+        - Marketplace
+      summary: 'Retrieve a paged list of ids and links to wallets belonging to your users'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/objectReferencePage'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
   /transactions/purchases:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
@@ -5606,6 +5665,14 @@ components:
       schema:
         type: string
         default: creationDate
+      in: query
+      required: false
+    sortDirectionParam:
+      name: sortDirection
+      description: 'Sort direction field. ASC or DESC, default value is DESC.'
+      schema:
+        type: string
+        default: DESC
       in: query
       required: false
     clientIdHeaderParam:
