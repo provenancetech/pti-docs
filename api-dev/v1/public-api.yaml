@@ -3282,6 +3282,7 @@ components:
         - UNSUPPORTED_DEPOSIT_ADDRESS
         - INVALID_WALLET_PROVIDER
         - INVALID_WALLET_PROVIDER_CONFIGURATION
+        - INVALID_ACH_PROVIDER_CONFIGURATION
         - NOT_ENOUGH_FUNDS
         - INVALID_ASSET_OWNERSHIP
         - FEES_WALLET_NOT_FOUND
@@ -3434,6 +3435,7 @@ components:
             UNSUPPORTED_DEPOSIT_ADDRESS(2006)
             INVALID_WALLET_PROVIDER(2007)
             INVALID_WALLET_PROVIDER_CONFIGURATION(2008)
+            INVALID_ACH_PROVIDER_CONFIGURATION(2009)
             NOT_ENOUGH_FUNDS(3000)
             INVALID_ASSET_OWNERSHIP(3001)
             FEES_WALLET_NOT_FOUND(3002)
@@ -3894,6 +3896,9 @@ components:
       required:
         - paymentMethodType
       properties:
+        sameDayAch:
+          type: boolean
+          description: Used to identify whether this ACH will be a same day (true) or standard (false) ACH.
         paymentMethodType:
           $ref: '#/components/schemas/paymentMethodType'
         currency:
