@@ -1,13 +1,13 @@
 {
   "openapi" : "3.0.2",
   "info" : {
-    "title" : "Provenance technologies institutional API",
-    "description" : "Provenance technologies institutional API specification",
+    "title" : "Fiant institutional API",
+    "description" : "Fiant institutional API specification",
     "license" : {
       "name" : "Private",
       "url" : "https://provenancetech.io"
     },
-    "version" : "1.0.189"
+    "version" : "1.0.196"
   },
   "servers" : [ {
     "url" : "https://api.staging.fiant.io/v1"
@@ -18,6 +18,21 @@
     "signature" : [ ]
   }, {
     "userToken" : [ ]
+  } ],
+  "tags" : [ {
+    "name" : "Authentication"
+  }, {
+    "name" : "Users"
+  }, {
+    "name" : "Wallets"
+  }, {
+    "name" : "Payment Information"
+  }, {
+    "name" : "Transaction Assessment"
+  }, {
+    "name" : "Transactions"
+  }, {
+    "name" : "Marketplace"
   } ],
   "paths" : {
     "/auth/jwt" : {
@@ -100,75 +115,6 @@
         }
       }
     },
-    "/assets" : {
-      "get" : {
-        "tags" : [ "Wallets" ],
-        "summary" : "Get the list of the supported Assets",
-        "operationId" : "getListOfAssets",
-        "parameters" : [ {
-          "name" : "x-pti-client-id",
-          "in" : "header",
-          "description" : "Client ID provided to you during onboarding.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "maxItems" : 100,
-                  "type" : "array",
-                  "example" : [ {
-                    "currency" : "BTC",
-                    "networks" : [ "BITCOIN" ],
-                    "type" : "CRYPTO"
-                  }, {
-                    "currency" : "USDC",
-                    "networks" : [ "ETHEREUM", "POLYGON", "SOLANA" ],
-                    "type" : "CRYPTO"
-                  }, {
-                    "currency" : "USD",
-                    "type" : "FIAT"
-                  } ],
-                  "items" : {
-                    "$ref" : "#/components/schemas/currencyAsset"
-                  }
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "unauthorized",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "default" : {
-            "description" : "unexpected error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/users" : {
       "get" : {
         "tags" : [ "Users" ],
@@ -195,7 +141,8 @@
             "maximum" : 9999999,
             "minimum" : 0,
             "type" : "integer",
-            "format" : "int32"
+            "format" : "int32",
+            "default" : 0
           }
         }, {
           "name" : "size",
@@ -208,17 +155,19 @@
             "maximum" : 100,
             "minimum" : 0,
             "type" : "integer",
-            "format" : "int32"
+            "format" : "int32",
+            "default" : 20
           }
         }, {
           "name" : "sortBy",
           "in" : "query",
-          "description" : "Sort by field. If not specified, the default value is creation date.",
+          "description" : "Sort by field. If not specified, the default value is creationDate.",
           "required" : false,
           "style" : "form",
           "explode" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "default" : "creationDate"
           }
         } ],
         "responses" : {
@@ -353,11 +302,12 @@
                 "$ref" : "#/components/schemas/oneOfUserSubTypes"
               },
               "example" : {
+                "id" : "ffffffff-2747-41c6-8748-559588fd3248",
+                "type" : "PERSON",
                 "name" : {
                   "firstName" : "John",
                   "lastName" : "Smith"
                 },
-                "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
                 "dateOfBirth" : "1988-09-28",
                 "emails" : [ {
                   "address" : "johnsmith@test.com",
@@ -591,6 +541,1292 @@
           },
           "404" : {
             "description" : "User not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/assessments" : {
+      "post" : {
+        "tags" : [ "Users" ],
+        "summary" : "Create a new User Assessment",
+        "description" : "This endpoint is used to assess a User. Depending on what information is available on the User,  a tier level will be assigned to the assessment, the higher the level is, the more permission he will get on your platform.  Please refer to PTI documentation for more information on the tier levels configuration and scenarios.",
+        "operationId" : "startUserAssessment",
+        "parameters" : [ {
+          "name" : "x-pti-request-id",
+          "in" : "header",
+          "description" : "Unique identifier of the request. This ID must be provided and stored by the client of this API at the creation of a transaction. This ID is attached to all PTI internal operations as well as the webhook calls. This ID is required to post feedback about a transaction and get support from PTI for a problem on a transaction. Creating two transactions having the same requestId is not allowed.\n",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-scenario-id",
+          "in" : "header",
+          "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-session-id",
+          "in" : "header",
+          "description" : "Session ID associated to a UI session for a specific User. Should match the value passed to the PTI SDK at initialization.",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-disable-webhook",
+          "in" : "header",
+          "description" : "Set to true to disable webhook calls for this request.",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/kycRequest"
+              },
+              "example" : {
+                "id" : "ffffffff-2747-41c6-8748-559588fd3248",
+                "type" : "PERSON",
+                "name" : {
+                  "firstName" : "john",
+                  "lastName" : "smith"
+                },
+                "dateOfBirth" : "1988-09-28",
+                "emails" : [ {
+                  "address" : "johnsmith@test.com",
+                  "default" : true
+                } ],
+                "phones" : [ {
+                  "number" : "12345678901",
+                  "type" : "WORK",
+                  "default" : true
+                } ],
+                "addresses" : [ {
+                  "streetAddress" : "1, main street",
+                  "city" : "New Hampshire",
+                  "postalCode" : "10005",
+                  "stateCode" : "US-NH",
+                  "country" : "US",
+                  "default" : true
+                } ],
+                "sourceOfFunds" : "Creator earnings"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "started",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/objectReference"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "User invalid or missing fields",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/invalidRequestError"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Forbidden. Happens when the targeted User is not active.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "422" : {
+            "description" : "One of these 2 cases: More information about the User is needed in order to approve the Transaction. There is no approved assessment for this User that enables him to perform the operation.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        },
+        "callbacks" : {
+          "userAssessUpdate" : {
+            "{$url}" : {
+              "post" : {
+                "summary" : "Endpoint to receive User Assessments updates",
+                "requestBody" : {
+                  "content" : {
+                    "application/json" : {
+                      "schema" : {
+                        "$ref" : "#/components/schemas/userAssessStatusObject"
+                      }
+                    }
+                  },
+                  "required" : true
+                },
+                "responses" : {
+                  "200" : {
+                    "description" : "Your server returns this code if it accepts the callback"
+                  },
+                  "422" : {
+                    "description" : "Your server returns an error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/assessments" : {
+      "get" : {
+        "tags" : [ "Users" ],
+        "summary" : "Get a User’s latest Assessment",
+        "operationId" : "getLastKyc",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/userAssessStatusObject"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/documents" : {
+      "post" : {
+        "tags" : [ "Users" ],
+        "summary" : "Upload a User’s Document (Passport, License, etc)",
+        "operationId" : "uploadDocument",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "multipart/form-data" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/body"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Successfully uploaded the document"
+          },
+          "400" : {
+            "description" : "Missing required fields on document",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/invalidRequestError"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets" : {
+      "get" : {
+        "tags" : [ "Wallets" ],
+        "summary" : "Get the list of the supported Assets",
+        "operationId" : "getListOfAssets",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "maxItems" : 100,
+                  "type" : "array",
+                  "example" : [ {
+                    "currency" : "BTC",
+                    "networks" : [ "BITCOIN" ],
+                    "type" : "CRYPTO"
+                  }, {
+                    "currency" : "USDC",
+                    "networks" : [ "ETHEREUM", "POLYGON", "SOLANA" ],
+                    "type" : "CRYPTO"
+                  }, {
+                    "currency" : "USD",
+                    "type" : "FIAT"
+                  } ],
+                  "items" : {
+                    "$ref" : "#/components/schemas/currencyAsset"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/wallets" : {
+      "get" : {
+        "tags" : [ "Wallets" ],
+        "summary" : "Get a list of a User's wallets",
+        "operationId" : "getWallets",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "maxItems" : 100,
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/wallet"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Wallets" ],
+        "summary" : "Create a Wallet for a User",
+        "operationId" : "createWallet",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/walletCreation"
+              },
+              "example" : {
+                "type" : "WALLET",
+                "id" : "ffffffff-6129-4bda-8a10-8ef234dff30e",
+                "currency" : "ETH",
+                "network" : "Ethereum"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Successfully created a Wallet",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/wallet"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Missing required fields on Wallet",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/invalidRequestError"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/wallets/{walletId}" : {
+      "summary" : "Delete a Wallet",
+      "get" : {
+        "tags" : [ "Wallets" ],
+        "summary" : "Get a Wallet by ID",
+        "operationId" : "getWallet",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        }, {
+          "name" : "walletId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/wallet"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Wallets" ],
+        "summary" : "Delete a Wallet",
+        "operationId" : "deleteWallet",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        }, {
+          "name" : "walletId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/invalidRequestError"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User or Wallet not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/wallets/{walletId}/simulate-deposit" : {
+      "post" : {
+        "tags" : [ "Wallets" ],
+        "summary" : "Simulate a Deposit to a Wallet",
+        "operationId" : "simulateWalletDeposit",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        }, {
+          "name" : "walletId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "amount of the payment and type of payment method",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/simulateDepositRequest"
+              },
+              "example" : {
+                "amount" : 100,
+                "paymentMethodType" : "ACH",
+                "status" : "COMPLETED"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Successfully created a simulated payment to the Wallet."
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "forbidden"
+          },
+          "404" : {
+            "description" : "User or Wallet not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/wallets/{walletId}/deposit-address" : {
+      "summary" : "Generate a Wallet’s Deposit Address",
+      "post" : {
+        "tags" : [ "Wallets" ],
+        "summary" : "Create a crypto deposit address",
+        "operationId" : "createWalletDepositAddress",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        }, {
+          "name" : "walletId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "Deposit address request parameters",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/depositAddressRequest"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Successfully created a crypto deposit address. The Wallet with its deposit instruction is returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/wallet"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "forbidden"
+          },
+          "404" : {
+            "description" : "User or Wallet not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/wallets/{walletId}/virtual-bank-account" : {
+      "summary" : "Generate a Wallet’s Virtual Bank Account",
+      "post" : {
+        "tags" : [ "Wallets" ],
+        "summary" : "Create a virtual bank account for a Wallet",
+        "operationId" : "createWalletVirtualBankAccount",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        }, {
+          "name" : "walletId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Successfully created a Wallet virtual bank account. The Wallet with its deposit instruction is returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/wallet"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Missing User or Bank Account Information",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/invalidRequestError"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "forbidden"
+          },
+          "404" : {
+            "description" : "User or Wallet not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/wallets/{walletId}/wire-instructions" : {
+      "summary" : "Generate wire instructions for a wallet",
+      "post" : {
+        "tags" : [ "Wallets" ],
+        "summary" : "Generate wire instructions for a Wallet",
+        "operationId" : "generateWireInstructions",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        }, {
+          "name" : "walletId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Successfully created a Wallet wire instructions. The Wallet with its deposit instruction is returned",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/wallet"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Missing User or Bank Account Information",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/invalidRequestError"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "forbidden"
+          },
+          "404" : {
+            "description" : "User or Wallet not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/wallets/{walletId}/history" : {
+      "get" : {
+        "tags" : [ "Wallets" ],
+        "summary" : "Retrieve the balance history of a Wallet",
+        "operationId" : "getWalletHistory",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        }, {
+          "name" : "walletId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "maxLength" : 255,
+            "pattern" : "^[a-z0-9_-]{3,255}$",
+            "type" : "string"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Offset for pagination. If not specified, the default value is 0.",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "maximum" : 9999999,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 0
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Page size for pagination. If not specified, the default value is 20.",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "maximum" : 100,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 20
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/walletHistoryPage"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "forbidden"
+          },
+          "404" : {
+            "description" : "User or Wallet not found",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -1073,441 +2309,6 @@
         }
       }
     },
-    "/transactions/validations" : {
-      "post" : {
-        "tags" : [ "Transaction Assessment" ],
-        "summary" : "Validate that a User is allowed to perform a Transaction",
-        "operationId" : "transactionInformationAssessment",
-        "parameters" : [ {
-          "name" : "x-pti-client-id",
-          "in" : "header",
-          "description" : "Client ID provided to you during onboarding.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "x-pti-request-id",
-          "in" : "header",
-          "description" : "Unique identifier of the request. This ID must be provided and stored by the client of this API at the creation of a transaction. This ID is attached to all PTI internal operations as well as the webhook calls. This ID is required to post feedback about a transaction and get support from PTI for a problem on a transaction. Creating two transactions having the same requestId is not allowed.\n",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "x-pti-scenario-id",
-          "in" : "header",
-          "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "x-pti-session-id",
-          "in" : "header",
-          "description" : "Session ID associated to a UI session for a specific User. Should match the value passed to the PTI SDK at initialization.",
-          "required" : false,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "x-pti-disable-webhook",
-          "in" : "header",
-          "description" : "Set to true to disable webhook calls for this request.",
-          "required" : false,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "type" : "boolean"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/oneOfTransactionSubTypes"
-              },
-              "example" : {
-                "sourceMethod" : {
-                  "paymentMethodType" : "CREDIT_CARD",
-                  "paymentInformation" : {
-                    "id" : "4b573a86-fd3f-475d-a90b-3658f2e79719"
-                  },
-                  "billingEmail" : "user@example.com"
-                },
-                "destinationMethod" : {
-                  "paymentMethodType" : "WALLET",
-                  "paymentInformation" : {
-                    "id" : "3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82"
-                  },
-                  "billingEmail" : "user@example.com"
-                },
-                "type" : "DEPOSIT",
-                "transactionTotal" : {
-                  "fee" : {
-                    "amount" : 10,
-                    "currency" : "USD"
-                  },
-                  "total" : {
-                    "amount" : 100,
-                    "currency" : "USD"
-                  },
-                  "subtotal" : {
-                    "amount" : 90,
-                    "currency" : "USD"
-                  }
-                },
-                "initiator" : {
-                  "name" : {
-                    "firstName" : "john",
-                    "lastName" : "smith"
-                  },
-                  "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
-                  "dateOfBirth" : "1988-09-28",
-                  "emails" : [ {
-                    "address" : "johnsmith@test.com",
-                    "default" : true
-                  } ],
-                  "phones" : [ {
-                    "number" : "12345678901",
-                    "type" : "WORK",
-                    "default" : true
-                  } ],
-                  "addresses" : [ {
-                    "streetAddress" : "1, main street",
-                    "city" : "New Hampshire",
-                    "postalCode" : "10005",
-                    "stateCode" : "US-NH",
-                    "country" : "US",
-                    "default" : true
-                  } ],
-                  "sourceOfFunds" : "Creator earnings"
-                },
-                "transactionGroupId" : "c8d8ed2a-33df-463b-95af-e59ff6e16414",
-                "usdValue" : 100,
-                "amount" : 100,
-                "date" : "2024-12-13T18:46:40.666+0000"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "unauthorized",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "User not found",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "default" : {
-            "description" : "unexpected error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/users/assessments" : {
-      "post" : {
-        "tags" : [ "Users" ],
-        "summary" : "Create a new User Assessment",
-        "description" : "This endpoint is used to assess a User. Depending on what information is available on the User,  a tier level will be assigned to the assessment, the higher the level is, the more permission he will get on your platform.  Please refer to PTI documentation for more information on the tier levels configuration and scenarios.",
-        "operationId" : "startUserAssessment",
-        "parameters" : [ {
-          "name" : "x-pti-request-id",
-          "in" : "header",
-          "description" : "Unique identifier of the request. This ID must be provided and stored by the client of this API at the creation of a transaction. This ID is attached to all PTI internal operations as well as the webhook calls. This ID is required to post feedback about a transaction and get support from PTI for a problem on a transaction. Creating two transactions having the same requestId is not allowed.\n",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "x-pti-scenario-id",
-          "in" : "header",
-          "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "x-pti-session-id",
-          "in" : "header",
-          "description" : "Session ID associated to a UI session for a specific User. Should match the value passed to the PTI SDK at initialization.",
-          "required" : false,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "x-pti-disable-webhook",
-          "in" : "header",
-          "description" : "Set to true to disable webhook calls for this request.",
-          "required" : false,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "type" : "boolean"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/kycRequest"
-              },
-              "example" : {
-                "name" : {
-                  "firstName" : "john",
-                  "lastName" : "smith"
-                },
-                "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
-                "dateOfBirth" : "1988-09-28",
-                "emails" : [ {
-                  "address" : "johnsmith@test.com",
-                  "default" : true
-                } ],
-                "phones" : [ {
-                  "number" : "12345678901",
-                  "type" : "WORK",
-                  "default" : true
-                } ],
-                "addresses" : [ {
-                  "streetAddress" : "1, main street",
-                  "city" : "New Hampshire",
-                  "postalCode" : "10005",
-                  "stateCode" : "US-NH",
-                  "country" : "US",
-                  "default" : true
-                } ],
-                "sourceOfFunds" : "Creator earnings"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "201" : {
-            "description" : "started",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/objectReference"
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "User invalid or missing fields",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/invalidRequestError"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "unauthorized",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "403" : {
-            "description" : "Forbidden. Happens when the targeted User is not active.",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "User not found",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "422" : {
-            "description" : "One of these 2 cases: More information about the User is needed in order to approve the Transaction. There is no approved assessment for this User that enables him to perform the operation.",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "default" : {
-            "description" : "unexpected error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          }
-        },
-        "callbacks" : {
-          "userAssessUpdate" : {
-            "{$url}" : {
-              "post" : {
-                "summary" : "Endpoint to receive User Assessments updates",
-                "requestBody" : {
-                  "content" : {
-                    "application/json" : {
-                      "schema" : {
-                        "$ref" : "#/components/schemas/userAssessStatusObject"
-                      }
-                    }
-                  },
-                  "required" : true
-                },
-                "responses" : {
-                  "200" : {
-                    "description" : "Your server returns this code if it accepts the callback"
-                  },
-                  "422" : {
-                    "description" : "Your server returns an error"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/users/{userId}/assessments" : {
-      "get" : {
-        "tags" : [ "Users" ],
-        "summary" : "Get a User’s latest Assessment",
-        "operationId" : "getLastKyc",
-        "parameters" : [ {
-          "name" : "x-pti-client-id",
-          "in" : "header",
-          "description" : "Client ID provided to you during onboarding.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "userId",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "maxLength" : 255,
-            "pattern" : "^[a-z0-9_-]{3,255}$",
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/userAssessStatusObject"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "unauthorized",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "User not found",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "default" : {
-            "description" : "unexpected error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/transactions/assessments" : {
       "post" : {
         "tags" : [ "Transaction Assessment" ],
@@ -1602,11 +2403,12 @@
                   }
                 },
                 "initiator" : {
+                  "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
+                  "type" : "PERSON",
                   "name" : {
                     "firstName" : "john",
                     "lastName" : "smith"
                   },
-                  "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
                   "dateOfBirth" : "1988-09-28",
                   "emails" : [ {
                     "address" : "johnsmith@test.com",
@@ -1812,6 +2614,181 @@
         }
       }
     },
+    "/transactions/validations" : {
+      "post" : {
+        "tags" : [ "Transaction Assessment" ],
+        "summary" : "Validate that a User is allowed to perform a Transaction",
+        "operationId" : "transactionInformationAssessment",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-request-id",
+          "in" : "header",
+          "description" : "Unique identifier of the request. This ID must be provided and stored by the client of this API at the creation of a transaction. This ID is attached to all PTI internal operations as well as the webhook calls. This ID is required to post feedback about a transaction and get support from PTI for a problem on a transaction. Creating two transactions having the same requestId is not allowed.\n",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-scenario-id",
+          "in" : "header",
+          "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-session-id",
+          "in" : "header",
+          "description" : "Session ID associated to a UI session for a specific User. Should match the value passed to the PTI SDK at initialization.",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-disable-webhook",
+          "in" : "header",
+          "description" : "Set to true to disable webhook calls for this request.",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/oneOfTransactionSubTypes"
+              },
+              "example" : {
+                "sourceMethod" : {
+                  "paymentMethodType" : "CREDIT_CARD",
+                  "paymentInformation" : {
+                    "id" : "4b573a86-fd3f-475d-a90b-3658f2e79719"
+                  },
+                  "billingEmail" : "user@example.com"
+                },
+                "destinationMethod" : {
+                  "paymentMethodType" : "WALLET",
+                  "paymentInformation" : {
+                    "id" : "3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82"
+                  },
+                  "billingEmail" : "user@example.com"
+                },
+                "type" : "DEPOSIT",
+                "transactionTotal" : {
+                  "fee" : {
+                    "amount" : 10,
+                    "currency" : "USD"
+                  },
+                  "total" : {
+                    "amount" : 100,
+                    "currency" : "USD"
+                  },
+                  "subtotal" : {
+                    "amount" : 90,
+                    "currency" : "USD"
+                  }
+                },
+                "initiator" : {
+                  "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
+                  "type" : "PERSON",
+                  "name" : {
+                    "firstName" : "john",
+                    "lastName" : "smith"
+                  },
+                  "dateOfBirth" : "1988-09-28",
+                  "emails" : [ {
+                    "address" : "johnsmith@test.com",
+                    "default" : true
+                  } ],
+                  "phones" : [ {
+                    "number" : "12345678901",
+                    "type" : "WORK",
+                    "default" : true
+                  } ],
+                  "addresses" : [ {
+                    "streetAddress" : "1, main street",
+                    "city" : "New Hampshire",
+                    "postalCode" : "10005",
+                    "stateCode" : "US-NH",
+                    "country" : "US",
+                    "default" : true
+                  } ],
+                  "sourceOfFunds" : "Creator earnings"
+                },
+                "transactionGroupId" : "c8d8ed2a-33df-463b-95af-e59ff6e16414",
+                "usdValue" : 100,
+                "amount" : 100,
+                "date" : "2024-12-13T18:46:40.666+0000"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/transactions/trades/price-estimation" : {
       "post" : {
         "tags" : [ "Transactions" ],
@@ -1865,11 +2842,12 @@
                   }
                 },
                 "initiator" : {
+                  "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
+                  "type" : "PERSON",
                   "name" : {
                     "firstName" : "john",
                     "lastName" : "smith"
                   },
-                  "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
                   "dateOfBirth" : "1988-09-28",
                   "emails" : [ {
                     "address" : "johnsmith@test.com",
@@ -2056,11 +3034,12 @@
                 },
                 "type" : "DEPOSIT",
                 "initiator" : {
+                  "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
+                  "type" : "PERSON",
                   "name" : {
                     "firstName" : "john",
                     "lastName" : "smith"
                   },
-                  "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
                   "dateOfBirth" : "1988-09-28",
                   "emails" : [ {
                     "address" : "johnsmith@test.com",
@@ -2085,418 +3064,6 @@
                 "usdValue" : 100,
                 "amount" : 100,
                 "date" : "2024-12-13T18:46:40.666+0000"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "201" : {
-            "description" : "Successfully initiated the transaction",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/objectReference"
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Invalid fields on Transaction",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/invalidRequestError"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "unauthorized",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "403" : {
-            "description" : "Forbidden. Happens when the targeted User is not active.",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "User not found",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "422" : {
-            "description" : "One of these 2 cases: More information about the User is needed in order to approve the transaction. There is no approved assessment for this User that enables him to perform the operation.",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "default" : {
-            "description" : "unexpected error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          }
-        },
-        "callbacks" : {
-          "transactionUpdate" : {
-            "{$url}" : {
-              "post" : {
-                "summary" : "Endpoint that receives transaction status updates",
-                "requestBody" : {
-                  "content" : {
-                    "application/json" : {
-                      "schema" : {
-                        "$ref" : "#/components/schemas/transactionStatusObject"
-                      }
-                    }
-                  },
-                  "required" : true
-                },
-                "responses" : {
-                  "200" : {
-                    "description" : "Your server returns this code if it accepts the callback"
-                  },
-                  "422" : {
-                    "description" : "Your server returns an error"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/transactions/purchases" : {
-      "post" : {
-        "tags" : [ "Marketplace" ],
-        "summary" : "Execute a buy (token, nft, other)",
-        "description" : "This endpoint is used to execute a Digital Item buy (token, nft, other) transaction for a User. The Transaction Assessment and User information requirement are evaluated before the Transaction is executed.",
-        "operationId" : "digitalItemBuy",
-        "parameters" : [ {
-          "name" : "x-pti-client-id",
-          "in" : "header",
-          "description" : "Client ID provided to you during onboarding.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "x-pti-request-id",
-          "in" : "header",
-          "description" : "Unique identifier of the request. This ID must be provided and stored by the client of this API at the creation of a transaction. This ID is attached to all PTI internal operations as well as the webhook calls. This ID is required to post feedback about a transaction and get support from PTI for a problem on a transaction. Creating two transactions having the same requestId is not allowed.\n",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "x-pti-scenario-id",
-          "in" : "header",
-          "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "x-pti-session-id",
-          "in" : "header",
-          "description" : "Session ID associated to a UI session for a specific User. Should match the value passed to the PTI SDK at initialization.",
-          "required" : false,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "x-pti-disable-webhook",
-          "in" : "header",
-          "description" : "Set to true to disable webhook calls for this request.",
-          "required" : false,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "type" : "boolean"
-          }
-        }, {
-          "name" : "x-pti-provider-name",
-          "in" : "header",
-          "description" : "Used to specify which provider is responsible for handling the given operation. Ignored if the client configuration is not set for passive mode.\n",
-          "required" : false,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/providerName"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/executeBuyTransaction"
-              },
-              "example" : {
-                "initiator" : {
-                  "id" : "c5c4b077-0c9a-4d5f-84fd-439a6123cdd2",
-                  "type" : "PERSON"
-                },
-                "sourceMethod" : {
-                  "paymentMethodType" : "WALLET",
-                  "paymentInformation" : {
-                    "type" : "WALLET",
-                    "walletId" : "1de3e77b-e673-4e44-8b69-4931364c4e76"
-                  }
-                },
-                "digitalItem" : {
-                  "digitalItemType" : "NFT",
-                  "itemReference" : "21d7c009-8469-41ae-83d7-393085fd6fef"
-                },
-                "seller" : {
-                  "id" : "f0714c92-d5bf-4ed2-9636-e9ab3743fcb6",
-                  "type" : "PERSON"
-                },
-                "date" : "2024-12-13T18:46:40.666+0000",
-                "usdValue" : 5,
-                "amount" : 5,
-                "type" : "BUY"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "201" : {
-            "description" : "Successfully initiated the transaction",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/objectReference"
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Invalid fields on Transaction",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/invalidRequestError"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "unauthorized",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "403" : {
-            "description" : "Forbidden. Happens when the targeted User is not active.",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "User not found",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "422" : {
-            "description" : "One of these 2 cases: More information about the User is needed in order to approve the transaction. There is no approved assessment for this User that enables him to perform the operation.",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "default" : {
-            "description" : "unexpected error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          }
-        },
-        "callbacks" : {
-          "transactionUpdate" : {
-            "{$url}" : {
-              "post" : {
-                "summary" : "Endpoint that receives transaction status update",
-                "requestBody" : {
-                  "content" : {
-                    "application/json" : {
-                      "schema" : {
-                        "$ref" : "#/components/schemas/transactionStatusObject"
-                      }
-                    }
-                  },
-                  "required" : true
-                },
-                "responses" : {
-                  "200" : {
-                    "description" : "Your server returns this code if it accepts the callback"
-                  },
-                  "422" : {
-                    "description" : "Your server returns an error"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/transactions/sales" : {
-      "post" : {
-        "tags" : [ "Marketplace" ],
-        "summary" : "Execute a sell (token, nft, other)",
-        "description" : "This endpoint is used to execute a Digital Item sell (token, nft, other) transaction for a User. The Transaction Assessment and User information requirement are evaluated before the transaction is executed.",
-        "operationId" : "digitalItemSell",
-        "parameters" : [ {
-          "name" : "x-pti-client-id",
-          "in" : "header",
-          "description" : "Client ID provided to you during onboarding.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "x-pti-request-id",
-          "in" : "header",
-          "description" : "Unique identifier of the request. This ID must be provided and stored by the client of this API at the creation of a transaction. This ID is attached to all PTI internal operations as well as the webhook calls. This ID is required to post feedback about a transaction and get support from PTI for a problem on a transaction. Creating two transactions having the same requestId is not allowed.\n",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "x-pti-scenario-id",
-          "in" : "header",
-          "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "x-pti-session-id",
-          "in" : "header",
-          "description" : "Session ID associated to a UI session for a specific User. Should match the value passed to the PTI SDK at initialization.",
-          "required" : false,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "x-pti-disable-webhook",
-          "in" : "header",
-          "description" : "Set to true to disable webhook calls for this request.",
-          "required" : false,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "type" : "boolean"
-          }
-        }, {
-          "name" : "x-pti-provider-name",
-          "in" : "header",
-          "description" : "Used to specify which provider is responsible for handling the given operation. Ignored if the client configuration is not set for passive mode.\n",
-          "required" : false,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/providerName"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/executeSellTransaction"
-              },
-              "example" : {
-                "initiator" : {
-                  "id" : "2903c06b-6291-4cc8-b568-fe93064a5a8c",
-                  "type" : "PERSON"
-                },
-                "digitalItem" : {
-                  "digitalItemType" : "NFT",
-                  "itemReference" : "f5511285-9d0b-41fd-8ae7-0817bb7462ba"
-                },
-                "buyer" : {
-                  "id" : "be975fae-fb15-4b70-80ba-e59968ae48c3",
-                  "type" : "PERSON"
-                },
-                "destinationMethod" : {
-                  "paymentInformation" : {
-                    "type" : "WALLET",
-                    "walletId" : "c5b2cca7-a1ac-4aad-a461-be8903c695d9"
-                  },
-                  "paymentMethodType" : "WALLET"
-                },
-                "date" : "2024-12-13T18:46:40.666+0000",
-                "usdValue" : 5,
-                "amount" : 5,
-                "type" : "SELL"
               }
             }
           },
@@ -2684,7 +3251,7 @@
                   "paymentMethodType" : "WALLET",
                   "paymentInformation" : {
                     "type" : "WALLET",
-                    "walletId" : "a8e99100-f562-4e5b-b86f-9142dc2bc9f0"
+                    "id" : "a8e99100-f562-4e5b-b86f-9142dc2bc9f0"
                   }
                 },
                 "destinationMethod" : {
@@ -2894,7 +3461,7 @@
                   "paymentMethodType" : "WALLET",
                   "paymentInformation" : {
                     "type" : "WALLET",
-                    "walletId" : "e13c3242-57d3-473f-b98c-eb2768e4549c"
+                    "id" : "e13c3242-57d3-473f-b98c-eb2768e4549c"
                   }
                 },
                 "transactionTotal" : {
@@ -3107,14 +3674,14 @@
                   "paymentMethodType" : "WALLET",
                   "paymentInformation" : {
                     "type" : "WALLET",
-                    "walletId" : "dd2473b7-1afd-4f9c-a359-b4294587fef6"
+                    "id" : "dd2473b7-1afd-4f9c-a359-b4294587fef6"
                   }
                 },
                 "destinationTransferMethod" : {
                   "paymentMethodType" : "WALLET",
                   "paymentInformation" : {
                     "type" : "WALLET",
-                    "walletId" : "70cd9757-f288-41e5-8506-5c38b7c819e1"
+                    "id" : "70cd9757-f288-41e5-8506-5c38b7c819e1"
                   }
                 },
                 "destination" : {
@@ -3310,14 +3877,14 @@
                   "paymentMethodType" : "WALLET",
                   "paymentInformation" : {
                     "type" : "WALLET",
-                    "walletId" : "MySOLWallet"
+                    "id" : "MySOLWallet"
                   }
                 },
                 "destinationMethod" : {
                   "paymentMethodType" : "WALLET",
                   "paymentInformation" : {
                     "type" : "WALLET",
-                    "walletId" : "MyUSDWallet"
+                    "id" : "MyUSDWallet"
                   }
                 },
                 "amount" : 0.5,
@@ -3686,8 +4253,9 @@
       },
       "delete" : {
         "tags" : [ "Transactions" ],
-        "summary" : "Delete a transaction",
-        "operationId" : "deleteTransaction",
+        "summary" : "Cancel a transaction",
+        "description" : "This endpoint is used to attempt a Transaction cancellation. If the call is successful, it means we were able to cancel the Transaction",
+        "operationId" : "cancelTransaction",
         "parameters" : [ {
           "name" : "x-pti-client-id",
           "in" : "header",
@@ -3711,6 +4279,16 @@
         "responses" : {
           "204" : {
             "description" : "NO CONTENT"
+          },
+          "400" : {
+            "description" : "Invalid fields on Transaction",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/invalidRequestError"
+                }
+              }
+            }
           },
           "401" : {
             "description" : "unauthorized",
@@ -3748,11 +4326,12 @@
         }
       }
     },
-    "/users/{userId}/documents" : {
+    "/transactions/{requestId}/updates" : {
       "post" : {
-        "tags" : [ "Users" ],
-        "summary" : "Upload a User’s Document (Passport, License, etc)",
-        "operationId" : "uploadDocument",
+        "tags" : [ "Transactions" ],
+        "summary" : "Update status on existing transaction",
+        "description" : "This endpoint allows adding feedback information to an existing transaction. Here are the possible feedback values with their meaning:\n\n| Feedback | Meaning |\n|----------|---------|\n| `ACCEPTED` | The transaction was accepted by the processor and is deemed to be in a pending state. This feedback is not a final state and should be followed by antoher feedback such as `SETTLED` or `CANCELLED` |\n| `SETTLED`  | The transaction was accepted and fully finalized by the processor. The transfer of value has occured. |\n| `CANCELLED`  | The transaction was accepted but cancelled prior to being settled |\n| `AWAITING_PAYMENT` | A deposit transaction is being processed and is in a state where it is waiting for the user to complete the payment by funding the target address provided or making a deposit using the specified payment method. |\n| `REJECTED` | The transaction was declined by the processor |\n| `REFUNDED` | An intentional, settled transaction was refunded |\n| `CHARGED_BACK` | A settled transaction was disputed and refunded |\n| `ERROR` | The processor returned an error, the transaction is assumed to be non existent from the processor standpoint |\n",
+        "operationId" : "provideFeedback",
         "parameters" : [ {
           "name" : "x-pti-client-id",
           "in" : "header",
@@ -3764,36 +4343,175 @@
             "$ref" : "#/components/schemas/uuidLikeStr"
           }
         }, {
-          "name" : "userId",
+          "name" : "requestId",
           "in" : "path",
+          "description" : "Request ID used when the transaction was initially logged",
           "required" : true,
           "style" : "simple",
           "explode" : false,
           "schema" : {
-            "maxLength" : 255,
-            "pattern" : "^[a-z0-9_-]{3,255}$",
-            "type" : "string"
+            "$ref" : "#/components/schemas/uuidLikeStr"
           }
         } ],
         "requestBody" : {
+          "description" : "Feedback to associate to the existing transaction",
           "content" : {
-            "multipart/form-data" : {
+            "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/body"
+                "$ref" : "#/components/schemas/transactionUpdate"
+              },
+              "example" : {
+                "payload" : "{}",
+                "providerName" : "UNKNOWN",
+                "feedback" : "SETTLED",
+                "transactionId" : "UUID",
+                "date" : "2024-12-13T18:46:40.666+0000"
               }
             }
-          }
+          },
+          "required" : true
         },
         "responses" : {
           "201" : {
-            "description" : "Successfully uploaded the document"
+            "description" : "Successfully added transaction feedback. Returns the requestId in the id value of the response.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/objectReference"
+                }
+              }
+            }
           },
           "400" : {
-            "description" : "Missing required fields on document",
+            "description" : "Missing required fields on transaction feedback",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/invalidRequestError"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Transaction identified by requestId not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wallets/" : {
+      "get" : {
+        "tags" : [ "Marketplace" ],
+        "summary" : "Retrieve a paged list of ids and links to wallets belonging to your users",
+        "operationId" : "searchClientWallets",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Offset for pagination. If not specified, the default value is 0.",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "maximum" : 9999999,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 0
+          }
+        }, {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Page size for pagination. If not specified, the default value is 20.",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "maximum" : 100,
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 20
+          }
+        }, {
+          "name" : "sortBy",
+          "in" : "query",
+          "description" : "Sort by field. If not specified, the default value is creationDate.",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "creationDate"
+          }
+        }, {
+          "name" : "sortDirection",
+          "in" : "query",
+          "description" : "Sort direction field. ASC or DESC, default value is DESC.",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "DESC"
+          }
+        }, {
+          "name" : "filters",
+          "in" : "query",
+          "description" : "Allows you to apply different filters on your users Wallets.\nbalance: Filter for wallets with an available balance above a numerical value. currency: Filter for wallets matching given currency. network: Filter for wallets belonging to the specified network. userId: Filter on a list of specific users in a comma separated value format.\nMultiple different filters can be used and acts like an AND between them.\nExample: filters=userIds:123,324;currency:ETH;network:Ethereum Should return all wallets belonging to users 123 or 324 having network Ethereum and currency ETH",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "maxLength" : 255,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/objectReferencePage"
                 }
               }
             }
@@ -3827,6 +4545,418 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions/purchases" : {
+      "post" : {
+        "tags" : [ "Marketplace" ],
+        "summary" : "Execute a buy (token, nft, other)",
+        "description" : "This endpoint is used to execute a Digital Item buy (token, nft, other) transaction for a User. The Transaction Assessment and User information requirement are evaluated before the Transaction is executed.",
+        "operationId" : "digitalItemBuy",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-request-id",
+          "in" : "header",
+          "description" : "Unique identifier of the request. This ID must be provided and stored by the client of this API at the creation of a transaction. This ID is attached to all PTI internal operations as well as the webhook calls. This ID is required to post feedback about a transaction and get support from PTI for a problem on a transaction. Creating two transactions having the same requestId is not allowed.\n",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-scenario-id",
+          "in" : "header",
+          "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-session-id",
+          "in" : "header",
+          "description" : "Session ID associated to a UI session for a specific User. Should match the value passed to the PTI SDK at initialization.",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-disable-webhook",
+          "in" : "header",
+          "description" : "Set to true to disable webhook calls for this request.",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        }, {
+          "name" : "x-pti-provider-name",
+          "in" : "header",
+          "description" : "Used to specify which provider is responsible for handling the given operation. Ignored if the client configuration is not set for passive mode.\n",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/providerName"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/executeBuyTransaction"
+              },
+              "example" : {
+                "initiator" : {
+                  "id" : "c5c4b077-0c9a-4d5f-84fd-439a6123cdd2",
+                  "type" : "PERSON"
+                },
+                "sourceMethod" : {
+                  "paymentMethodType" : "WALLET",
+                  "paymentInformation" : {
+                    "type" : "WALLET",
+                    "id" : "1de3e77b-e673-4e44-8b69-4931364c4e76"
+                  }
+                },
+                "digitalItem" : {
+                  "digitalItemType" : "NFT",
+                  "itemReference" : "21d7c009-8469-41ae-83d7-393085fd6fef"
+                },
+                "seller" : {
+                  "id" : "f0714c92-d5bf-4ed2-9636-e9ab3743fcb6",
+                  "type" : "PERSON"
+                },
+                "date" : "2024-12-13T18:46:40.666+0000",
+                "usdValue" : 5,
+                "amount" : 5,
+                "type" : "BUY"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Successfully initiated the transaction",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/objectReference"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid fields on Transaction",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/invalidRequestError"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Forbidden. Happens when the targeted User is not active.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "422" : {
+            "description" : "One of these 2 cases: More information about the User is needed in order to approve the transaction. There is no approved assessment for this User that enables him to perform the operation.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        },
+        "callbacks" : {
+          "transactionUpdate" : {
+            "{$url}" : {
+              "post" : {
+                "summary" : "Endpoint that receives transaction status update",
+                "requestBody" : {
+                  "content" : {
+                    "application/json" : {
+                      "schema" : {
+                        "$ref" : "#/components/schemas/transactionStatusObject"
+                      }
+                    }
+                  },
+                  "required" : true
+                },
+                "responses" : {
+                  "200" : {
+                    "description" : "Your server returns this code if it accepts the callback"
+                  },
+                  "422" : {
+                    "description" : "Your server returns an error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions/sales" : {
+      "post" : {
+        "tags" : [ "Marketplace" ],
+        "summary" : "Execute a sell (token, nft, other)",
+        "description" : "This endpoint is used to execute a Digital Item sell (token, nft, other) transaction for a User. The Transaction Assessment and User information requirement are evaluated before the transaction is executed.",
+        "operationId" : "digitalItemSell",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-request-id",
+          "in" : "header",
+          "description" : "Unique identifier of the request. This ID must be provided and stored by the client of this API at the creation of a transaction. This ID is attached to all PTI internal operations as well as the webhook calls. This ID is required to post feedback about a transaction and get support from PTI for a problem on a transaction. Creating two transactions having the same requestId is not allowed.\n",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-scenario-id",
+          "in" : "header",
+          "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-session-id",
+          "in" : "header",
+          "description" : "Session ID associated to a UI session for a specific User. Should match the value passed to the PTI SDK at initialization.",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-disable-webhook",
+          "in" : "header",
+          "description" : "Set to true to disable webhook calls for this request.",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        }, {
+          "name" : "x-pti-provider-name",
+          "in" : "header",
+          "description" : "Used to specify which provider is responsible for handling the given operation. Ignored if the client configuration is not set for passive mode.\n",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/providerName"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/executeSellTransaction"
+              },
+              "example" : {
+                "initiator" : {
+                  "id" : "2903c06b-6291-4cc8-b568-fe93064a5a8c",
+                  "type" : "PERSON"
+                },
+                "digitalItem" : {
+                  "digitalItemType" : "NFT",
+                  "itemReference" : "f5511285-9d0b-41fd-8ae7-0817bb7462ba"
+                },
+                "buyer" : {
+                  "id" : "be975fae-fb15-4b70-80ba-e59968ae48c3",
+                  "type" : "PERSON"
+                },
+                "destinationMethod" : {
+                  "paymentInformation" : {
+                    "type" : "WALLET",
+                    "id" : "c5b2cca7-a1ac-4aad-a461-be8903c695d9"
+                  },
+                  "paymentMethodType" : "WALLET"
+                },
+                "date" : "2024-12-13T18:46:40.666+0000",
+                "usdValue" : 5,
+                "amount" : 5,
+                "type" : "SELL"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Successfully initiated the transaction",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/objectReference"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid fields on Transaction",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/invalidRequestError"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Forbidden. Happens when the targeted User is not active.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "422" : {
+            "description" : "One of these 2 cases: More information about the User is needed in order to approve the transaction. There is no approved assessment for this User that enables him to perform the operation.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        },
+        "callbacks" : {
+          "transactionUpdate" : {
+            "{$url}" : {
+              "post" : {
+                "summary" : "Endpoint that receives transaction status updates",
+                "requestBody" : {
+                  "content" : {
+                    "application/json" : {
+                      "schema" : {
+                        "$ref" : "#/components/schemas/transactionStatusObject"
+                      }
+                    }
+                  },
+                  "required" : true
+                },
+                "responses" : {
+                  "200" : {
+                    "description" : "Your server returns this code if it accepts the callback"
+                  },
+                  "422" : {
+                    "description" : "Your server returns an error"
+                  }
                 }
               }
             }
@@ -4020,7 +5150,8 @@
             "maximum" : 9999999,
             "minimum" : 0,
             "type" : "integer",
-            "format" : "int32"
+            "format" : "int32",
+            "default" : 0
           }
         }, {
           "name" : "size",
@@ -4033,17 +5164,19 @@
             "maximum" : 100,
             "minimum" : 0,
             "type" : "integer",
-            "format" : "int32"
+            "format" : "int32",
+            "default" : 20
           }
         }, {
           "name" : "sortBy",
           "in" : "query",
-          "description" : "Sort by field. If not specified, the default value is creation date.",
+          "description" : "Sort by field. If not specified, the default value is creationDate.",
           "required" : false,
           "style" : "form",
           "explode" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "default" : "creationDate"
           }
         } ],
         "responses" : {
@@ -4129,13 +5262,13 @@
                 }
               },
               "example" : [ {
-                "itemReference" : "57d6467c-6ae0-434f-8197-e7e9f86f2209",
+                "itemReference" : "ffffffff-6ae0-434f-8197-e7e9f86f2209",
                 "digitalItemType" : "NFT",
                 "itemDescription" : "Ultra Rare Elite Russell Wilson Level 1",
                 "itemTitle" : "QB, Mint Condition, #467/500 From Founders Set ",
                 "itemUSDValue" : 10
               }, {
-                "itemReference" : "57d6467c-6ae0-434f-8197-e7e9f86f2210",
+                "itemReference" : "ffffffff-6ae0-434f-8197-e7e9f86f2210",
                 "digitalItemType" : "NFT",
                 "itemDescription" : "Ultra Rare Elite Peyton Manning Level 10",
                 "itemTitle" : "QB, Mint Condition, #468/500 From Founders Set",
@@ -4195,855 +5328,6 @@
           }
         }
       }
-    },
-    "/users/{userId}/wallets" : {
-      "get" : {
-        "tags" : [ "Wallets" ],
-        "summary" : "Get a list of a User's wallets",
-        "operationId" : "getWallets",
-        "parameters" : [ {
-          "name" : "x-pti-client-id",
-          "in" : "header",
-          "description" : "Client ID provided to you during onboarding.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "userId",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "maxLength" : 255,
-            "pattern" : "^[a-z0-9_-]{3,255}$",
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "maxItems" : 100,
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/wallet"
-                  }
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "unauthorized",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "User not found",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "default" : {
-            "description" : "unexpected error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post" : {
-        "tags" : [ "Wallets" ],
-        "summary" : "Create a Wallet for a User",
-        "operationId" : "createWallet",
-        "parameters" : [ {
-          "name" : "x-pti-client-id",
-          "in" : "header",
-          "description" : "Client ID provided to you during onboarding.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "userId",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "maxLength" : 255,
-            "pattern" : "^[a-z0-9_-]{3,255}$",
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/walletCreation"
-              },
-              "example" : {
-                "type" : "WALLET",
-                "walletId" : "c8768405-6129-4bda-8a10-8ef234dff30e",
-                "currency" : "ETH",
-                "network" : "Ethereum"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "201" : {
-            "description" : "Successfully created a Wallet",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/wallet"
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Missing required fields on Wallet",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/invalidRequestError"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "unauthorized",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "User not found",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "default" : {
-            "description" : "unexpected error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/users/{userId}/wallets/{walletId}" : {
-      "summary" : "Delete a Wallet",
-      "get" : {
-        "tags" : [ "Wallets" ],
-        "summary" : "Get a Wallet by ID",
-        "operationId" : "getWallet",
-        "parameters" : [ {
-          "name" : "x-pti-client-id",
-          "in" : "header",
-          "description" : "Client ID provided to you during onboarding.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "userId",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "maxLength" : 255,
-            "pattern" : "^[a-z0-9_-]{3,255}$",
-            "type" : "string"
-          }
-        }, {
-          "name" : "walletId",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "maxLength" : 255,
-            "pattern" : "^[a-z0-9_-]{3,255}$",
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/wallet"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "unauthorized",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "default" : {
-            "description" : "unexpected error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete" : {
-        "tags" : [ "Wallets" ],
-        "summary" : "Delete a Wallet",
-        "operationId" : "deleteWallet",
-        "parameters" : [ {
-          "name" : "x-pti-client-id",
-          "in" : "header",
-          "description" : "Client ID provided to you during onboarding.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "userId",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "maxLength" : 255,
-            "pattern" : "^[a-z0-9_-]{3,255}$",
-            "type" : "string"
-          }
-        }, {
-          "name" : "walletId",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "maxLength" : 255,
-            "pattern" : "^[a-z0-9_-]{3,255}$",
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "204" : {
-            "description" : "No Content"
-          },
-          "400" : {
-            "description" : "Bad Request",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/invalidRequestError"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "unauthorized",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "User or Wallet not found",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "default" : {
-            "description" : "unexpected error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/users/{userId}/wallets/{walletId}/simulate-payment" : {
-      "post" : {
-        "tags" : [ "Wallets" ],
-        "summary" : "Simulate a Deposit to a Wallet",
-        "operationId" : "simulateWalletPayment",
-        "parameters" : [ {
-          "name" : "x-pti-client-id",
-          "in" : "header",
-          "description" : "Client ID provided to you during onboarding.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "userId",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "maxLength" : 255,
-            "pattern" : "^[a-z0-9_-]{3,255}$",
-            "type" : "string"
-          }
-        }, {
-          "name" : "walletId",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "maxLength" : 255,
-            "pattern" : "^[a-z0-9_-]{3,255}$",
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "description" : "amount of the payment and type of payment method",
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/simulatePaymentRequest"
-              },
-              "example" : {
-                "amount" : 100,
-                "paymentMethodType" : "ACH"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "201" : {
-            "description" : "Successfully created a simulated payment to the Wallet."
-          },
-          "401" : {
-            "description" : "unauthorized",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "403" : {
-            "description" : "forbidden"
-          },
-          "404" : {
-            "description" : "User or Wallet not found",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "default" : {
-            "description" : "unexpected error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/users/{userId}/wallets/{walletId}/deposit-address" : {
-      "summary" : "Generate a Wallet’s Deposit Address",
-      "post" : {
-        "tags" : [ "Wallets" ],
-        "summary" : "Create a crypto deposit address",
-        "operationId" : "createWalletDepositAddress",
-        "parameters" : [ {
-          "name" : "x-pti-client-id",
-          "in" : "header",
-          "description" : "Client ID provided to you during onboarding.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "userId",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "maxLength" : 255,
-            "pattern" : "^[a-z0-9_-]{3,255}$",
-            "type" : "string"
-          }
-        }, {
-          "name" : "walletId",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "maxLength" : 255,
-            "pattern" : "^[a-z0-9_-]{3,255}$",
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "description" : "Deposit address request parameters",
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/depositAddressRequest"
-              }
-            }
-          },
-          "required" : false
-        },
-        "responses" : {
-          "201" : {
-            "description" : "Successfully created a crypto deposit address. The Wallet with its deposit instruction is returned",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/wallet"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "unauthorized",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "403" : {
-            "description" : "forbidden"
-          },
-          "404" : {
-            "description" : "User or Wallet not found",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "default" : {
-            "description" : "unexpected error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/users/{userId}/wallets/{walletId}/virtual-bank-account" : {
-      "summary" : "Generate a Wallet’s Virtual Bank Account",
-      "post" : {
-        "tags" : [ "Wallets" ],
-        "summary" : "Create a virtual bank account for a Wallet",
-        "operationId" : "createWalletVirtualBankAccount",
-        "parameters" : [ {
-          "name" : "x-pti-client-id",
-          "in" : "header",
-          "description" : "Client ID provided to you during onboarding.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "userId",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "maxLength" : 255,
-            "pattern" : "^[a-z0-9_-]{3,255}$",
-            "type" : "string"
-          }
-        }, {
-          "name" : "walletId",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "maxLength" : 255,
-            "pattern" : "^[a-z0-9_-]{3,255}$",
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "type" : "object"
-              }
-            }
-          },
-          "required" : false
-        },
-        "responses" : {
-          "201" : {
-            "description" : "Successfully created a Wallet virtual bank account. The Wallet with its deposit instruction is returned",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/wallet"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "unauthorized",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "403" : {
-            "description" : "forbidden"
-          },
-          "404" : {
-            "description" : "User or Wallet not found",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "default" : {
-            "description" : "unexpected error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/users/{userId}/wallets/{walletId}/history" : {
-      "get" : {
-        "tags" : [ "Wallets" ],
-        "summary" : "Retrieve the balance history of a Wallet",
-        "operationId" : "getWalletHistory",
-        "parameters" : [ {
-          "name" : "x-pti-client-id",
-          "in" : "header",
-          "description" : "Client ID provided to you during onboarding.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "userId",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "maxLength" : 255,
-            "pattern" : "^[a-z0-9_-]{3,255}$",
-            "type" : "string"
-          }
-        }, {
-          "name" : "walletId",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "maxLength" : 255,
-            "pattern" : "^[a-z0-9_-]{3,255}$",
-            "type" : "string"
-          }
-        }, {
-          "name" : "page",
-          "in" : "query",
-          "description" : "Offset for pagination. If not specified, the default value is 0.",
-          "required" : false,
-          "style" : "form",
-          "explode" : true,
-          "schema" : {
-            "maximum" : 9999999,
-            "minimum" : 0,
-            "type" : "integer",
-            "format" : "int32"
-          }
-        }, {
-          "name" : "size",
-          "in" : "query",
-          "description" : "Page size for pagination. If not specified, the default value is 20.",
-          "required" : false,
-          "style" : "form",
-          "explode" : true,
-          "schema" : {
-            "maximum" : 100,
-            "minimum" : 0,
-            "type" : "integer",
-            "format" : "int32"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/walletHistoryPage"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "unauthorized",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "403" : {
-            "description" : "forbidden"
-          },
-          "404" : {
-            "description" : "User or Wallet not found",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "default" : {
-            "description" : "unexpected error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/transactions/{requestId}/updates" : {
-      "post" : {
-        "tags" : [ "Transactions" ],
-        "summary" : "Update status on existing transaction",
-        "description" : "This endpoint allows adding feedback information to an existing transaction. Here are the possible feedback values with their meaning:\n\n| Feedback | Meaning |\n|----------|---------|\n| `ACCEPTED` | The transaction was accepted by the processor and is deemed to be in a pending state. This feedback is not a final state and should be followed by antoher feedback such as `SETTLED` or `CANCELLED` |\n| `SETTLED`  | The transaction was accepted and fully finalized by the processor. The transfer of value has occured. |\n| `CANCELLED`  | The transaction was accepted but cancelled prior to being settled |\n| `AWAITING_PAYMENT` | A deposit transaction is being processed and is in a state where it is waiting for the user to complete the payment by funding the target address provided or making a deposit using the specified payment method. |\n| `REJECTED` | The transaction was declined by the processor |\n| `REFUNDED` | An intentional, settled transaction was refunded |\n| `CHARGED_BACK` | A settled transaction was disputed and refunded |\n| `ERROR` | The processor returned an error, the transaction is assumed to be non existent from the processor standpoint |\n",
-        "operationId" : "provideFeedback",
-        "parameters" : [ {
-          "name" : "x-pti-client-id",
-          "in" : "header",
-          "description" : "Client ID provided to you during onboarding.",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        }, {
-          "name" : "requestId",
-          "in" : "path",
-          "description" : "Request ID used when the transaction was initially logged",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "$ref" : "#/components/schemas/uuidLikeStr"
-          }
-        } ],
-        "requestBody" : {
-          "description" : "Feedback to associate to the existing transaction",
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/transactionUpdate"
-              },
-              "example" : {
-                "payload" : "{}",
-                "providerName" : "UNKNOWN",
-                "feedback" : "SETTLED",
-                "transactionId" : "UUID",
-                "date" : "2024-12-13T18:46:40.666+0000"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "201" : {
-            "description" : "Successfully added transaction feedback. Returns the requestId in the id value of the response.",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/objectReference"
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "Missing required fields on transaction feedback",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/invalidRequestError"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "unauthorized",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "Transaction identified by requestId not found",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests"
-          },
-          "default" : {
-            "description" : "unexpected error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/unmanagedError"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components" : {
@@ -5061,7 +5345,7 @@
           }
         }
       },
-      "simulatePaymentRequest" : {
+      "simulateDepositRequest" : {
         "type" : "object",
         "properties" : {
           "amount" : {
@@ -5071,6 +5355,16 @@
           },
           "paymentMethodType" : {
             "$ref" : "#/components/schemas/paymentMethodType"
+          },
+          "status" : {
+            "maxLength" : 255,
+            "pattern" : "^[ -~]*$",
+            "type" : "string"
+          },
+          "requestId" : {
+            "maxLength" : 255,
+            "pattern" : "^[ -~]*$",
+            "type" : "string"
           }
         }
       },
@@ -5121,6 +5415,11 @@
             "type" : "string",
             "description" : "Type of bank account, Required for ACH and WIRE",
             "enum" : [ "CHECKING", "SAVINGS" ]
+          },
+          "accountHolderName" : {
+            "maxLength" : 1024,
+            "type" : "string",
+            "description" : "Full name of the holder of the bank account. Required on creation."
           },
           "bankSwiftCode" : {
             "maxLength" : 11,
@@ -5415,7 +5714,7 @@
       },
       "errorType" : {
         "type" : "string",
-        "enum" : [ "INVALID_REQUEST", "MIN_INFO_MISSING", "MIN_ASSESSMENT_MISSING", "ALREADY_IN_PROGRESS", "NO_ERROR", "MISSING_WALLET", "WALLETS_DIFFERENT_CURRENCY", "WALLETS_SAME_CURRENCY", "SOURCE_WALLET_DESTINATION_TOKEN_ONLY", "ITEM_USD_VALUE_REQUIRED_WHEN_MULTIPLE_ITEMS", "INVALID_USER_TAG", "MISSING_TRANSACTION_GROUP_ID", "DIFFERENT_BUY_SELL_AMOUNT", "DIFFERENT_BUY_SELL_CURRENCIES", "NO_INTER_CLIENTS_TRANSFERS", "CLIENT_CONFIGURATION_ERROR", "UNSUPPORTED_OPERATION", "COUNTRY_NOT_SUPPORTED", "NOT_ENOUGH_FUNDS", "INVALID_ASSET_OWNERSHIP", "FEES_WALLET_NOT_FOUND", "REVERT_ONLY_CHARGE_BACK", "MISSING_CORRESPONDING_BUY_TRANSACTION", "ALREADY_EXISTING_CORRESPONDING_TRANSACTION_PAIR", "BUY_TRANSACTION_NOT_SETTLED", "FIAT_ONLY", "SOURCE_DESTINATION_WALLET", "INVALID_SOURCE_CURRENCY", "INVALID_DESTINATION_CURRENCY", "USD_WALLET_ONLY", "BANK_ONLY", "MISSING_EMAIL_ADDRESS", "MISSING_BANK_ACCOUNT_INFORMATION", "MISSING_BANK_ACCOUNT_NUMBER_INFORMATION", "MISSING_BANK_ACCOUNT_TYPE", "MANDATORY_IP_ADDRESS", "MANDATORY_EMAIL_ADDRESS", "MISSING_CC_INFO", "CC_ONLY", "UNABLE_TO_PROVIDE_ESTIMATES", "FUNDING_FROM_CRYPTO_ONLY", "WITHDRAWAL_FROM_WALLET_TO_CRYPTO", "SOURCE_WALLET_CURRENCY_DIFFERENT_THAN_DESTINATION_TOKEN_CURRENCY" ]
+        "enum" : [ "NO_ERROR", "INVALID_REQUEST", "MIN_INFO_MISSING", "MIN_ASSESSMENT_MISSING", "ALREADY_IN_PROGRESS", "MISSING_WALLET", "WALLETS_DIFFERENT_CURRENCY", "WALLETS_SAME_CURRENCY", "SOURCE_WALLET_DESTINATION_TOKEN_ONLY", "ITEM_USD_VALUE_REQUIRED_WHEN_MULTIPLE_ITEMS", "INVALID_USER_TAG", "MISSING_TRANSACTION_GROUP_ID", "DIFFERENT_BUY_SELL_AMOUNT", "DIFFERENT_BUY_SELL_CURRENCIES", "WALLET_MISSING_NETWORK", "PAYMENT_METHOD_TYPE_REQUIRED", "AMOUNT_REQUIRED", "NO_INTER_CLIENTS_TRANSFERS", "CLIENT_CONFIGURATION_ERROR", "UNSUPPORTED_OPERATION", "COUNTRY_NOT_SUPPORTED", "UNSUPPORTED_CURRENCY", "UNSUPPORTED_FIAT_CURRENCY", "UNSUPPORTED_CRYPTO_CURRENCY", "UNSUPPORTED_DEPOSIT_ADDRESS", "INVALID_WALLET_PROVIDER", "INVALID_WALLET_PROVIDER_CONFIGURATION", "INVALID_ACH_PROVIDER_CONFIGURATION", "NOT_ENOUGH_FUNDS", "INVALID_ASSET_OWNERSHIP", "FEES_WALLET_NOT_FOUND", "REVERT_ONLY_CHARGE_BACK", "MISSING_CORRESPONDING_BUY_TRANSACTION", "ALREADY_EXISTING_CORRESPONDING_TRANSACTION_PAIR", "BUY_TRANSACTION_NOT_SETTLED", "FIAT_ONLY", "SOURCE_DESTINATION_WALLET", "INVALID_SOURCE_CURRENCY", "INVALID_DESTINATION_CURRENCY", "USD_WALLET_ONLY", "NON_CORRESPONDING_USERS_FOR_TRANSACTION", "UNSUPPORTED_SOURCE_METHOD", "WALLET_REFERENCE_ALREADY_EXISTS", "UNABLE_TO_DELETE_WALLET_WITH_NONZERO_BALANCE", "WALLET_DELETED", "WALLET_LABEL_ALREADY_IN_USE", "EXCEEDED_ACH_PULL_DEPOSIT_LIMIT", "USER_EXCEEDED_ACH_PULL_DEPOSIT_LIMIT", "MAXIMUM_ACH_PULL_LIMIT_EXCEEDED", "TRANSACTION_CANNOT_BE_CANCELED", "BLOCKED_ASSET", "BANK_ONLY", "MISSING_EMAIL_ADDRESS", "MISSING_BANK_ACCOUNT_INFORMATION", "MISSING_BANK_ACCOUNT_NUMBER_INFORMATION", "MISSING_BANK_ACCOUNT_TYPE", "FUNDING_FROM_ACH_ONLY", "WITHDRAWING_FROM_WALLET_ONLY", "WITHDRAWING_TO_ACH_WIRE_ONLY", "FUNDING_TO_WALLET_ONLY", "MANDATORY_IP_ADDRESS", "MANDATORY_EMAIL_ADDRESS", "MISSING_CC_INFO", "CC_ONLY", "UNABLE_TO_PROVIDE_ESTIMATES", "FUNDING_FROM_CRYPTO_ONLY", "WITHDRAWAL_FROM_WALLET_TO_CRYPTO", "SOURCE_WALLET_CURRENCY_DIFFERENT_THAN_DESTINATION_TOKEN_CURRENCY" ]
       },
       "oneOfAssessmentValidationError" : {
         "example" : {
@@ -5465,7 +5764,6 @@
         } ]
       },
       "invalidRequestError" : {
-        "required" : [ "errors" ],
         "type" : "object",
         "properties" : {
           "errors" : {
@@ -5511,7 +5809,6 @@
         } ]
       },
       "managedError" : {
-        "required" : [ "code", "type" ],
         "type" : "object",
         "properties" : {
           "type" : {
@@ -5521,14 +5818,13 @@
             "maximum" : 9999,
             "minimum" : 0,
             "type" : "integer",
-            "description" : "# Error codes descriptions\nNO_ERROR(0)\nINVALID_REQUEST(1000)\nMIN_INFO_MISSING(1001)\nMIN_ASSESSMENT_MISSING(1002)\nALREADY_IN_PROGRESS(1003)\nMISSING_WALLET(1004)\nWALLETS_DIFFERENT_CURRENCY(1005)\nWALLETS_SAME_CURRENCY(1006)\nSOURCE_WALLET_DESTINATION_TOKEN_ONLY(1007)\nITEM_USD_VALUE_REQUIRED_WHEN_MULTIPLE_ITEMS(1008)\nINVALID_USER_TAG(1009)\nMISSING_TRANSACTION_GROUP_ID(1010)\nDIFFERENT_BUY_SELL_AMOUNT(1011)\nDIFFERENT_BUY_SELL_CURRENCIES(1012)\nNO_INTER_CLIENTS_TRANSFERS(2000)\nCLIENT_CONFIGURATION_ERROR(2001)\nUNSUPPORTED_OPERATION(2002)\nCOUNTRY_NOT_SUPPORTED(2003)\nNOT_ENOUGH_FUNDS(3000)\nINVALID_ASSET_OWNERSHIP(3001)\nFEES_WALLET_NOT_FOUND(3002)\nREVERT_ONLY_CHARGE_BACK(3003)\nMISSING_CORRESPONDING_BUY_TRANSACTION(3004)\nALREADY_EXISTING_CORRESPONDING_TRANSACTION_PAIR(3005)\nBUY_TRANSACTION_NOT_SETTLED(3006)\nFIAT_ONLY(3007)\nSOURCE_DESTINATION_WALLET(3008)\nINVALID_SOURCE_CURRENCY(3009)\nINVALID_DESTINATION_CURRENCY(3010)\nUSD_WALLET_ONLY(3011)\nBANK_ONLY(4000)\nMISSING_EMAIL_ADDRESS(4001)\nMISSING_BANK_ACCOUNT_INFORMATION(4002)\nMISSING_BANK_ACCOUNT_NUMBER_INFORMATION(4003)\nMISSING_BANK_ACCOUNT_TYPE(4004)\nMANDATORY_IP_ADDRESS(5000)\nMANDATORY_EMAIL_ADDRESS(5001)\nMISSING_CC_INFO(5002)\nCC_ONLY(5003)\nUNABLE_TO_PROVIDE_ESTIMATES(6000)\nFUNDING_FROM_CRYPTO_ONLY(6001)\nWITHDRAWAL_FROM_WALLET_TO_CRYPTO(6002)\nSOURCE_WALLET_CURRENCY_DIFFERENT_THAN_DESTINATION_TOKEN_CURRENCY(6003)\n",
+            "description" : "# Error codes descriptions\nNO_ERROR(0)\nINVALID_REQUEST(1000)\nMIN_INFO_MISSING(1001)\nMIN_ASSESSMENT_MISSING(1002)\nALREADY_IN_PROGRESS(1003)\nMISSING_WALLET(1004)\nWALLETS_DIFFERENT_CURRENCY(1005)\nWALLETS_SAME_CURRENCY(1006)\nSOURCE_WALLET_DESTINATION_TOKEN_ONLY(1007)\nITEM_USD_VALUE_REQUIRED_WHEN_MULTIPLE_ITEMS(1008)\nINVALID_USER_TAG(1009)\nMISSING_TRANSACTION_GROUP_ID(1010)\nDIFFERENT_BUY_SELL_AMOUNT(1011)\nDIFFERENT_BUY_SELL_CURRENCIES(1012)\nWALLET_MISSING_NETWORK(1013)\nPAYMENT_METHOD_TYPE_REQUIRED(1014)\nAMOUNT_REQUIRED(1015)\nNO_INTER_CLIENTS_TRANSFERS(2000)\nCLIENT_CONFIGURATION_ERROR(2001)\nUNSUPPORTED_OPERATION(2002)\nCOUNTRY_NOT_SUPPORTED(2003)\nUNSUPPORTED_CURRENCY(2004)\nUNSUPPORTED_FIAT_CURRENCY(2005)\nUNSUPPORTED_CRYPTO_CURRENCY(2005)\nUNSUPPORTED_DEPOSIT_ADDRESS(2006)\nINVALID_WALLET_PROVIDER(2007)\nINVALID_WALLET_PROVIDER_CONFIGURATION(2008)\nINVALID_ACH_PROVIDER_CONFIGURATION(2009)\nNOT_ENOUGH_FUNDS(3000)\nINVALID_ASSET_OWNERSHIP(3001)\nFEES_WALLET_NOT_FOUND(3002)\nREVERT_ONLY_CHARGE_BACK(3003)\nMISSING_CORRESPONDING_BUY_TRANSACTION(3004)\nALREADY_EXISTING_CORRESPONDING_TRANSACTION_PAIR(3005)\nBUY_TRANSACTION_NOT_SETTLED(3006)\nFIAT_ONLY(3007)\nSOURCE_DESTINATION_WALLET(3008)\nINVALID_SOURCE_CURRENCY(3009)\nINVALID_DESTINATION_CURRENCY(3010)\nUSD_WALLET_ONLY(3011)\nNON_CORRESPONDING_USERS_FOR_TRANSACTION(3012)\nUNSUPPORTED_SOURCE_METHOD(3013)\nWALLET_REFERENCE_ALREADY_EXISTS(3014)\nUNABLE_TO_DELETE_WALLET_WITH_NONZERO_BALANCE(3015)\nWALLET_DELETED(3016)\nWALLET_LABEL_ALREADY_IN_USE(3017)\nEXCEEDED_ACH_PULL_DEPOSIT_LIMIT(3018)\nEXCEEDED_ACH_PULL_DEPOSIT_LIMIT(3019)\nMAXIMUM_ACH_PULL_LIMIT_EXCEEDED(3020)\nTRANSACTION_CANNOT_BE_CANCELED(3021)\nBANK_ONLY(4000)\nMISSING_EMAIL_ADDRESS(4001)\nMISSING_BANK_ACCOUNT_INFORMATION(4002)\nMISSING_BANK_ACCOUNT_NUMBER_INFORMATION(4003)\nMISSING_BANK_ACCOUNT_TYPE(4004)\nFUNDING_FROM_ACH_ONLY(4005)\nWITHDRAWING_FROM_WALLET_ONLY(4006)\nWITHDRAWING_TO_ACH_WIRE_ONLY(4007)\nFUNDING_TO_WALLET_ONLY(4008)\nMISSING_TAX_INFO(4009)\nMANDATORY_IP_ADDRESS(5000)\nMANDATORY_EMAIL_ADDRESS(5001)\nMISSING_CC_INFO(5002)\nCC_ONLY(5003)\nUNABLE_TO_PROVIDE_ESTIMATES(6000)\nFUNDING_FROM_CRYPTO_ONLY(6001)\nWITHDRAWAL_FROM_WALLET_TO_CRYPTO(6002)\nSOURCE_WALLET_CURRENCY_DIFFERENT_THAN_DESTINATION_TOKEN_CURRENCY(6003)\n",
             "format" : "int32"
           }
         },
         "additionalProperties" : true
       },
       "unmanagedError" : {
-        "required" : [ "error" ],
         "type" : "object",
         "properties" : {
           "error" : {
@@ -5547,17 +5843,16 @@
         "additionalProperties" : true
       },
       "transactionUpdate" : {
-        "required" : [ "feedback", "providerName" ],
+        "required" : [ "feedback" ],
         "type" : "object",
         "properties" : {
           "payload" : {
             "type" : "string",
             "format" : "escaped_json",
-            "example" : "{\"status\":\"SETTLED\",\"exchangeInfo\":{\"amountDebited\":150.0,\"amountCredited\":1.5},\"providerName\":\"CLIENT_MANAGED_SERVICE\"}"
+            "example" : "{\"status\":\"SETTLED\",\"exchangeInfo\":{\"amountDebited\":150.0,\"amountCredited\":1.5},\"providerName\":\"UNKNOWN\"}"
           },
           "providerName" : {
-            "type" : "string",
-            "enum" : [ "PTI_LEDGER", "UNKNOWN" ]
+            "$ref" : "#/components/schemas/providerName"
           },
           "feedback" : {
             "type" : "string",
@@ -5589,7 +5884,7 @@
             "$ref" : "#/components/schemas/oneOfExternalPaymentMethod"
           },
           "destinationMethod" : {
-            "$ref" : "#/components/schemas/walletPaymentMethod"
+            "$ref" : "#/components/schemas/walletPaymentMethodWrapper"
           }
         },
         "description" : "Fund a Wallet with crypto. SourceMethod: external crypto Wallet. DestinationMethod: Wallet on the platform.",
@@ -5630,7 +5925,7 @@
             "paymentMethodType" : "WALLET",
             "paymentInformation" : {
               "type" : "WALLET",
-              "walletId" : "MyUSDWallet"
+              "id" : "MyUSDWallet"
             }
           },
           "amount" : 200,
@@ -5661,10 +5956,10 @@
         "type" : "object",
         "properties" : {
           "sourceTransferMethod" : {
-            "$ref" : "#/components/schemas/walletPaymentMethod"
+            "$ref" : "#/components/schemas/walletPaymentMethodWrapper"
           },
           "destinationTransferMethod" : {
-            "$ref" : "#/components/schemas/walletPaymentMethod"
+            "$ref" : "#/components/schemas/walletPaymentMethodWrapper"
           },
           "destination" : {
             "$ref" : "#/components/schemas/oneOfUserSubTypes"
@@ -5684,14 +5979,14 @@
             "paymentMethodType" : "WALLET",
             "paymentInformation" : {
               "type" : "WALLET",
-              "walletId" : "MyUSDWallet"
+              "id" : "MyUSDWallet"
             }
           },
           "destinationTransferMethod" : {
             "paymentMethodType" : "WALLET",
             "paymentInformation" : {
               "type" : "WALLET",
-              "walletId" : "MyUSDWallet2"
+              "id" : "MyUSDWallet2"
             }
           },
           "destination" : {
@@ -5753,7 +6048,7 @@
             "paymentMethodType" : "WALLET",
             "paymentInformation" : {
               "type" : "WALLET",
-              "walletId" : "MyUSDWallet"
+              "id" : "MyUSDWallet"
             }
           },
           "seller" : {
@@ -5779,7 +6074,7 @@
           "usdValue" : 200,
           "type" : "BUY",
           "feeRecipients" : [ {
-            "feeRecipientId" : "3d85a4fc-b98f-4ab7-96fe-4cc1779fc9c2",
+            "id" : "3d85a4fc-b98f-4ab7-96fe-4cc1779fc9c2",
             "walletId" : "USDCreatorWallet",
             "currency" : "USD",
             "feeRecipientType" : "COMMISSION",
@@ -5835,7 +6130,7 @@
             "paymentMethodType" : "WALLET",
             "paymentInformation" : {
               "type" : "WALLET",
-              "walletId" : "MyUSDWallet"
+              "id" : "MyUSDWallet"
             }
           },
           "buyer" : {
@@ -5845,7 +6140,7 @@
           "amount" : 200,
           "usdValue" : 200,
           "feeRecipients" : [ {
-            "feeRecipientId" : "3d85a4fc-b98f-4ab7-96fe-4cc1779fc9c2",
+            "id" : "3d85a4fc-b98f-4ab7-96fe-4cc1779fc9c2",
             "walletId" : "USDCreatorWallet",
             "currency" : "USD",
             "feeRecipientType" : "COMMISSION",
@@ -5865,7 +6160,7 @@
             "$ref" : "#/components/schemas/oneOfExternalPaymentMethod"
           },
           "sourceMethod" : {
-            "$ref" : "#/components/schemas/walletPaymentMethod"
+            "$ref" : "#/components/schemas/walletPaymentMethodWrapper"
           }
         },
         "description" : "Withdraw from a Wallet to fiat destination. SourceMethod: Wallet on the platform. DestinationMethod: fiat payment method.",
@@ -5887,7 +6182,7 @@
             "paymentMethodType" : "WALLET",
             "paymentInformation" : {
               "type" : "WALLET",
-              "walletId" : "db36f561-f20d-47b9-80b8-89dc1ecb4903"
+              "id" : "db36f561-f20d-47b9-80b8-89dc1ecb4903"
             }
           },
           "amount" : 200,
@@ -5903,10 +6198,10 @@
         "type" : "object",
         "properties" : {
           "sourceMethod" : {
-            "$ref" : "#/components/schemas/walletPaymentMethod"
+            "$ref" : "#/components/schemas/walletPaymentMethodWrapper"
           },
           "destinationMethod" : {
-            "$ref" : "#/components/schemas/walletPaymentMethod"
+            "$ref" : "#/components/schemas/walletPaymentMethodWrapper"
           }
         },
         "description" : "Trade currency/crypto for another. SourceMethod: Wallet. DestinationMethod: Wallet.",
@@ -5919,14 +6214,14 @@
             "paymentMethodType" : "WALLET",
             "paymentInformation" : {
               "type" : "WALLET",
-              "walletId" : "MyUSDWallet"
+              "id" : "MyUSDWallet"
             }
           },
           "destinationMethod" : {
             "paymentMethodType" : "WALLET",
             "paymentInformation" : {
               "type" : "WALLET",
-              "walletId" : "MyBTCWallet"
+              "id" : "MyBTCWallet"
             }
           },
           "amount" : 200,
@@ -5945,7 +6240,7 @@
             "$ref" : "#/components/schemas/oneOfPaymentMethod"
           },
           "destinationMethod" : {
-            "$ref" : "#/components/schemas/walletPaymentMethod"
+            "$ref" : "#/components/schemas/walletPaymentMethodWrapper"
           }
         },
         "description" : "Collect payment from the initiator, the beneficiary is the Client platform's  specified Wallet in the destinationMethod(if specified).",
@@ -5958,14 +6253,14 @@
             "paymentMethodType" : "WALLET",
             "paymentInformation" : {
               "type" : "WALLET",
-              "walletId" : "MyUSDWallet"
+              "id" : "MyUSDWallet"
             }
           },
           "destinationMethod" : {
             "paymentMethodType" : "WALLET",
             "paymentInformation" : {
               "type" : "WALLET",
-              "walletId" : "client_subscriptions"
+              "id" : "client_subscriptions"
             }
           },
           "amount" : 200,
@@ -5984,7 +6279,7 @@
             "$ref" : "#/components/schemas/oneOfUserSubTypes"
           },
           "destinationMethod" : {
-            "$ref" : "#/components/schemas/walletPaymentMethod"
+            "$ref" : "#/components/schemas/walletPaymentMethodWrapper"
           }
         },
         "description" : "Mint some value on behalf of a User in a Wallet. DestinationMethod: Wallet on the platform. destination: destination User.",
@@ -5997,7 +6292,7 @@
             "paymentMethodType" : "WALLET",
             "paymentInformation" : {
               "type" : "WALLET",
-              "walletId" : "MyBTCWallet"
+              "id" : "MyBTCWallet"
             }
           },
           "amount" : 0.55,
@@ -6012,6 +6307,10 @@
         "required" : [ "paymentMethodType" ],
         "type" : "object",
         "properties" : {
+          "sameDayAch" : {
+            "type" : "boolean",
+            "description" : "Used to identify whether this ACH will be a same day (true) or standard (false) ACH."
+          },
           "paymentMethodType" : {
             "$ref" : "#/components/schemas/paymentMethodType"
           },
@@ -6103,6 +6402,19 @@
           }
         },
         "additionalProperties" : true
+      },
+      "walletPaymentMethodWrapper" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/walletPaymentMethod"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "paymentMethodType" : {
+              "type" : "string",
+              "enum" : [ "WALLET" ]
+            }
+          }
+        } ]
       },
       "walletPaymentMethod" : {
         "required" : [ "paymentMethodType" ],
@@ -6206,13 +6518,19 @@
             "pattern" : "^[A-Za-z]+(?:_[A-Za-z]+)*$",
             "type" : "string"
           },
-          "balanceBefore" : {
+          "pendingBalanceBefore" : {
             "maximum" : 999999,
             "minimum" : 0,
             "type" : "number",
             "format" : "double"
           },
-          "inFlightBalanceBefore" : {
+          "totalBalanceBefore" : {
+            "maximum" : 999999,
+            "minimum" : 0,
+            "type" : "number",
+            "format" : "double"
+          },
+          "lockedBalanceBefore" : {
             "maximum" : 999999,
             "minimum" : 0,
             "type" : "number",
@@ -6232,7 +6550,7 @@
           },
           "operationTarget" : {
             "type" : "string",
-            "enum" : [ "BALANCE", "IN_FLIGHT_BALANCE" ]
+            "enum" : [ "LOCKED_BALANCE", "PENDING_BALANCE", "TOTAL_BALANCE" ]
           },
           "requestId" : {
             "$ref" : "#/components/schemas/uuidLikeStr"
@@ -6241,9 +6559,9 @@
         "additionalProperties" : false,
         "example" : {
           "walletId" : "6d9e99eb-95e2-44c3-a790-c61dde3952ad",
-          "balanceBefore" : 100.0,
+          "totalBalanceBefore" : 100.0,
           "change" : 5.99,
-          "targetOperation" : "BALANCE",
+          "targetOperation" : "TOTAL_BALANCE",
           "createDateTime" : "2024-12-05T12:00:00Z"
         }
       },
@@ -6395,14 +6713,14 @@
             "paymentMethodType" : "WALLET",
             "paymentInformation" : {
               "type" : "WALLET",
-              "walletId" : "MyUSDWallet"
+              "id" : "MyUSDWallet"
             }
           },
           "destinationMethod" : {
             "paymentMethodType" : "WALLET",
             "paymentInformation" : {
               "type" : "WALLET",
-              "walletId" : "MyUSDWallet2"
+              "id" : "MyUSDWallet2"
             }
           },
           "destination" : {
@@ -6692,6 +7010,12 @@
         "required" : [ "amount", "date", "initiator" ],
         "type" : "object",
         "properties" : {
+          "id" : {
+            "maxLength" : 64,
+            "pattern" : "^[a-z0-9_-]{3,64}$",
+            "type" : "string",
+            "description" : "The id of the transaction/payment. Optional, will be populated with the value provided in the x-pti-request-id header."
+          },
           "transactionGroupId" : {
             "$ref" : "#/components/schemas/uuidLikeStrTransactionGroup"
           },
@@ -6920,6 +7244,7 @@
         },
         "example" : {
           "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
+          "type" : "PERSON",
           "dateOfBirth" : "1988-09-28",
           "name" : {
             "firstName" : "test",
@@ -7010,7 +7335,7 @@
         "required" : [ "currency", "type" ],
         "type" : "object",
         "properties" : {
-          "walletId" : {
+          "id" : {
             "maxLength" : 255,
             "pattern" : "^[A-Za-z]+(?:_[A-Za-z]+)*$",
             "type" : "string"
@@ -7042,7 +7367,7 @@
           }
         },
         "example" : {
-          "walletId" : "6c870027-01d8-4804-8867-6a08e8a37e49",
+          "id" : "6c870027-01d8-4804-8867-6a08e8a37e49",
           "label" : "MyUSDWallet",
           "type" : "WALLET",
           "currency" : "USD",
@@ -7052,7 +7377,7 @@
       "wallet" : {
         "type" : "object",
         "properties" : {
-          "walletId" : {
+          "id" : {
             "maxLength" : 255,
             "pattern" : "^[A-Za-z]+(?:_[A-Za-z]+)*$",
             "type" : "string"
@@ -7068,19 +7393,25 @@
           "network" : {
             "$ref" : "#/components/schemas/blockChainEnum"
           },
-          "balance" : {
-            "maximum" : 999999,
-            "minimum" : 0,
-            "type" : "number",
-            "format" : "double"
-          },
-          "inflightBalance" : {
-            "maximum" : 999999,
-            "minimum" : 0,
-            "type" : "number",
-            "format" : "double"
-          },
           "availableBalance" : {
+            "maximum" : 999999,
+            "minimum" : 0,
+            "type" : "number",
+            "format" : "double"
+          },
+          "lockedBalance" : {
+            "maximum" : 999999,
+            "minimum" : 0,
+            "type" : "number",
+            "format" : "double"
+          },
+          "pendingBalance" : {
+            "maximum" : 999999,
+            "minimum" : 0,
+            "type" : "number",
+            "format" : "double"
+          },
+          "totalBalance" : {
             "maximum" : 999999,
             "minimum" : 0,
             "type" : "number",
@@ -7106,7 +7437,7 @@
           }
         },
         "example" : {
-          "walletId" : "MyUSDWallet",
+          "id" : "MyUSDWallet",
           "label" : "MyUSDWallet",
           "currency" : "USD",
           "type" : "WALLET",
@@ -7117,7 +7448,7 @@
             "currency" : "BTC"
           },
           "createDateTime" : "2021-09-28T12:00:00Z",
-          "balance" : 1000
+          "availableBalance" : 1000
         }
       },
       "withdrawalTransaction" : {
@@ -7259,10 +7590,10 @@
         "description" : "If your system performs transactions that are together part of an overall transaction group, use this to tie them together"
       },
       "feeRecipient" : {
-        "required" : [ "amount", "currency", "feeRecipientId", "feeRecipientType", "walletId" ],
+        "required" : [ "amount", "currency", "feeRecipientType", "id", "walletId" ],
         "type" : "object",
         "properties" : {
-          "feeRecipientId" : {
+          "id" : {
             "type" : "string",
             "description" : "User ID of the Commission Recipient"
           },
@@ -7289,7 +7620,7 @@
         },
         "additionalProperties" : false,
         "example" : {
-          "feeRecipientId" : "MyUserId",
+          "id" : "MyUserId",
           "walletId" : "MyWalletId",
           "currency" : "USD",
           "amount" : 100,
@@ -7300,6 +7631,9 @@
         "required" : [ "digitalItemType", "itemDescription", "itemReference", "itemTitle" ],
         "type" : "object",
         "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          },
           "itemReference" : {
             "maxLength" : 128,
             "pattern" : "^[ -~]*$",
@@ -7339,7 +7673,8 @@
       "providerName" : {
         "maxLength" : 64,
         "pattern" : "^[A-Za-z0-9\\-_]{3,64}$",
-        "type" : "string"
+        "type" : "string",
+        "description" : "A provider identifier. Can be any alphanumeric string (3-64 chars), but the following are commonly used values: PTI_LEDGER, UNKNOWN, WORLDPAY, TRMLABS, SARDINE, CIRCLE, TABAPAY, AU10TIX, OPEN_SANCTION, COINBASE_PRIME, COINBASE_EXCHANGE, CHECKOUT, FORTE, M_AND_T, CROSS_RIVER_BANK, FIREBLOCKS, BANKING example: PTI_LEDGER\n"
       },
       "transactionAssessStatus" : {
         "type" : "string",
@@ -7358,7 +7693,7 @@
       "userAssessStatus" : {
         "type" : "string",
         "additionalProperties" : false,
-        "enum" : [ "PENDING", "ERROR", "UNDER_REVIEW", "REQUESTED_MORE_INFORMATION", "ACCEPTED", "REFUSED" ]
+        "enum" : [ "PENDING", "ERROR", "UNDER_REVIEW", "REQUESTED_MORE_INFORMATION", "ACCEPTED", "REFUSED", "INVALID" ]
       },
       "transactionStatus" : {
         "type" : "string",
@@ -7706,15 +8041,15 @@
           "total" : 2,
           "items" : [ {
             "walletId" : "6d9e99eb-95e2-44c3-a790-c61dde3952ad",
-            "balanceBefore" : 100.0,
+            "availableBalanceBefore" : 100.0,
             "change" : 5.99,
-            "targetOperation" : "BALANCE",
+            "targetOperation" : "AVAILABLE_BALANCE",
             "createDateTime" : "2024-12-05T12:00:00Z"
           }, {
             "walletId" : "6d9e99eb-95e2-44c3-a790-c61dde3952ad",
-            "inFlightBalanceBefore" : 0.0,
+            "lockedBalanceBefore" : 0.0,
             "change" : 5.99,
-            "targetOperation" : "IN_FLIGHT_BALANCE",
+            "targetOperation" : "LOCKED_BALANCE",
             "createDateTime" : "2024-12-05T12:00:00Z"
           } ]
         }
@@ -7843,11 +8178,11 @@
       },
       "currencyEnum" : {
         "type" : "string",
-        "enum" : [ "BTC", "ETH", "SOL", "POL", "USDC", "USD" ]
+        "enum" : [ "BTC", "ETH", "SOL", "POL", "USDC", "USD", "TRX", "LTC", "ADA", "XRP", "XLM", "DOGE", "TON", "AVAX", "HBAR" ]
       },
       "blockChainEnum" : {
         "type" : "string",
-        "enum" : [ "ETHEREUM", "BITCOIN", "SOLANA", "POLYGON" ]
+        "enum" : [ "ETHEREUM", "BITCOIN", "SOLANA", "POLYGON", "TRON", "LITECOIN", "CARDANO", "RIPPLE", "STELLAR", "DOGECOIN", "AVALANCHE", "TONCOIN", "HEDERA" ]
       },
       "currencyType" : {
         "type" : "string",
@@ -8006,7 +8341,8 @@
           "maximum" : 100,
           "minimum" : 0,
           "type" : "integer",
-          "format" : "int32"
+          "format" : "int32",
+          "default" : 20
         }
       },
       "externalPaymentInformationTypeParam" : {
@@ -8031,18 +8367,32 @@
           "maximum" : 9999999,
           "minimum" : 0,
           "type" : "integer",
-          "format" : "int32"
+          "format" : "int32",
+          "default" : 0
         }
       },
       "sortByParam" : {
         "name" : "sortBy",
         "in" : "query",
-        "description" : "Sort by field. If not specified, the default value is creation date.",
+        "description" : "Sort by field. If not specified, the default value is creationDate.",
         "required" : false,
         "style" : "form",
         "explode" : true,
         "schema" : {
-          "type" : "string"
+          "type" : "string",
+          "default" : "creationDate"
+        }
+      },
+      "sortDirectionParam" : {
+        "name" : "sortDirection",
+        "in" : "query",
+        "description" : "Sort direction field. ASC or DESC, default value is DESC.",
+        "required" : false,
+        "style" : "form",
+        "explode" : true,
+        "schema" : {
+          "type" : "string",
+          "default" : "DESC"
         }
       },
       "clientIdHeaderParam" : {
