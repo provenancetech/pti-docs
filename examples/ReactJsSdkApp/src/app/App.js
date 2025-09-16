@@ -18,6 +18,7 @@ import { openSimpleDialog, SimpleDialog } from "../components/simpleDialog/Simpl
 import SnackAlert from "../components/snackAlert/SnackAlert";
 
 import AddCardIcon from "@mui/icons-material/AddCardOutlined";
+import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
 import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
 import ContactPageOutlinedIcon from "@mui/icons-material/ContactPageOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
@@ -133,6 +134,21 @@ const App = () => {
           variant="contained"
         >
           Open KYC Form
+        </Button>
+      </Section>
+
+      <Section style={{ gridArea: "kyb" }}>
+        <Header>
+          <BusinessOutlinedIcon />
+          KYB
+        </Header>
+        <Button
+          endIcon={<OpenInNewOutlinedIcon />}
+          fullWidth={true}
+          onClick={() => openSimpleDialog(actionType.kyb, userId, requestId, amount, scenarioId, lang)}
+          variant="contained"
+        >
+          Open KYB Form
         </Button>
       </Section>
 

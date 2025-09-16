@@ -8,6 +8,7 @@ export const ContainerGrid = styled(Container)`
     "title title"
     "informations payment"
     "informations kyc"
+    "informations kyb"
     "informations onboarding"
     "informations add-cc"
     "transaction transaction"
