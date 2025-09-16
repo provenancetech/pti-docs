@@ -6,13 +6,10 @@ export const ContainerGrid = styled(Container)`
     gap: 20px;
     grid-template-areas:
     "title title"
-    "informations payment"
     "informations kyc"
     "informations kyb"
     "informations onboarding"
-    "informations add-cc"
-    "transaction transaction"
-    "feedback feedback";
+    "informations add-cc";
 `;
 
 export const Title = styled.h1`
