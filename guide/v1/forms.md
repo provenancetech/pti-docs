@@ -97,6 +97,7 @@ These messages are js objects containing a message's event name, followed by the
 ### Message names
 - Payment: `UserTransactionCompleted`
 - Assessment: `UserAssessmentCompleted`
+- Business assessment: `BusinessAssessmentCompleted`
 - User onboarding: `UserOnboardingCompleted`
 - Add credit card: `AddCreditCardCompleted`, `AddPaymentMethodCompleted`
 - Add bank account: `AddBankAccountCompleted`, `AddPaymentMethodCompleted`
