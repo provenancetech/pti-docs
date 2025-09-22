@@ -18,6 +18,7 @@ import { openSimpleDialog, SimpleDialog } from "../components/simpleDialog/Simpl
 import SnackAlert from "../components/snackAlert/SnackAlert";
 
 import AddCardIcon from "@mui/icons-material/AddCardOutlined";
+import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
 import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
 import ContactPageOutlinedIcon from "@mui/icons-material/ContactPageOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
@@ -36,7 +37,8 @@ const App = () => {
   const [lang, setLang] = useState("en");
 
   const [createUserLoading, setCreateUserLoading] = useState(false);
-    const [transactionFeedbackPayload] = useState({
+  const [createBusinessLoading, setCreateBusinessLoading] = useState(false);
+  const [transactionFeedbackPayload] = useState({
     feedback: "SETTLED",
     transactionId: "0xbb0ec8b4ab6679a0e0486f44a867dcd913cd5acee368180ac72432784eba48e4",
     date: new Date().toISOString(),
@@ -80,6 +82,19 @@ const App = () => {
           variant="contained"
         >
           Create a new User
+        </LoadingButton>
+        <LoadingButton
+          endIcon={<BusinessOutlinedIcon />}
+          fullWidth={true}
+          loading={createBusinessLoading}
+          loadingPosition="end"
+          onClick={() => {
+            setCreateBusinessLoading(true);
+            createUser(props, "BUSINESS").finally(() => setCreateBusinessLoading(false));
+          }}
+          variant="contained"
+        >
+          Create a new Business
         </LoadingButton>
         <Stack direction="row" spacing={2}>
           <TextField
@@ -133,6 +148,21 @@ const App = () => {
           variant="contained"
         >
           Open KYC Form
+        </Button>
+      </Section>
+
+      <Section style={{ gridArea: "kyb" }}>
+        <Header>
+          <BusinessOutlinedIcon />
+          KYB
+        </Header>
+        <Button
+          endIcon={<OpenInNewOutlinedIcon />}
+          fullWidth={true}
+          onClick={() => openSimpleDialog(actionType.kyb, userId, requestId, amount, scenarioId, lang)}
+          variant="contained"
+        >
+          Open KYB Form
         </Button>
       </Section>
 

@@ -83,6 +83,22 @@ render the forms on your web application.
 </script>
 ```
 
+#### Display the KYB form
+
+```html
+<div id="kyb_form"></div>
+<script>
+  PTI.form({
+    type: "KYB",
+    requestId: "REQUEST_ID",
+    userId: "USER_ID",
+    scenarioId: "SCENARIO_ID",
+    parentElement: document.getElementById("kyb_form"),
+    lang: "en",
+  });
+</script>
+```
+
 #### Display the payment form
 
 ```html
@@ -134,7 +150,8 @@ render the forms on your web application.
 
 The value of the `type` parameter will determine which form will be displayed.
 There are various forms available:
--  `KYC` will display the KYC form
+- `KYB` will display the KYB form
+- `KYC` will display the KYC form
 - `FIAT_FUNDING` will display the Payment form
 - `ONBOARDING` will display the Onboarding form
 - `ADD_CC` will display the "Add a credit card" form

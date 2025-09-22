@@ -3,10 +3,10 @@ import { callCreateUser } from "../app/calls/callCreateUser";
 import { outputIfExists } from "../components/Utils";
 import { showErrorSnackAlert, showSuccessSnackAlert } from "../components/snackAlert/SnackAlert";
 
-const createUser = async ({ setUserId, ...props }) => {
+const createUser = async ({ setUserId, ...props }, type = "PERSON") => {
   const accessToken = await generateToken("POST", `/users`);
   if (accessToken) {
-    await callCreateUser({ accessToken, ...props })
+    await callCreateUser({ accessToken, ...props }, type)
       .then((res) => {
         setUserId(res.id);
         showSuccessSnackAlert(`User "${res.id}" successfully created`);
