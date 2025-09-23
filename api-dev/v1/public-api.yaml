@@ -5666,10 +5666,10 @@ components:
       required: false
     sortByParam:
       name: sortBy
-      description: 'Sort by field. If not specified, the default value is creationDate.'
+      description: 'Sort by field. If not specified, the default value is userCreationDate.'
       schema:
         type: string
-        default: creationDate
+        default: userCreationDate
       in: query
       required: false
     sortDirectionParam:

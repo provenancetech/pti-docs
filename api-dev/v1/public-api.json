@@ -161,13 +161,13 @@
         }, {
           "name" : "sortBy",
           "in" : "query",
-          "description" : "Sort by field. If not specified, the default value is creationDate.",
+          "description" : "Sort by field. If not specified, the default value is userCreationDate.",
           "required" : false,
           "style" : "form",
           "explode" : true,
           "schema" : {
             "type" : "string",
-            "default" : "creationDate"
+            "default" : "userCreationDate"
           }
         } ],
         "responses" : {
@@ -4474,13 +4474,13 @@
         }, {
           "name" : "sortBy",
           "in" : "query",
-          "description" : "Sort by field. If not specified, the default value is creationDate.",
+          "description" : "Sort by field. If not specified, the default value is userCreationDate.",
           "required" : false,
           "style" : "form",
           "explode" : true,
           "schema" : {
             "type" : "string",
-            "default" : "creationDate"
+            "default" : "userCreationDate"
           }
         }, {
           "name" : "sortDirection",
@@ -5170,13 +5170,13 @@
         }, {
           "name" : "sortBy",
           "in" : "query",
-          "description" : "Sort by field. If not specified, the default value is creationDate.",
+          "description" : "Sort by field. If not specified, the default value is userCreationDate.",
           "required" : false,
           "style" : "form",
           "explode" : true,
           "schema" : {
             "type" : "string",
-            "default" : "creationDate"
+            "default" : "userCreationDate"
           }
         } ],
         "responses" : {
@@ -8374,13 +8374,13 @@
       "sortByParam" : {
         "name" : "sortBy",
         "in" : "query",
-        "description" : "Sort by field. If not specified, the default value is creationDate.",
+        "description" : "Sort by field. If not specified, the default value is userCreationDate.",
         "required" : false,
         "style" : "form",
         "explode" : true,
         "schema" : {
           "type" : "string",
-          "default" : "creationDate"
+          "default" : "userCreationDate"
         }
       },
       "sortDirectionParam" : {
