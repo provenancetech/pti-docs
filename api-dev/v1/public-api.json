@@ -3,6 +3,11 @@
   "info" : {
     "title" : "Fiant institutional API",
     "description" : "Fiant institutional API specification",
+    "contact" : {
+      "name" : "API Support",
+      "url" : "https://support.fiant.io/support/tickets/new",
+      "email" : "support@fiant.io"
+    },
     "license" : {
       "name" : "Private",
       "url" : "https://provenancetech.io"
@@ -39,6 +44,7 @@
       "post" : {
         "tags" : [ "Authentication" ],
         "summary" : "Get a User Token",
+        "description" : "This endpoint generates a User Token that can be used to authenticate requests on behalf of a specific User. The token is obtained by submitting a request payload that specifies the target API resource and method the User intends to access. Use this operation to enable secure, delegated access to API resources without directly sharing the User’s credentials.",
         "operationId" : "getUserToken",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -119,6 +125,7 @@
       "get" : {
         "tags" : [ "Users" ],
         "summary" : "Get the list of your Users",
+        "description" : "Retrieves a paginated list of users associated with the specified client.\nYou can control the number of results returned per page and specify an\noffset to navigate through the collection. Results can also be sorted\nby supported fields to simplify client-side processing.\n",
         "operationId" : "getListOfUsers",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -209,6 +216,7 @@
       "put" : {
         "tags" : [ "Users" ],
         "summary" : "Overwrite all User’s information",
+        "description" : "Replaces the entire User record with the data provided in the request body. \nAll existing information will be overwritten — fields not included in the \nrequest will be cleared.\n\nUse this endpoint when you need to fully update a User’s profile, rather than \nmaking partial changes.\n",
         "operationId" : "updateUser",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -283,6 +291,7 @@
       "post" : {
         "tags" : [ "Users" ],
         "summary" : "Create a User",
+        "description" : "Creates a new user under the client account. The request must include all\nrequired user information in the request body.\n\nAfter a user is created, your system can receive real-time status updates \nthrough the provided callback URL. These callbacks notify your server of \nimportant changes to the user’s lifecycle (e.g., activation, deactivation, \nor verification status).\n",
         "operationId" : "addAUser",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -418,6 +427,7 @@
       "patch" : {
         "tags" : [ "Users" ],
         "summary" : "Add information to a User",
+        "description" : "Updates specific fields of an existing User without overwriting the entire \nrecord. Only the properties included in the request body will be modified;\nall other data remains unchanged. \n\nThis endpoint is useful for incremental updates, such as adding new contact \ndetails, updating addresses, or modifying optional profile fields.\n",
         "operationId" : "mergeUserInfo",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -494,7 +504,7 @@
       "get" : {
         "tags" : [ "Users" ],
         "summary" : "Get a User by ID",
-        "description" : "This endpoint is used to get the information for a specific User. The information returned is the information that was collected for the User. PII information is not returned.",
+        "description" : "This endpoint is used to get the information for a specific User.  The information returned is the information that was collected for the User. PII information is not returned.",
         "operationId" : "getUser",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -569,7 +579,7 @@
       "post" : {
         "tags" : [ "Users" ],
         "summary" : "Create a new User Assessment",
-        "description" : "This endpoint is used to assess a User. Depending on what information is available on the User,  a tier level will be assigned to the assessment, the higher the level is, the more permission he will get on your platform.  Please refer to PTI documentation for more information on the tier levels configuration and scenarios.",
+        "description" : "This endpoint is used to assess a User. Depending on what information is  available on the User,  a tier level will be assigned to the assessment,  the higher the level is, the more permission he will get on your  platform.  Please refer to PTI documentation for more information on the  tier levels configuration and scenarios.",
         "operationId" : "startUserAssessment",
         "parameters" : [ {
           "name" : "x-pti-request-id",
@@ -757,6 +767,7 @@
       "get" : {
         "tags" : [ "Users" ],
         "summary" : "Get a User’s latest Assessment",
+        "description" : "Retrieves the most recent assessment for a specific User. Assessments reflect \nthe User's verification status, risk tier, and any relevant KYC (Know Your \nCustomer) information.\n\nThis endpoint is useful for quickly checking the User’s current verification \nlevel and status without retrieving the full history of assessments.\n",
         "operationId" : "getLastKyc",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -831,6 +842,7 @@
       "post" : {
         "tags" : [ "Users" ],
         "summary" : "Upload a User’s Document (Passport, License, etc)",
+        "description" : "Allows uploading a document for a specific User, such as a passport, driver’s \nlicense, or other identification. The request can include metadata about the \ndocument and any associated ID information.\n\nUploaded documents are used for KYC verification, compliance checks, and \nrecord-keeping purposes. The file must be sent as binary data and cannot \nexceed 5 MB in size.\n",
         "operationId" : "uploadDocument",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -917,6 +929,7 @@
       "get" : {
         "tags" : [ "Wallets" ],
         "summary" : "Get the list of the supported Assets",
+        "description" : "Retrieves a list of all assets supported by the platform. Each asset includes \nits currency, type, and, for cryptocurrencies, the networks on which it is \nsupported. This information is useful for wallet operations, transactions, \nand trading.\n",
         "operationId" : "getListOfAssets",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -986,6 +999,7 @@
       "get" : {
         "tags" : [ "Wallets" ],
         "summary" : "Get a list of a User's wallets",
+        "description" : "Retrieves a list of wallets for a specific user. Each wallet includes the wallet type, \nunique ID, currency, associated blockchain network (if applicable), optional label, \nmulti-address support flag, and creation date. The endpoint returns up to 100 wallets \nper request.\n",
         "operationId" : "getWallets",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -1062,6 +1076,7 @@
       "post" : {
         "tags" : [ "Wallets" ],
         "summary" : "Create a Wallet for a User",
+        "description" : "Creates a new wallet for a specific user. The request includes the wallet type, \na unique wallet ID, the currency, and for cryptocurrencies, the blockchain network.\nOptional fields include a human-readable label and whether the wallet supports multiple \naddresses. The newly created wallet can then be used for transactions, deposits, or \nother wallet-related operations.\n",
         "operationId" : "createWallet",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -1095,7 +1110,7 @@
                 "type" : "WALLET",
                 "id" : "ffffffff-6129-4bda-8a10-8ef234dff30e",
                 "currency" : "ETH",
-                "network" : "Ethereum"
+                "network" : "ETHEREUM"
               }
             }
           },
@@ -1159,10 +1174,10 @@
       }
     },
     "/users/{userId}/wallets/{walletId}" : {
-      "summary" : "Delete a Wallet",
       "get" : {
         "tags" : [ "Wallets" ],
         "summary" : "Get a Wallet by ID",
+        "description" : "Retrieves a specific wallet for a user by its walletId. The response includes the \nwallet's currency, network, type, optional label, balance information, creation \ntimestamp, and other relevant metadata.\n",
         "operationId" : "getWallet",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -1236,6 +1251,7 @@
       "delete" : {
         "tags" : [ "Wallets" ],
         "summary" : "Delete a Wallet",
+        "description" : "Deletes a specific wallet for the given user. The wallet to be deleted is identified \nby its walletId. Only wallets with a zero balance can be deleted; wallets containing \nfunds cannot be removed. Once deleted, the wallet and any associated metadata will \nno longer be accessible.\n",
         "operationId" : "deleteWallet",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -1324,6 +1340,7 @@
       "post" : {
         "tags" : [ "Wallets" ],
         "summary" : "Simulate a Deposit to a Wallet",
+        "description" : "Simulates a deposit into a user's wallet without actually processing a real \ntransaction. The request specifies the amount and the payment method type.\nThe response provides the expected result of the deposit, including status \nand any applicable metadata, allowing you to validate transaction behavior \nbefore executing real deposits.\n",
         "operationId" : "simulateWalletDeposit",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -1422,6 +1439,7 @@
       "post" : {
         "tags" : [ "Wallets" ],
         "summary" : "Create a crypto deposit address",
+        "description" : "Creates a new deposit address for a user's cryptocurrency wallet. \nThis allows the user to receive crypto deposits on the specified wallet. \nThe response includes the wallet details along with its deposit instructions.\n",
         "operationId" : "createWalletDepositAddress",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -1522,6 +1540,7 @@
       "post" : {
         "tags" : [ "Wallets" ],
         "summary" : "Create a virtual bank account for a Wallet",
+        "description" : "Creates a virtual bank account associated with a user's wallet.\nThis account can be used to receive fiat deposits directly into the wallet.\nThe response returns the wallet details along with the virtual bank account \nand its deposit instruction.\n",
         "operationId" : "createWalletVirtualBankAccount",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -1631,6 +1650,7 @@
       "post" : {
         "tags" : [ "Wallets" ],
         "summary" : "Generate wire instructions for a Wallet",
+        "description" : "Generates wire transfer instructions for a user's wallet to facilitate \nfiat deposits. The response includes the wallet details along with \nthe generated wire instructions for completing the deposit.\n",
         "operationId" : "generateWireInstructions",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -1739,6 +1759,7 @@
       "get" : {
         "tags" : [ "Wallets" ],
         "summary" : "Retrieve the balance history of a Wallet",
+        "description" : "Retrieves the historical balance and transaction records for a specific user's wallet.\nSupports pagination using `page` and `size` query parameters. Each entry in the history \nincludes details about deposits, withdrawals, and other balance-affecting operations.\n",
         "operationId" : "getWalletHistory",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -1855,7 +1876,7 @@
       "get" : {
         "tags" : [ "Payment Information" ],
         "summary" : "Get a User’s Payment Information objects",
-        "description" : "This endpoint is used to get the Payment Information for a specific User. The information returned is the information that was collected for the User. You can filter by Payment Information type",
+        "description" : "This endpoint is used to get the Payment Information for a specific User. The information returned is the information that was collected for the User. You can filter by Payment Information type.",
         "operationId" : "getUserPaymentInformations",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -2376,16 +2397,40 @@
                 "sourceMethod" : {
                   "paymentMethodType" : "CREDIT_CARD",
                   "paymentInformation" : {
-                    "id" : "4b573a86-fd3f-475d-a90b-3658f2e79719"
-                  },
-                  "billingEmail" : "user@example.com"
+                    "type" : "ENCRYPTED_CREDIT_CARD",
+                    "id" : "4b573a86-fd3f-475d-a90b-3658f2e79719",
+                    "creditCardLast4" : "1234",
+                    "cvv" : "789",
+                    "creditCardType" : "mastercard",
+                    "expirationYear" : "2030",
+                    "expirationMonth" : "01",
+                    "creditCardBin" : "123456",
+                    "cardHolderFirstName" : "John",
+                    "cardHolderLastName" : "Smith",
+                    "creditCardAddress" : {
+                      "streetAddress" : "1 Main street",
+                      "city" : "New York",
+                      "postalCode" : "10001",
+                      "stateCode" : "NY",
+                      "country" : "US"
+                    }
+                  }
                 },
                 "destinationMethod" : {
                   "paymentMethodType" : "WALLET",
                   "paymentInformation" : {
-                    "id" : "3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82"
-                  },
-                  "billingEmail" : "user@example.com"
+                    "type" : "WALLET",
+                    "id" : "3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82",
+                    "label" : "MyUSDWallet",
+                    "currency" : "USD",
+                    "depositInstruction" : {
+                      "type" : "BANK_ACCOUNT",
+                      "accountNumber" : "123456789",
+                      "routingNumber" : "12345678"
+                    },
+                    "createDateTime" : "2021-09-28T12:00:00Z",
+                    "availableBalance" : 1000
+                  }
                 },
                 "type" : "DEPOSIT",
                 "transactionTotal" : {
@@ -2432,7 +2477,7 @@
                 "transactionGroupId" : "c8d8ed2a-33df-463b-95af-e59ff6e16414",
                 "usdValue" : 100,
                 "amount" : 100,
-                "date" : "2024-12-13T18:46:40.666+0000"
+                "date" : "2024-12-13T18:46:40.666+00:00"
               }
             }
           },
@@ -2546,6 +2591,7 @@
       "get" : {
         "tags" : [ "Transaction Assessment" ],
         "summary" : "Get the transaction assessment status",
+        "description" : "Retrieves the status of a specific transaction assessment by its request ID.\nThe response includes details such as the assessment result, risk level, and\nrelevant evaluation metadata.\n",
         "operationId" : "getTransactionAssess",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -2618,6 +2664,7 @@
       "post" : {
         "tags" : [ "Transaction Assessment" ],
         "summary" : "Validate that a User is allowed to perform a Transaction",
+        "description" : "Validates whether a User is allowed to perform a specific Transaction.\nThe response indicates whether the transaction is allowed and may return \nvalidation errors if the transaction violates any rules.\n",
         "operationId" : "transactionInformationAssessment",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -2680,16 +2727,40 @@
                 "sourceMethod" : {
                   "paymentMethodType" : "CREDIT_CARD",
                   "paymentInformation" : {
-                    "id" : "4b573a86-fd3f-475d-a90b-3658f2e79719"
-                  },
-                  "billingEmail" : "user@example.com"
+                    "type" : "ENCRYPTED_CREDIT_CARD",
+                    "id" : "4b573a86-fd3f-475d-a90b-3658f2e79719",
+                    "creditCardLast4" : "1234",
+                    "cvv" : "789",
+                    "creditCardType" : "mastercard",
+                    "expirationYear" : "2030",
+                    "expirationMonth" : "01",
+                    "creditCardBin" : "123456",
+                    "cardHolderFirstName" : "John",
+                    "cardHolderLastName" : "Smith",
+                    "creditCardAddress" : {
+                      "streetAddress" : "1 Main street",
+                      "city" : "New York",
+                      "postalCode" : "10001",
+                      "stateCode" : "NY",
+                      "country" : "US"
+                    }
+                  }
                 },
                 "destinationMethod" : {
                   "paymentMethodType" : "WALLET",
                   "paymentInformation" : {
-                    "id" : "3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82"
-                  },
-                  "billingEmail" : "user@example.com"
+                    "type" : "WALLET",
+                    "id" : "3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82",
+                    "label" : "MyUSDWallet",
+                    "currency" : "USD",
+                    "depositInstruction" : {
+                      "type" : "BANK_ACCOUNT",
+                      "accountNumber" : "123456789",
+                      "routingNumber" : "12345678"
+                    },
+                    "createDateTime" : "2021-09-28T12:00:00Z",
+                    "availableBalance" : 1000
+                  }
                 },
                 "type" : "DEPOSIT",
                 "transactionTotal" : {
@@ -2736,7 +2807,7 @@
                 "transactionGroupId" : "c8d8ed2a-33df-463b-95af-e59ff6e16414",
                 "usdValue" : 100,
                 "amount" : 100,
-                "date" : "2024-12-13T18:46:40.666+0000"
+                "date" : "2024-12-13T18:46:40.666+00:00"
               }
             }
           },
@@ -2793,6 +2864,7 @@
       "post" : {
         "tags" : [ "Transactions" ],
         "summary" : "Estimate the Fill Price of a Trade",
+        "description" : "Estimates the fill price and associated costs of a Trade transaction. \nThe response returns a quote including the estimated fill price per unit, \nthe source and destination currencies, and the trade amount.\n",
         "operationId" : "estimationTransactionCost",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -2815,16 +2887,41 @@
                 "sourceMethod" : {
                   "paymentMethodType" : "CREDIT_CARD",
                   "paymentInformation" : {
-                    "id" : "4b573a86-fd3f-475d-a90b-3658f2e79719"
+                    "type" : "ENCRYPTED_CREDIT_CARD",
+                    "id" : "4b573a86-fd3f-475d-a90b-3658f2e79719",
+                    "creditCardLast4" : "1234",
+                    "cvv" : "789",
+                    "creditCardType" : "mastercard",
+                    "expirationYear" : "2030",
+                    "expirationMonth" : "01",
+                    "creditCardBin" : "123456",
+                    "cardHolderFirstName" : "John",
+                    "cardHolderLastName" : "Smith",
+                    "creditCardAddress" : {
+                      "streetAddress" : "1 Main street",
+                      "city" : "New York",
+                      "postalCode" : "10001",
+                      "stateCode" : "NY",
+                      "country" : "US"
+                    }
                   },
                   "billingEmail" : "user@example.com"
                 },
                 "destinationMethod" : {
                   "paymentMethodType" : "WALLET",
                   "paymentInformation" : {
-                    "id" : "3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82"
-                  },
-                  "billingEmail" : "user@example.com"
+                    "type" : "WALLET",
+                    "id" : "3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82",
+                    "label" : "MyUSDWallet",
+                    "currency" : "USD",
+                    "depositInstruction" : {
+                      "type" : "BANK_ACCOUNT",
+                      "accountNumber" : "123456789",
+                      "routingNumber" : "12345678"
+                    },
+                    "createDateTime" : "2021-09-28T12:00:00Z",
+                    "availableBalance" : 1000
+                  }
                 },
                 "type" : "DEPOSIT",
                 "transactionTotal" : {
@@ -2871,7 +2968,7 @@
                 "transactionGroupId" : "c8d8ed2a-33df-463b-95af-e59ff6e16414",
                 "usdValue" : 100,
                 "amount" : 100,
-                "date" : "2024-12-13T18:46:40.666+0000"
+                "date" : "2024-12-13T18:46:40.666+00:00"
               }
             }
           },
@@ -2948,7 +3045,7 @@
       "post" : {
         "tags" : [ "Transactions" ],
         "summary" : "Create a Deposit (Fiat or Crypto)",
-        "description" : "This endpoint is used to execute a deposit (crypto/fiat -in) transaction for a User. The transaction assessment and User information requirement are evaluated before the transaction is executed.",
+        "description" : "This endpoint is used to execute a deposit (crypto/fiat -in) transaction  for a User. The transaction assessment and User information requirement  are evaluated before the transaction is executed.",
         "operationId" : "deposit",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -3021,16 +3118,41 @@
                 "sourceMethod" : {
                   "paymentMethodType" : "CREDIT_CARD",
                   "paymentInformation" : {
-                    "id" : "4b573a86-fd3f-475d-a90b-3658f2e79719"
+                    "type" : "ENCRYPTED_CREDIT_CARD",
+                    "id" : "4b573a86-fd3f-475d-a90b-3658f2e79719",
+                    "creditCardLast4" : "1234",
+                    "cvv" : "789",
+                    "creditCardType" : "mastercard",
+                    "expirationYear" : "2030",
+                    "expirationMonth" : "01",
+                    "creditCardBin" : "123456",
+                    "cardHolderFirstName" : "John",
+                    "cardHolderLastName" : "Smith",
+                    "creditCardAddress" : {
+                      "streetAddress" : "1 Main street",
+                      "city" : "New York",
+                      "postalCode" : "10001",
+                      "stateCode" : "NY",
+                      "country" : "US"
+                    }
                   },
                   "billingEmail" : "user@example.com"
                 },
                 "destinationMethod" : {
                   "paymentMethodType" : "WALLET",
                   "paymentInformation" : {
-                    "id" : "3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82"
-                  },
-                  "billingEmail" : "user@example.com"
+                    "type" : "WALLET",
+                    "id" : "3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82",
+                    "label" : "MyUSDWallet",
+                    "currency" : "USD",
+                    "depositInstruction" : {
+                      "type" : "BANK_ACCOUNT",
+                      "accountNumber" : "123456789",
+                      "routingNumber" : "12345678"
+                    },
+                    "createDateTime" : "2021-09-28T12:00:00Z",
+                    "availableBalance" : 1000
+                  }
                 },
                 "type" : "DEPOSIT",
                 "initiator" : {
@@ -3063,7 +3185,7 @@
                 "transactionGroupId" : "c8d8ed2a-33df-463b-95af-e59ff6e16414",
                 "usdValue" : 100,
                 "amount" : 100,
-                "date" : "2024-12-13T18:46:40.666+0000"
+                "date" : "2024-12-13T18:46:40.666+00:00"
               }
             }
           },
@@ -3121,7 +3243,7 @@
             }
           },
           "422" : {
-            "description" : "One of these 2 cases: More information about the User is needed in order to approve the transaction. There is no approved assessment for this User that enables him to perform the operation.",
+            "description" : "One of these 2 cases: More information about the User is needed in  order to approve the transaction. There is no approved assessment  for this User that enables him to perform the operation.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -3177,7 +3299,7 @@
       "post" : {
         "tags" : [ "Transactions" ],
         "summary" : "Create a Withdrawal (Fiat or Crypto)",
-        "description" : "This endpoint is used to execute a withdrawal of fiat or crypto transaction for a User. The Transaction Assessment and User information requirement are evaluated before the transaction is executed.",
+        "description" : "This endpoint is used to execute a withdrawal of fiat or crypto  transaction for a User. The Transaction Assessment and User information  requirement are evaluated before the transaction is executed.",
         "operationId" : "withdrawal",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -3247,6 +3369,10 @@
                 "$ref" : "#/components/schemas/executeWithdrawalTransaction"
               },
               "example" : {
+                "initiator" : {
+                  "id" : "7ece8274-871b-405b-9f25-f30f2128ad94",
+                  "type" : "PERSON"
+                },
                 "sourceMethod" : {
                   "paymentMethodType" : "WALLET",
                   "paymentInformation" : {
@@ -3255,14 +3381,15 @@
                   }
                 },
                 "destinationMethod" : {
-                  "paymentMethodType" : "TOKEN",
+                  "paymentMethodType" : "CRYPTO",
                   "paymentInformation" : {
-                    "type" : "TOKEN",
-                    "tokenAddress" : "0xfecf1d73653c4231a6781770c7b44eda",
-                    "tokenType" : "ETH",
-                    "blockchain" : "ETHEREUM"
+                    "type" : "CRYPTO",
+                    "walletAddress" : "0xfecf1d73653c4231a6781770c7b44eda",
+                    "currency" : "ETH",
+                    "network" : "ETHEREUM"
                   }
                 },
+                "date" : "2024-12-13T18:46:40.666+00:00",
                 "amount" : 1,
                 "usdValue" : 3999.54,
                 "type" : "WITHDRAWAL"
@@ -3379,7 +3506,7 @@
       "post" : {
         "tags" : [ "Transactions" ],
         "summary" : "Collect a Payment from a User",
-        "description" : "This endpoint is used to execute a generic payment of fiat or crypto transaction for a User. The Transaction Assessment and User information requirement are evaluated before the transaction is executed.",
+        "description" : "This endpoint is used to execute a generic payment of fiat or crypto  transaction for a User. The Transaction Assessment and User information  requirement are evaluated before the transaction is executed.",
         "operationId" : "payment",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -3448,41 +3575,74 @@
               "schema" : {
                 "$ref" : "#/components/schemas/executePaymentTransaction"
               },
-              "example" : {
-                "sourceMethod" : {
-                  "currency" : "USD",
-                  "paymentInformation" : {
-                    "type" : "ENCRYPTED_CREDIT_CARD",
-                    "id" : "79a0da5f-d24b-4ed8-a194-f8e0db32cf05"
-                  },
-                  "paymentMethodType" : "CREDIT_CARD"
-                },
-                "destinationMethod" : {
-                  "paymentMethodType" : "WALLET",
-                  "paymentInformation" : {
-                    "type" : "WALLET",
-                    "id" : "e13c3242-57d3-473f-b98c-eb2768e4549c"
-                  }
-                },
-                "transactionTotal" : {
-                  "total" : {
+              "examples" : {
+                "creditCardToWallet" : {
+                  "summary" : "Example payment from credit card to internal wallet",
+                  "value" : {
+                    "initiator" : {
+                      "id" : "7ece8274-871b-405b-9f25-f30f2128ad94",
+                      "type" : "PERSON"
+                    },
+                    "sourceMethod" : {
+                      "paymentInformation" : {
+                        "type" : "ENCRYPTED_CREDIT_CARD",
+                        "id" : "79a0da5f-d24b-4ed8-a194-f8e0db32cf05",
+                        "creditCardLast4" : "1234",
+                        "cvv" : "789",
+                        "creditCardType" : "mastercard",
+                        "expirationYear" : "2030",
+                        "expirationMonth" : "01",
+                        "creditCardBin" : "123456",
+                        "cardHolderFirstName" : "John",
+                        "cardHolderLastName" : "Smith",
+                        "creditCardAddress" : {
+                          "streetAddress" : "1 Main street",
+                          "city" : "New York",
+                          "postalCode" : "10001",
+                          "stateCode" : "NY",
+                          "country" : "US"
+                        }
+                      },
+                      "paymentMethodType" : "CREDIT_CARD"
+                    },
+                    "destinationMethod" : {
+                      "paymentMethodType" : "WALLET",
+                      "paymentInformation" : {
+                        "type" : "WALLET",
+                        "id" : "e13c3242-57d3-473f-b98c-eb2768e4549c",
+                        "label" : "MyUSDWallet",
+                        "currency" : "USD",
+                        "depositInstruction" : {
+                          "type" : "BANK_ACCOUNT",
+                          "accountNumber" : "123456789",
+                          "routingNumber" : "12345678"
+                        },
+                        "createDateTime" : "2021-09-28T12:00:00Z",
+                        "availableBalance" : 1000
+                      }
+                    },
+                    "transactionTotal" : {
+                      "total" : {
+                        "amount" : 6.99,
+                        "currency" : "USD"
+                      },
+                      "fee" : {
+                        "amount" : 0,
+                        "currency" : "USD"
+                      },
+                      "subtotal" : {
+                        "amount" : 6.99,
+                        "currency" : "USD"
+                      }
+                    },
+                    "date" : "2024-12-13T18:46:40.666+00:00",
+                    "usdValue" : 6.99,
                     "amount" : 6.99,
-                    "currency" : "USD"
-                  },
-                  "fee" : {
-                    "amount" : 0,
-                    "currency" : "USD"
-                  },
-                  "subtotal" : {
-                    "amount" : 6.99,
-                    "currency" : "USD"
+                    "type" : "PAYMENT",
+                    "clientMeta" : {
+                      "paymentMetadata" : "collection 1 publication fees"
+                    }
                   }
-                },
-                "usdValue" : 6.99,
-                "amount" : 6.99,
-                "type" : "PAYMENT",
-                "clientMeta" : {
-                  "paymentMetadata" : "collection 1 publication fees"
                 }
               }
             }
@@ -3541,7 +3701,7 @@
             }
           },
           "422" : {
-            "description" : "One of these 2 cases: More information about the User is needed in order to approve the transaction. There is no approved assessment for this User that enables him to perform the operation.",
+            "description" : "One of these 2 cases: More information about the User is needed in  order to approve the transaction. There is no approved assessment  for this User that enables him to perform the operation.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -3668,6 +3828,7 @@
               },
               "example" : {
                 "initiator" : {
+                  "id" : "7ece8274-871b-405b-9f25-f30f2128ad94",
                   "type" : "PERSON"
                 },
                 "sourceTransferMethod" : {
@@ -3685,8 +3846,10 @@
                   }
                 },
                 "destination" : {
+                  "id" : "3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82",
                   "type" : "PERSON"
                 },
+                "date" : "2024-12-13T18:46:40.666+00:00",
                 "amount" : 200,
                 "usdValue" : 200,
                 "type" : "TRANSFER"
@@ -3747,7 +3910,7 @@
             }
           },
           "422" : {
-            "description" : "One of these 2 cases: More information about the User is needed in order to approve the transaction. There is no approved assessment for this User that enables him to perform the operation.",
+            "description" : "One of these 2 cases: More information about the User is needed in  order to approve the transaction. There is no approved assessment  for this User that enables him to perform the operation.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -3873,6 +4036,10 @@
                 "$ref" : "#/components/schemas/executeTradeTransaction"
               },
               "example" : {
+                "initiator" : {
+                  "id" : "7ece8274-871b-405b-9f25-f30f2128ad94",
+                  "type" : "PERSON"
+                },
                 "sourceMethod" : {
                   "paymentMethodType" : "WALLET",
                   "paymentInformation" : {
@@ -3887,6 +4054,7 @@
                     "id" : "MyUSDWallet"
                   }
                 },
+                "date" : "2024-12-13T18:46:40.666+00:00",
                 "amount" : 0.5,
                 "usdValue" : 113,
                 "type" : "TRADE"
@@ -3947,7 +4115,7 @@
             }
           },
           "422" : {
-            "description" : "One of these 2 cases: More information about the User is needed in order to approve the transaction. There is no approved assessment for this User that enables him to perform the operation.",
+            "description" : "One of these 2 cases: More information about the User is needed in  order to approve the transaction. There is no approved assessment  for this User that enables him to perform the operation.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -4003,7 +4171,7 @@
       "post" : {
         "tags" : [ "Transactions" ],
         "summary" : "Execute a mint transaction",
-        "description" : "This endpoint is used to execute a mint transaction for a User. The Transaction Assessment and User information requirement are evaluated before the transaction is executed.",
+        "description" : "This endpoint is used to execute a mint transaction for a User. The  Transaction Assessment and User information requirement are evaluated  before the transaction is executed.",
         "operationId" : "mint",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -4128,7 +4296,7 @@
             }
           },
           "422" : {
-            "description" : "One of these 2 cases: More information about the User is needed in order to approve the transaction. There is no approved assessment for this User that enables him to perform the operation.",
+            "description" : "One of these 2 cases: More information about the User is needed in  order to approve the transaction. There is no approved assessment  for this User that enables him to perform the operation.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -4184,6 +4352,7 @@
       "get" : {
         "tags" : [ "Transactions" ],
         "summary" : "Get a Transaction by ID",
+        "description" : "Retrieves the details and current status of a specific Transaction by its ID.  \nThe response includes the transaction’s status and related information.\n",
         "operationId" : "getTransaction",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -4254,7 +4423,7 @@
       "delete" : {
         "tags" : [ "Transactions" ],
         "summary" : "Cancel a transaction",
-        "description" : "This endpoint is used to attempt a Transaction cancellation. If the call is successful, it means we were able to cancel the Transaction",
+        "description" : "This endpoint is used to attempt a Transaction cancellation. \nIf the call is successful, it means we were able to cancel the Transaction.\n",
         "operationId" : "cancelTransaction",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -4365,7 +4534,7 @@
                 "providerName" : "UNKNOWN",
                 "feedback" : "SETTLED",
                 "transactionId" : "UUID",
-                "date" : "2024-12-13T18:46:40.666+0000"
+                "date" : "2024-12-13T18:46:40.666+00:00"
               }
             }
           },
@@ -4428,10 +4597,11 @@
         }
       }
     },
-    "/wallets/" : {
+    "/wallets" : {
       "get" : {
         "tags" : [ "Marketplace" ],
         "summary" : "Retrieve a paged list of ids and links to wallets belonging to your users",
+        "description" : "Retrieves a paginated list of Wallets belonging to your users.\nSupports filtering by balance, currency, network, and user ID.\nMultiple filters can be combined, and results can be sorted and paginated.\n",
         "operationId" : "searchClientWallets",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -4556,7 +4726,7 @@
       "post" : {
         "tags" : [ "Marketplace" ],
         "summary" : "Execute a buy (token, nft, other)",
-        "description" : "This endpoint is used to execute a Digital Item buy (token, nft, other) transaction for a User. The Transaction Assessment and User information requirement are evaluated before the Transaction is executed.",
+        "description" : "This endpoint is used to execute a Digital Item buy (token, nft, other)  transaction for a User. The Transaction Assessment and User information  requirement are evaluated before the Transaction is executed.",
         "operationId" : "digitalItemBuy",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -4639,13 +4809,15 @@
                 },
                 "digitalItem" : {
                   "digitalItemType" : "NFT",
+                  "itemTitle" : "My first NFT",
+                  "itemDescription" : "This is my first NFT",
                   "itemReference" : "21d7c009-8469-41ae-83d7-393085fd6fef"
                 },
                 "seller" : {
                   "id" : "f0714c92-d5bf-4ed2-9636-e9ab3743fcb6",
                   "type" : "PERSON"
                 },
-                "date" : "2024-12-13T18:46:40.666+0000",
+                "date" : "2024-12-13T18:46:40.666+00:00",
                 "usdValue" : 5,
                 "amount" : 5,
                 "type" : "BUY"
@@ -4706,7 +4878,7 @@
             }
           },
           "422" : {
-            "description" : "One of these 2 cases: More information about the User is needed in order to approve the transaction. There is no approved assessment for this User that enables him to perform the operation.",
+            "description" : "One of these 2 cases: More information about the User is needed in  order to approve the transaction. There is no approved assessment  for this User that enables him to perform the operation.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -4762,7 +4934,7 @@
       "post" : {
         "tags" : [ "Marketplace" ],
         "summary" : "Execute a sell (token, nft, other)",
-        "description" : "This endpoint is used to execute a Digital Item sell (token, nft, other) transaction for a User. The Transaction Assessment and User information requirement are evaluated before the transaction is executed.",
+        "description" : "This endpoint is used to execute a Digital Item sell (token, nft, other)  transaction for a User. The Transaction Assessment and User information  requirement are evaluated before the transaction is executed.",
         "operationId" : "digitalItemSell",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -4838,6 +5010,8 @@
                 },
                 "digitalItem" : {
                   "digitalItemType" : "NFT",
+                  "itemTitle" : "My first NFT",
+                  "itemDescription" : "This is my first NFT",
                   "itemReference" : "f5511285-9d0b-41fd-8ae7-0817bb7462ba"
                 },
                 "buyer" : {
@@ -4851,7 +5025,7 @@
                   },
                   "paymentMethodType" : "WALLET"
                 },
-                "date" : "2024-12-13T18:46:40.666+0000",
+                "date" : "2024-12-13T18:46:40.666+00:00",
                 "usdValue" : 5,
                 "amount" : 5,
                 "type" : "SELL"
@@ -4912,7 +5086,7 @@
             }
           },
           "422" : {
-            "description" : "One of these 2 cases: More information about the User is needed in order to approve the transaction. There is no approved assessment for this User that enables him to perform the operation.",
+            "description" : "One of these 2 cases: More information about the User is needed in  order to approve the transaction. There is no approved assessment  for this User that enables him to perform the operation.",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -4968,6 +5142,7 @@
       "get" : {
         "tags" : [ "Marketplace" ],
         "summary" : "Get a digital item information",
+        "description" : "This endpoint retrieves detailed information about a specific Digital Item identified by its `digitalItemId`. The response includes metadata such as the item type, title, description, reference and valuation details.  Use this operation to display or verify the properties of a Digital Item  in the Marketplace.",
         "operationId" : "getDigitalItem",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -5040,6 +5215,7 @@
       "delete" : {
         "tags" : [ "Marketplace" ],
         "summary" : "Delete a digital item",
+        "description" : "This endpoint is used to delete a specific Digital Item from a User’s  account. Once deleted, the item will no longer appear in the User’s list  of Digital Items.",
         "operationId" : "deleteDigitalItem",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -5117,6 +5293,7 @@
       "get" : {
         "tags" : [ "Marketplace" ],
         "summary" : "Get a list of Digital Items for the User",
+        "description" : "This endpoint is used to retrieve the list of Digital Items that belong to a specific User. Results can be paginated using the `page` and `size`  parameters, and sorted using the `sortBy` parameter. By default, results  are sorted by `creationDate`.",
         "operationId" : "getDigitalItems",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -5228,6 +5405,7 @@
       "post" : {
         "tags" : [ "Marketplace" ],
         "summary" : "Create a list of Digital Items for the User",
+        "description" : "This endpoint is used to create one or more Digital Items for a specific User.  Up to 100 Digital Items can be created in a single request.",
         "operationId" : "createDigitalItems",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -6137,6 +6315,7 @@
             "id" : "99dbe68f-2747-41c6-8748-559588fd3248",
             "type" : "PERSON"
           },
+          "date" : "2024-12-13T18:46:40.666+00:00",
           "amount" : 200,
           "usdValue" : 200,
           "feeRecipients" : [ {
@@ -6185,6 +6364,7 @@
               "id" : "db36f561-f20d-47b9-80b8-89dc1ecb4903"
             }
           },
+          "date" : "2024-12-13T18:46:40.666+00:00",
           "amount" : 200,
           "usdValue" : 200,
           "type" : "WITHDRAWAL"
@@ -6224,6 +6404,7 @@
               "id" : "MyBTCWallet"
             }
           },
+          "date" : "2024-12-13T18:46:40.666+00:00",
           "amount" : 200,
           "usdValue" : 200,
           "type" : "TRADE"
@@ -6263,6 +6444,7 @@
               "id" : "client_subscriptions"
             }
           },
+          "date" : "2024-12-13T18:46:40.666+00:00",
           "amount" : 200,
           "usdValue" : 200,
           "type" : "PAYMENT"
@@ -6295,6 +6477,7 @@
               "id" : "MyBTCWallet"
             }
           },
+          "date" : "2024-12-13T18:46:40.666+00:00",
           "amount" : 0.55,
           "usdValue" : 200,
           "type" : "MINT"
@@ -6515,7 +6698,7 @@
         "properties" : {
           "walletId" : {
             "maxLength" : 255,
-            "pattern" : "^[A-Za-z]+(?:_[A-Za-z]+)*$",
+            "pattern" : "^[A-Za-z0-9_-]{3,255}$",
             "type" : "string"
           },
           "pendingBalanceBefore" : {
@@ -6727,6 +6910,7 @@
             "id" : "99dbe68f-2747-41c6-8748-559588fd3248",
             "type" : "PERSON"
           },
+          "date" : "2024-12-13T18:46:40.666+00:00",
           "amount" : 200,
           "type" : "TRANSFER"
         },
@@ -6897,7 +7081,7 @@
           },
           "number" : {
             "maxLength" : 64,
-            "pattern" : "/^[+]?(?:\\(\\d+(?:\\.\\d+)?\\)|\\d+(?:\\.\\d+)?)(?:[ -]?(?:\\(\\d+(?:\\.\\d+)?\\)|\\d+(?:\\.\\d+)?))*(?:[ ]?(?:x|ext)\\.?[ ]?\\d{1,5})?$/",
+            "pattern" : "^[+]?(?:\\(\\d+(?:\\.\\d+)?\\)|\\d+(?:\\.\\d+)?)(?:[ -]?(?:\\(\\d+(?:\\.\\d+)?\\)|\\d+(?:\\.\\d+)?))*(?:[ ]?(?:x|ext)\\.?[ ]?\\d{1,5})?$",
             "type" : "string",
             "description" : "Phone number, can be formatted using plus sign, spaces, parenthesis or hyphens"
           },
@@ -6962,6 +7146,7 @@
           },
           "clientMeta" : {
             "type" : "object",
+            "additionalProperties" : true,
             "description" : "key/value map of extra meta data for this payment info, for example, it could be useful to add information to a transaction, like if a subtoken asset is involved"
           }
         },
@@ -7048,12 +7233,12 @@
           },
           "ptiMeta" : {
             "type" : "object",
-            "additionalProperties" : false,
+            "additionalProperties" : true,
             "description" : "key/value map of extra meta data for this request (used by PTI)"
           },
           "clientMeta" : {
             "type" : "object",
-            "additionalProperties" : false,
+            "additionalProperties" : true,
             "description" : "key/value map of extra meta data for this request (used by Client)"
           }
         },
@@ -7235,10 +7420,12 @@
           },
           "userPtiMeta" : {
             "type" : "object",
+            "additionalProperties" : true,
             "description" : "key/value map of extra meta data for this request (used by PTI)"
           },
           "userClientMeta" : {
             "type" : "object",
+            "additionalProperties" : true,
             "description" : "key/value map of extra meta data for this request (used by Client)"
           }
         },
@@ -7337,7 +7524,7 @@
         "properties" : {
           "id" : {
             "maxLength" : 255,
-            "pattern" : "^[A-Za-z]+(?:_[A-Za-z]+)*$",
+            "pattern" : "^[A-Za-z0-9_-]{3,255}$",
             "type" : "string"
           },
           "currency" : {
@@ -7348,7 +7535,7 @@
           },
           "label" : {
             "maxLength" : 255,
-            "pattern" : "^[A-Za-z]+(?:_[A-Za-z]+)*$",
+            "pattern" : "^[A-Za-z0-9 _-]*$",
             "type" : "string",
             "description" : "Optional readable label"
           },
@@ -7379,12 +7566,12 @@
         "properties" : {
           "id" : {
             "maxLength" : 255,
-            "pattern" : "^[A-Za-z]+(?:_[A-Za-z]+)*$",
+            "pattern" : "^[A-Za-z0-9_-]{3,255}$",
             "type" : "string"
           },
           "label" : {
             "maxLength" : 255,
-            "pattern" : "^[A-Za-z]+(?:_[A-Za-z]+)*$",
+            "pattern" : "^[A-Za-z0-9 _-]*$",
             "type" : "string"
           },
           "currency" : {
@@ -7599,7 +7786,7 @@
           },
           "walletId" : {
             "maxLength" : 255,
-            "pattern" : "^[A-Za-z]+(?:_[A-Za-z]+)*$",
+            "pattern" : "^[A-Za-z0-9_-]{3,255}$",
             "type" : "string"
           },
           "currency" : {

@@ -7,6 +7,10 @@ info:
   license:
     name: Private
     url: 'https://provenancetech.io'
+  contact:
+    name: API Support
+    url: 'https://support.fiant.io/support/tickets/new'
+    email: support@fiant.io
 
 tags:
   - name: Authentication
@@ -35,6 +39,13 @@ paths:
         - Authentication
       operationId: getUserToken
       summary: Get a User Token
+      description: >-
+        This endpoint generates a User Token that can be used to authenticate
+        requests on behalf of a specific User. The token is obtained by
+        submitting a request payload that specifies the target API resource and
+        method the User intends to access. Use this operation to enable secure,
+        delegated access to API resources without directly sharing the User’s
+        credentials.
       requestBody:
         content:
           application/json:
@@ -82,6 +93,11 @@ paths:
     get:
       operationId: getListOfUsers
       summary: Get the list of your Users
+      description: |
+        Retrieves a paginated list of users associated with the specified client.
+        You can control the number of results returned per page and specify an
+        offset to navigate through the collection. Results can also be sorted
+        by supported fields to simplify client-side processing.
       parameters:
         - $ref: '#/components/parameters/offsetParam'
         - $ref: '#/components/parameters/pageSizeParam'
@@ -112,6 +128,14 @@ paths:
     post:
       operationId: addAUser
       summary: Create a User
+      description: |
+        Creates a new user under the client account. The request must include all
+        required user information in the request body.
+        
+        After a user is created, your system can receive real-time status updates 
+        through the provided callback URL. These callbacks notify your server of 
+        important changes to the user’s lifecycle (e.g., activation, deactivation, 
+        or verification status).
       tags:
         - Users
       callbacks:
@@ -194,6 +218,13 @@ paths:
     put:
       operationId: updateUser
       summary: Overwrite all User’s information
+      description: |
+        Replaces the entire User record with the data provided in the request body. 
+        All existing information will be overwritten — fields not included in the 
+        request will be cleared.
+        
+        Use this endpoint when you need to fully update a User’s profile, rather than 
+        making partial changes.
       tags:
         - Users
       requestBody:
@@ -234,6 +265,13 @@ paths:
     patch:
       operationId: mergeUserInfo
       summary: Add information to a User
+      description: |
+        Updates specific fields of an existing User without overwriting the entire 
+        record. Only the properties included in the request body will be modified;
+        all other data remains unchanged. 
+        
+        This endpoint is useful for incremental updates, such as adding new contact 
+        details, updating addresses, or modifying optional profile fields.
       tags:
         - Users
       requestBody:
@@ -285,8 +323,8 @@ paths:
       operationId: getUser
       summary: Get a User by ID
       description: >-
-        This endpoint is used to get the information for a specific User. The
-        information returned is the information that was collected for the User.
+        This endpoint is used to get the information for a specific User. 
+        The information returned is the information that was collected for the User.
         PII information is not returned.
       tags:
         - Users
@@ -322,10 +360,10 @@ paths:
       operationId: startUserAssessment
       summary: Create a new User Assessment
       description: >-
-        This endpoint is used to assess a User. Depending on what information is
-        available on the User,  a tier level will be assigned to the assessment,
-        the higher the level is, the more permission he will get on your
-        platform.  Please refer to PTI documentation for more information on the
+        This endpoint is used to assess a User. Depending on what information is 
+        available on the User,  a tier level will be assigned to the assessment, 
+        the higher the level is, the more permission he will get on your 
+        platform.  Please refer to PTI documentation for more information on the 
         tier levels configuration and scenarios.
       tags:
         - Users
@@ -439,6 +477,13 @@ paths:
     get:
       operationId: getLastKyc
       summary: Get a User’s latest Assessment
+      description: |
+        Retrieves the most recent assessment for a specific User. Assessments reflect 
+        the User's verification status, risk tier, and any relevant KYC (Know Your 
+        Customer) information.
+
+        This endpoint is useful for quickly checking the User’s current verification 
+        level and status without retrieving the full history of assessments.
       tags:
         - Users
       responses:
@@ -482,6 +527,14 @@ paths:
       operationId: uploadDocument
       summary: >-
         Upload a User’s Document (Passport, License, etc)
+      description: |
+        Allows uploading a document for a specific User, such as a passport, driver’s 
+        license, or other identification. The request can include metadata about the 
+        document and any associated ID information.
+        
+        Uploaded documents are used for KYC verification, compliance checks, and 
+        record-keeping purposes. The file must be sent as binary data and cannot 
+        exceed 5 MB in size.
       tags:
         - Users
       requestBody:
@@ -536,6 +589,11 @@ paths:
     get:
       operationId: getListOfAssets
       summary: Get the list of the supported Assets
+      description: |
+        Retrieves a list of all assets supported by the platform. Each asset includes 
+        its currency, type, and, for cryptocurrencies, the networks on which it is 
+        supported. This information is useful for wallet operations, transactions, 
+        and trading.
       tags:
         - Wallets
       responses:
@@ -592,6 +650,12 @@ paths:
     post:
       operationId: createWallet
       summary: Create a Wallet for a User
+      description: |
+        Creates a new wallet for a specific user. The request includes the wallet type, 
+        a unique wallet ID, the currency, and for cryptocurrencies, the blockchain network.
+        Optional fields include a human-readable label and whether the wallet supports multiple 
+        addresses. The newly created wallet can then be used for transactions, deposits, or 
+        other wallet-related operations.
       tags:
         - Wallets
       requestBody:
@@ -602,7 +666,7 @@ paths:
               type: WALLET
               id: ffffffff-6129-4bda-8a10-8ef234dff30e
               currency: ETH
-              network: Ethereum
+              network: ETHEREUM
             schema:
               $ref: '#/components/schemas/walletCreation'
       responses:
@@ -641,6 +705,11 @@ paths:
     get:
       operationId: getWallets
       summary: Get a list of a User's wallets
+      description: |
+        Retrieves a list of wallets for a specific user. Each wallet includes the wallet type, 
+        unique ID, currency, associated blockchain network (if applicable), optional label, 
+        multi-address support flag, and creation date. The endpoint returns up to 100 wallets 
+        per request.
       tags:
         - Wallets
       responses:
@@ -674,7 +743,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
   '/users/{userId}/wallets/{walletId}':
-    summary: Delete a Wallet
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
       - name: userId
@@ -694,6 +762,11 @@ paths:
     delete:
       operationId: deleteWallet
       summary: Delete a Wallet
+      description: |
+        Deletes a specific wallet for the given user. The wallet to be deleted is identified 
+        by its walletId. Only wallets with a zero balance can be deleted; wallets containing 
+        funds cannot be removed. Once deleted, the wallet and any associated metadata will 
+        no longer be accessible.
       tags:
         - Wallets
       responses:
@@ -728,6 +801,10 @@ paths:
     get:
       operationId: getWallet
       summary: Get a Wallet by ID
+      description: |
+        Retrieves a specific wallet for a user by its walletId. The response includes the 
+        wallet's currency, network, type, optional label, balance information, creation 
+        timestamp, and other relevant metadata.
       tags:
         - Wallets
       responses:
@@ -771,6 +848,12 @@ paths:
     post:
       operationId: simulateWalletDeposit
       summary: Simulate a Deposit to a Wallet
+      description: |
+        Simulates a deposit into a user's wallet without actually processing a real 
+        transaction. The request specifies the amount and the payment method type.
+        The response provides the expected result of the deposit, including status 
+        and any applicable metadata, allowing you to validate transaction behavior 
+        before executing real deposits.
       tags:
         - Wallets
       requestBody:
@@ -831,6 +914,10 @@ paths:
     post:
       operationId: createWalletDepositAddress
       summary: Create a crypto deposit address
+      description: |
+        Creates a new deposit address for a user's cryptocurrency wallet. 
+        This allows the user to receive crypto deposits on the specified wallet. 
+        The response includes the wallet details along with its deposit instructions.
       tags:
         - Wallets
       requestBody:
@@ -892,6 +979,11 @@ paths:
     post:
       operationId: createWalletVirtualBankAccount
       summary: Create a virtual bank account for a Wallet
+      description: |
+        Creates a virtual bank account associated with a user's wallet.
+        This account can be used to receive fiat deposits directly into the wallet.
+        The response returns the wallet details along with the virtual bank account 
+        and its deposit instruction.
       tags:
         - Wallets
       requestBody:
@@ -958,6 +1050,10 @@ paths:
     post:
       operationId: generateWireInstructions
       summary: Generate wire instructions for a Wallet
+      description: |
+        Generates wire transfer instructions for a user's wallet to facilitate 
+        fiat deposits. The response includes the wallet details along with 
+        the generated wire instructions for completing the deposit.
       tags:
         - Wallets
       requestBody:
@@ -1023,6 +1119,10 @@ paths:
     get:
       operationId: getWalletHistory
       summary: Retrieve the balance history of a Wallet
+      description: |
+        Retrieves the historical balance and transaction records for a specific user's wallet.
+        Supports pagination using `page` and `size` query parameters. Each entry in the history 
+        includes details about deposits, withdrawals, and other balance-affecting operations.
       tags:
         - Wallets
       parameters:
@@ -1075,9 +1175,9 @@ paths:
         - $ref: '#/components/parameters/externalPaymentInformationTypeParam'
       summary: Get a User’s Payment Information objects
       description: >-
-        This endpoint is used to get the Payment Information for a specific User. The
-        information returned is the information that was collected for the User.
-        You can filter by Payment Information type
+        This endpoint is used to get the Payment Information for a specific User.
+        The information returned is the information that was collected for the User.
+        You can filter by Payment Information type.
       tags:
         - Payment Information
       responses:
@@ -1323,13 +1423,32 @@ paths:
               sourceMethod:
                 paymentMethodType: CREDIT_CARD
                 paymentInformation:
+                  type: ENCRYPTED_CREDIT_CARD
                   id: 4b573a86-fd3f-475d-a90b-3658f2e79719
-                billingEmail: user@example.com
+                  creditCardLast4: '1234'
+                  cvv: '789'
+                  creditCardType: mastercard
+                  expirationYear: '2030'
+                  expirationMonth: '01'
+                  creditCardBin: '123456'
+                  cardHolderFirstName: John
+                  cardHolderLastName: Smith
+                  creditCardAddress:
+                    streetAddress: 1 Main street
+                    city: New York
+                    postalCode: '10001'
+                    stateCode: NY
+                    country: US
               destinationMethod:
                 paymentMethodType: WALLET
                 paymentInformation:
+                  type: WALLET
                   id: 3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82
-                billingEmail: user@example.com
+                  label: MyUSDWallet
+                  currency: USD
+                  depositInstruction: { "type": "BANK_ACCOUNT", "accountNumber": "123456789", "routingNumber": "12345678" }
+                  createDateTime: '2021-09-28T12:00:00Z'
+                  availableBalance: 1000
               type: DEPOSIT
               transactionTotal:
                 fee:
@@ -1366,7 +1485,7 @@ paths:
               transactionGroupId: c8d8ed2a-33df-463b-95af-e59ff6e16414
               usdValue: 100
               amount: 100
-              date: 2024-12-13T18:46:40.666+0000              
+              date: 2024-12-13T18:46:40.666+00:00
             schema:
               $ref: '#/components/schemas/oneOfTransactionSubTypes'
       callbacks:
@@ -1446,6 +1565,10 @@ paths:
     get:
       operationId: getTransactionAssess
       summary: Get the transaction assessment status
+      description: |
+        Retrieves the status of a specific transaction assessment by its request ID.
+        The response includes details such as the assessment result, risk level, and
+        relevant evaluation metadata.
       tags:
         - Transaction Assessment
       responses:
@@ -1482,6 +1605,10 @@ paths:
       operationId: transactionInformationAssessment
       summary: >-
         Validate that a User is allowed to perform a Transaction
+      description: |
+        Validates whether a User is allowed to perform a specific Transaction.
+        The response indicates whether the transaction is allowed and may return 
+        validation errors if the transaction violates any rules.
       tags:
         - Transaction Assessment
       parameters:
@@ -1497,13 +1624,32 @@ paths:
               sourceMethod:
                 paymentMethodType: CREDIT_CARD
                 paymentInformation:
+                  type: ENCRYPTED_CREDIT_CARD
                   id: 4b573a86-fd3f-475d-a90b-3658f2e79719
-                billingEmail: user@example.com
+                  creditCardLast4: '1234'
+                  cvv: '789'
+                  creditCardType: mastercard
+                  expirationYear: '2030'
+                  expirationMonth: '01'
+                  creditCardBin: '123456'
+                  cardHolderFirstName: John
+                  cardHolderLastName: Smith
+                  creditCardAddress:
+                    streetAddress: 1 Main street
+                    city: New York
+                    postalCode: '10001'
+                    stateCode: NY
+                    country: US
               destinationMethod:
                 paymentMethodType: WALLET
                 paymentInformation:
+                  type: WALLET
                   id: 3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82
-                billingEmail: user@example.com
+                  label: MyUSDWallet
+                  currency: USD
+                  depositInstruction: { "type": "BANK_ACCOUNT", "accountNumber": "123456789", "routingNumber": "12345678" }
+                  createDateTime: '2021-09-28T12:00:00Z'
+                  availableBalance: 1000
               type: DEPOSIT
               transactionTotal:
                 fee:
@@ -1540,7 +1686,7 @@ paths:
               transactionGroupId: c8d8ed2a-33df-463b-95af-e59ff6e16414
               usdValue: 100
               amount: 100
-              date: 2024-12-13T18:46:40.666+0000
+              date: 2024-12-13T18:46:40.666+00:00
             schema:
               $ref: '#/components/schemas/oneOfTransactionSubTypes'
       responses:
@@ -1580,6 +1726,10 @@ paths:
       tags:
         - Transactions
       summary: Estimate the Fill Price of a Trade
+      description: |
+        Estimates the fill price and associated costs of a Trade transaction. 
+        The response returns a quote including the estimated fill price per unit, 
+        the source and destination currencies, and the trade amount.
       requestBody:
         required: true
         content:
@@ -1588,13 +1738,33 @@ paths:
               sourceMethod:
                 paymentMethodType: CREDIT_CARD
                 paymentInformation:
+                  type: ENCRYPTED_CREDIT_CARD
                   id: 4b573a86-fd3f-475d-a90b-3658f2e79719
+                  creditCardLast4: '1234'
+                  cvv: '789'
+                  creditCardType: mastercard
+                  expirationYear: '2030'
+                  expirationMonth: '01'
+                  creditCardBin: '123456'
+                  cardHolderFirstName: John
+                  cardHolderLastName: Smith
+                  creditCardAddress:
+                    streetAddress: 1 Main street
+                    city: New York
+                    postalCode: '10001'
+                    stateCode: NY
+                    country: US
                 billingEmail: user@example.com
               destinationMethod:
                 paymentMethodType: WALLET
                 paymentInformation:
+                  type: WALLET
                   id: 3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82
-                billingEmail: user@example.com
+                  label: MyUSDWallet
+                  currency: USD
+                  depositInstruction: { "type": "BANK_ACCOUNT", "accountNumber": "123456789", "routingNumber": "12345678" }
+                  createDateTime: '2021-09-28T12:00:00Z'
+                  availableBalance: 1000
               type: DEPOSIT
               transactionTotal:
                 fee:
@@ -1631,7 +1801,7 @@ paths:
               transactionGroupId: c8d8ed2a-33df-463b-95af-e59ff6e16414
               usdValue: 100
               amount: 100
-              date: 2024-12-13T18:46:40.666+0000
+              date: 2024-12-13T18:46:40.666+00:00
             schema:
               $ref: '#/components/schemas/tradeTransaction'
       responses:
@@ -1682,8 +1852,8 @@ paths:
         - Transactions
       summary: Create a Deposit (Fiat or Crypto)
       description: >-
-        This endpoint is used to execute a deposit (crypto/fiat -in) transaction
-        for a User. The transaction assessment and User information requirement
+        This endpoint is used to execute a deposit (crypto/fiat -in) transaction 
+        for a User. The transaction assessment and User information requirement 
         are evaluated before the transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
@@ -1699,13 +1869,33 @@ paths:
               sourceMethod:
                 paymentMethodType: CREDIT_CARD
                 paymentInformation:
+                  type: ENCRYPTED_CREDIT_CARD
                   id: 4b573a86-fd3f-475d-a90b-3658f2e79719
+                  creditCardLast4: '1234'
+                  cvv: '789'
+                  creditCardType: mastercard
+                  expirationYear: '2030'
+                  expirationMonth: '01'
+                  creditCardBin: '123456'
+                  cardHolderFirstName: John
+                  cardHolderLastName: Smith
+                  creditCardAddress:
+                    streetAddress: 1 Main street
+                    city: New York
+                    postalCode: '10001'
+                    stateCode: NY
+                    country: US
                 billingEmail: user@example.com
               destinationMethod:
                 paymentMethodType: WALLET
                 paymentInformation:
+                  type: WALLET
                   id: 3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82
-                billingEmail: user@example.com
+                  label: MyUSDWallet
+                  currency: USD
+                  depositInstruction: { "type": "BANK_ACCOUNT", "accountNumber": "123456789", "routingNumber": "12345678" }
+                  createDateTime: '2021-09-28T12:00:00Z'
+                  availableBalance: 1000
               type: DEPOSIT
               initiator:
                 id: 36dbe68f-2747-41c6-8748-559588fd3248
@@ -1732,7 +1922,7 @@ paths:
               transactionGroupId: c8d8ed2a-33df-463b-95af-e59ff6e16414
               usdValue: 100
               amount: 100
-              date: 2024-12-13T18:46:40.666+0000
+              date: 2024-12-13T18:46:40.666+00:00
             schema:
               $ref: '#/components/schemas/executeDepositTransaction'
       callbacks:
@@ -1784,8 +1974,8 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
         '422':
           description: >-
-            One of these 2 cases: More information about the User is needed in
-            order to approve the transaction. There is no approved assessment
+            One of these 2 cases: More information about the User is needed in 
+            order to approve the transaction. There is no approved assessment 
             for this User that enables him to perform the operation.
           content:
             application/json:
@@ -1808,8 +1998,8 @@ paths:
       tags:
         - Transactions
       description: >-
-        This endpoint is used to execute a withdrawal of fiat or crypto
-        transaction for a User. The Transaction Assessment and User information
+        This endpoint is used to execute a withdrawal of fiat or crypto 
+        transaction for a User. The Transaction Assessment and User information 
         requirement are evaluated before the transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
@@ -1822,18 +2012,22 @@ paths:
         content:
           application/json:
             example:
+              initiator:
+                id: 7ece8274-871b-405b-9f25-f30f2128ad94
+                type: PERSON
               sourceMethod:
                 paymentMethodType: WALLET
                 paymentInformation:
                   type: WALLET
                   id: a8e99100-f562-4e5b-b86f-9142dc2bc9f0
               destinationMethod:
-                paymentMethodType: TOKEN
+                paymentMethodType: CRYPTO
                 paymentInformation:
-                  type: TOKEN
-                  tokenAddress: '0xfecf1d73653c4231a6781770c7b44eda'
-                  tokenType: ETH
-                  blockchain: ETHEREUM
+                  type: CRYPTO
+                  walletAddress: '0xfecf1d73653c4231a6781770c7b44eda'
+                  currency: ETH
+                  network: ETHEREUM
+              date: 2024-12-13T18:46:40.666+00:00
               amount: 1
               usdValue: 3999.54
               type: WITHDRAWAL
@@ -1912,8 +2106,8 @@ paths:
       tags:
         - Transactions
       description: >-
-        This endpoint is used to execute a generic payment of fiat or crypto
-        transaction for a User. The Transaction Assessment and User information
+        This endpoint is used to execute a generic payment of fiat or crypto 
+        transaction for a User. The Transaction Assessment and User information 
         requirement are evaluated before the transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
@@ -1925,33 +2119,58 @@ paths:
         required: true
         content:
           application/json:
-            example:
-              sourceMethod:
-                currency: USD
-                paymentInformation:
-                  type: ENCRYPTED_CREDIT_CARD
-                  id: 79a0da5f-d24b-4ed8-a194-f8e0db32cf05
-                paymentMethodType: CREDIT_CARD
-              destinationMethod:
-                paymentMethodType: WALLET
-                paymentInformation:
-                  type: WALLET
-                  id: e13c3242-57d3-473f-b98c-eb2768e4549c
-              transactionTotal:
-                total:
+            examples:
+              creditCardToWallet:
+                summary: Example payment from credit card to internal wallet
+                value:
+                  initiator:
+                    id: 7ece8274-871b-405b-9f25-f30f2128ad94
+                    type: PERSON
+                  sourceMethod:
+                    paymentInformation:
+                      type: ENCRYPTED_CREDIT_CARD
+                      id: 79a0da5f-d24b-4ed8-a194-f8e0db32cf05
+                      creditCardLast4: '1234'
+                      cvv: '789'
+                      creditCardType: mastercard
+                      expirationYear: '2030'
+                      expirationMonth: '01'
+                      creditCardBin: '123456'
+                      cardHolderFirstName: John
+                      cardHolderLastName: Smith
+                      creditCardAddress:
+                        streetAddress: 1 Main street
+                        city: New York
+                        postalCode: '10001'
+                        stateCode: NY
+                        country: US
+                    paymentMethodType: CREDIT_CARD
+                  destinationMethod:
+                    paymentMethodType: WALLET
+                    paymentInformation:
+                      type: WALLET
+                      id: e13c3242-57d3-473f-b98c-eb2768e4549c
+                      label: MyUSDWallet
+                      currency: USD
+                      depositInstruction: { "type": "BANK_ACCOUNT", "accountNumber": "123456789", "routingNumber": "12345678" }
+                      createDateTime: '2021-09-28T12:00:00Z'
+                      availableBalance: 1000
+                  transactionTotal:
+                    total:
+                      amount: 6.99
+                      currency: USD
+                    fee:
+                      amount: 0
+                      currency: USD
+                    subtotal:
+                      amount: 6.99
+                      currency: USD
+                  date: 2024-12-13T18:46:40.666+00:00
+                  usdValue: 6.99
                   amount: 6.99
-                  currency: USD
-                fee:
-                  amount: 0
-                  currency: USD
-                subtotal:
-                  amount: 6.99
-                  currency: USD
-              usdValue: 6.99
-              amount: 6.99
-              type: PAYMENT
-              clientMeta:
-                paymentMetadata: collection 1 publication fees
+                  type: PAYMENT
+                  clientMeta:
+                    paymentMetadata: collection 1 publication fees
             schema:
               $ref: '#/components/schemas/executePaymentTransaction'
       callbacks:
@@ -2003,8 +2222,8 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
         '422':
           description: >-
-            One of these 2 cases: More information about the User is needed in
-            order to approve the transaction. There is no approved assessment
+            One of these 2 cases: More information about the User is needed in 
+            order to approve the transaction. There is no approved assessment 
             for this User that enables him to perform the operation.
           content:
             application/json:
@@ -2027,8 +2246,8 @@ paths:
       tags:
         - Transactions
       description: >-
-        This endpoint is used to execute a transfer between Users. The
-        Transaction Assessment and User information requirement are evaluated
+        This endpoint is used to execute a transfer between Users.
+        The Transaction Assessment and User information requirement are evaluated
         before the transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
@@ -2042,6 +2261,7 @@ paths:
           application/json:
             example:
               initiator:
+                id: 7ece8274-871b-405b-9f25-f30f2128ad94
                 type: PERSON
               sourceTransferMethod:
                 paymentMethodType: WALLET
@@ -2054,7 +2274,9 @@ paths:
                   type: WALLET
                   id: 70cd9757-f288-41e5-8506-5c38b7c819e1
               destination:
+                id: 3f8d7e96-5d63-49b4-b4a8-42c70ef0cc82
                 type: PERSON
+              date: 2024-12-13T18:46:40.666+00:00
               amount: 200
               usdValue: 200
               type: TRANSFER
@@ -2109,8 +2331,8 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
         '422':
           description: >-
-            One of these 2 cases: More information about the User is needed in
-            order to approve the transaction. There is no approved assessment
+            One of these 2 cases: More information about the User is needed in 
+            order to approve the transaction. There is no approved assessment 
             for this User that enables him to perform the operation.
           content:
             application/json:
@@ -2148,6 +2370,9 @@ paths:
         content:
           application/json:
             example:
+              initiator:
+                id: 7ece8274-871b-405b-9f25-f30f2128ad94
+                type: PERSON
               sourceMethod:
                 paymentMethodType: WALLET
                 paymentInformation:
@@ -2158,6 +2383,7 @@ paths:
                 paymentInformation:
                   type: WALLET
                   id: MyUSDWallet
+              date: 2024-12-13T18:46:40.666+00:00
               amount: 0.5
               usdValue: 113
               type: TRADE
@@ -2212,8 +2438,8 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
         '422':
           description: >-
-            One of these 2 cases: More information about the User is needed in
-            order to approve the transaction. There is no approved assessment
+            One of these 2 cases: More information about the User is needed in 
+            order to approve the transaction. There is no approved assessment 
             for this User that enables him to perform the operation.
           content:
             application/json:
@@ -2236,8 +2462,8 @@ paths:
       tags:
         - Transactions
       description: >-
-        This endpoint is used to execute a mint transaction for a User. The
-        Transaction Assessment and User information requirement are evaluated
+        This endpoint is used to execute a mint transaction for a User. The 
+        Transaction Assessment and User information requirement are evaluated 
         before the transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
@@ -2300,8 +2526,8 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
         '422':
           description: >-
-            One of these 2 cases: More information about the User is needed in
-            order to approve the transaction. There is no approved assessment
+            One of these 2 cases: More information about the User is needed in 
+            order to approve the transaction. There is no approved assessment 
             for this User that enables him to perform the operation.
           content:
             application/json:
@@ -2328,6 +2554,9 @@ paths:
       tags:
         - Transactions
       summary: Get a Transaction by ID
+      description: |
+        Retrieves the details and current status of a specific Transaction by its ID.  
+        The response includes the transaction’s status and related information.
       responses:
         '200':
           description: OK
@@ -2358,7 +2587,9 @@ paths:
     delete:
       operationId: cancelTransaction
       summary: Cancel a transaction
-      description: This endpoint is used to attempt a Transaction cancellation. If the call is successful, it means we were able to cancel the Transaction
+      description: | 
+        This endpoint is used to attempt a Transaction cancellation. 
+        If the call is successful, it means we were able to cancel the Transaction.
       tags:
         - Transactions
       responses:
@@ -2448,7 +2679,7 @@ paths:
               providerName: UNKNOWN
               feedback: SETTLED
               transactionId: UUID
-              date: 2024-12-13T18:46:40.666+0000
+              date: 2024-12-13T18:46:40.666+00:00
             schema:
               $ref: '#/components/schemas/transactionUpdate'
       responses:
@@ -2488,7 +2719,7 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
 
   # Marketplace
-  /wallets/:
+  /wallets:
     parameters:
       - $ref: '#/components/parameters/clientIdHeaderParam'
     get:
@@ -2520,6 +2751,10 @@ paths:
       tags:
         - Marketplace
       summary: 'Retrieve a paged list of ids and links to wallets belonging to your users'
+      description: |
+        Retrieves a paginated list of Wallets belonging to your users.
+        Supports filtering by balance, currency, network, and user ID.
+        Multiple filters can be combined, and results can be sorted and paginated.
       responses:
         '200':
           description: OK
@@ -2556,8 +2791,8 @@ paths:
         - Marketplace
       summary: 'Execute a buy (token, nft, other)'
       description: >-
-        This endpoint is used to execute a Digital Item buy (token, nft, other)
-        transaction for a User. The Transaction Assessment and User information
+        This endpoint is used to execute a Digital Item buy (token, nft, other) 
+        transaction for a User. The Transaction Assessment and User information 
         requirement are evaluated before the Transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
@@ -2580,11 +2815,13 @@ paths:
                   id: 1de3e77b-e673-4e44-8b69-4931364c4e76
               digitalItem:
                 digitalItemType: NFT
+                itemTitle: 'My first NFT'
+                itemDescription: 'This is my first NFT'
                 itemReference: 21d7c009-8469-41ae-83d7-393085fd6fef
               seller:
                 id: f0714c92-d5bf-4ed2-9636-e9ab3743fcb6
                 type: PERSON
-              date: 2024-12-13T18:46:40.666+0000
+              date: 2024-12-13T18:46:40.666+00:00
               usdValue: 5
               amount: 5
               type: BUY
@@ -2639,8 +2876,8 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
         '422':
           description: >-
-            One of these 2 cases: More information about the User is needed in
-            order to approve the transaction. There is no approved assessment
+            One of these 2 cases: More information about the User is needed in 
+            order to approve the transaction. There is no approved assessment 
             for this User that enables him to perform the operation.
           content:
             application/json:
@@ -2663,8 +2900,8 @@ paths:
       tags:
         - Marketplace
       description: >-
-        This endpoint is used to execute a Digital Item sell (token, nft, other)
-        transaction for a User. The Transaction Assessment and User information
+        This endpoint is used to execute a Digital Item sell (token, nft, other) 
+        transaction for a User. The Transaction Assessment and User information 
         requirement are evaluated before the transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
@@ -2682,6 +2919,8 @@ paths:
                 type: PERSON
               digitalItem:
                 digitalItemType: NFT
+                itemTitle: 'My first NFT'
+                itemDescription: 'This is my first NFT'
                 itemReference: f5511285-9d0b-41fd-8ae7-0817bb7462ba
               buyer:
                 id: be975fae-fb15-4b70-80ba-e59968ae48c3
@@ -2691,7 +2930,7 @@ paths:
                   type: WALLET
                   id: c5b2cca7-a1ac-4aad-a461-be8903c695d9
                 paymentMethodType: WALLET
-              date: 2024-12-13T18:46:40.666+0000
+              date: 2024-12-13T18:46:40.666+00:00
               usdValue: 5
               amount: 5
               type: SELL
@@ -2746,8 +2985,8 @@ paths:
                 $ref: '#/components/schemas/unmanagedError'
         '422':
           description: >-
-            One of these 2 cases: More information about the User is needed in
-            order to approve the transaction. There is no approved assessment
+            One of these 2 cases: More information about the User is needed in 
+            order to approve the transaction. There is no approved assessment 
             for this User that enables him to perform the operation.
           content:
             application/json:
@@ -2774,6 +3013,12 @@ paths:
     get:
       operationId: getDigitalItem
       summary: Get a digital item information
+      description: >-
+        This endpoint retrieves detailed information about a specific Digital
+        Item identified by its `digitalItemId`. The response includes metadata
+        such as the item type, title, description, reference and valuation details. 
+        Use this operation to display or verify the properties of a Digital Item 
+        in the Marketplace.
       tags:
         - Marketplace
       responses:
@@ -2806,6 +3051,10 @@ paths:
     delete:
       operationId: deleteDigitalItem
       summary: Delete a digital item
+      description: >-
+        This endpoint is used to delete a specific Digital Item from a User’s 
+        account. Once deleted, the item will no longer appear in the User’s list 
+        of Digital Items.
       tags:
         - Marketplace
       responses:
@@ -2854,6 +3103,11 @@ paths:
         - $ref: '#/components/parameters/sortByParam'
       operationId: getDigitalItems
       summary: Get a list of Digital Items for the User
+      description: >-
+        This endpoint is used to retrieve the list of Digital Items that belong
+        to a specific User. Results can be paginated using the `page` and `size` 
+        parameters, and sorted using the `sortBy` parameter. By default, results 
+        are sorted by `creationDate`.
       tags:
         - Marketplace
       responses:
@@ -2886,6 +3140,9 @@ paths:
     post:
       operationId: createDigitalItems
       summary: Create a list of Digital Items for the User
+      description: >-
+        This endpoint is used to create one or more Digital Items for a specific User. 
+        Up to 100 Digital Items can be created in a single request.
       tags:
         - Marketplace
       requestBody:
@@ -3758,6 +4015,7 @@ components:
         buyer:
           id: 99dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
+        date: 2024-12-13T18:46:40.666+00:00
         amount: 200
         usdValue: 200
         feeRecipients:
@@ -3797,6 +4055,7 @@ components:
           paymentInformation:
             type: WALLET
             id: db36f561-f20d-47b9-80b8-89dc1ecb4903
+        date: 2024-12-13T18:46:40.666+00:00
         amount: 200
         usdValue: 200
         type: WITHDRAWAL
@@ -3829,6 +4088,7 @@ components:
           paymentInformation:
             type: WALLET
             id: MyBTCWallet
+        date: 2024-12-13T18:46:40.666+00:00
         amount: 200
         usdValue: 200
         type: TRADE
@@ -3860,6 +4120,7 @@ components:
           paymentInformation:
             type: WALLET
             id: client_subscriptions
+        date: 2024-12-13T18:46:40.666+00:00
         amount: 200
         usdValue: 200
         type: PAYMENT
@@ -3882,6 +4143,7 @@ components:
           paymentInformation:
             type: WALLET
             id: MyBTCWallet
+        date: 2024-12-13T18:46:40.666+00:00
         amount: 0.55
         usdValue: 200
         type: MINT
@@ -4068,7 +4330,7 @@ components:
         walletId:
           type: string
           maxLength: 255
-          pattern: '^[A-Za-z]+(?:_[A-Za-z]+)*$'
+          pattern: '^[A-Za-z0-9_-]{3,255}$'
         pendingBalanceBefore:
           type: number
           minimum: 0
@@ -4228,6 +4490,7 @@ components:
         destination:
           id: 99dbe68f-2747-41c6-8748-559588fd3248
           type: PERSON
+        date: 2024-12-13T18:46:40.666+00:00
         amount: 200
         type: TRANSFER
       oneOf:
@@ -4359,9 +4622,9 @@ components:
             Phone number, can be formatted using plus sign, spaces, parenthesis
             or hyphens
           pattern: >-
-            /^[+]?(?:\(\d+(?:\.\d+)?\)|\d+(?:\.\d+)?)(?:[
+            ^[+]?(?:\(\d+(?:\.\d+)?\)|\d+(?:\.\d+)?)(?:[
             -]?(?:\(\d+(?:\.\d+)?\)|\d+(?:\.\d+)?))*(?:[ ]?(?:x|ext)\.?[
-            ]?\d{1,5})?$/
+            ]?\d{1,5})?$
         type:
           type: string
           pattern: ^(WORK|HOME|MOBILE)
@@ -4415,6 +4678,7 @@ components:
           default: false
         clientMeta:
           type: object
+          additionalProperties: true
           description: >-
             key/value map of extra meta data for this payment info, for example,
             it could be useful to add information to a transaction, like if a
@@ -4485,11 +4749,11 @@ components:
           $ref: '#/components/schemas/oneOfUserSubTypes'
         ptiMeta:
           type: object
-          additionalProperties: false
+          additionalProperties: true
           description: key/value map of extra meta data for this request (used by PTI)
         clientMeta:
           type: object
-          additionalProperties: false
+          additionalProperties: true
           description: key/value map of extra meta data for this request (used by Client)
     transferTransaction:
       type: object
@@ -4683,9 +4947,11 @@ components:
           maxLength: 40
         userPtiMeta:
           type: object
+          additionalProperties: true
           description: key/value map of extra meta data for this request (used by PTI)
         userClientMeta:
           type: object
+          additionalProperties: true
           description: key/value map of extra meta data for this request (used by Client)
       discriminator:
         propertyName: type
@@ -4753,7 +5019,7 @@ components:
         id:
           type: string
           maxLength: 255
-          pattern: '^[A-Za-z]+(?:_[A-Za-z]+)*$'
+          pattern: '^[A-Za-z0-9_-]{3,255}$'
         currency:
           $ref: '#/components/schemas/currencyEnum'
         network:
@@ -4761,7 +5027,7 @@ components:
         label:
           type: string
           maxLength: 255
-          pattern: '^[A-Za-z]+(?:_[A-Za-z]+)*$'
+          pattern: '^[A-Za-z0-9 _-]*$'
           description: Optional readable label
         multiWalletAddress:
           type: boolean
@@ -4787,11 +5053,11 @@ components:
         id:
           type: string
           maxLength: 255
-          pattern: '^[A-Za-z]+(?:_[A-Za-z]+)*$'
+          pattern: '^[A-Za-z0-9_-]{3,255}$'
         label:
           type: string
           maxLength: 255
-          pattern: '^[A-Za-z]+(?:_[A-Za-z]+)*$'
+          pattern: '^[A-Za-z0-9 _-]*$'
         currency:
           $ref: '#/components/schemas/currencyEnum'
         network:
@@ -4979,7 +5245,7 @@ components:
         walletId:
           type: string
           maxLength: 255
-          pattern: '^[A-Za-z]+(?:_[A-Za-z]+)*$'
+          pattern: '^[A-Za-z0-9_-]{3,255}$'
         currency:
           type: string
           pattern: '^([A-Za-z]{1,10})$'
