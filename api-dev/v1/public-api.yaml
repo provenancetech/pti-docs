@@ -2717,6 +2717,67 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
+  '/transactions/{requestId}/actions':
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+      - name: requestId
+        description: Request ID used when the transaction was initially logged
+        schema:
+          $ref: '#/components/schemas/uuidLikeStr'
+        in: path
+        required: true
+    post:
+      operationId: performAction
+      summary: Settle ACH Deposit (Sandbox Only)
+      tags:
+        - Transactions
+      description: >
+        This endpoint can be used to force the Settlement of an ACH deposit so there is no need to 
+        wait for the regular “next day” settlement of ACH Deposits. This endpoint is only functional in non-Production
+        environments.
+      requestBody:
+        description: Information required to perform the action on a transaction.
+        required: true
+        content:
+          application/json:
+            example:
+              action: SETTLE_ACH
+            schema:
+              $ref: '#/components/schemas/transactionAction'
+      responses:
+        '201':
+          description: >-
+            Successfully performed transaction action.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transactionStatusObject'
+        '400':
+          description: Missing required fields on transaction feedback
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidRequestError'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
+          description: Transaction identified by requestId not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
 
   # Marketplace
   /wallets:
@@ -3529,6 +3590,8 @@ components:
         - WALLET_MISSING_NETWORK
         - PAYMENT_METHOD_TYPE_REQUIRED
         - AMOUNT_REQUIRED
+        - INVALID_TRANSACTION_TYPE
+        - INVALID_TRANSACTION_STATUS
         - NO_INTER_CLIENTS_TRANSFERS
         - CLIENT_CONFIGURATION_ERROR
         - UNSUPPORTED_OPERATION
@@ -3682,6 +3745,8 @@ components:
             WALLET_MISSING_NETWORK(1013)
             PAYMENT_METHOD_TYPE_REQUIRED(1014)
             AMOUNT_REQUIRED(1015)
+            INVALID_TRANSACTION_TYPE(1016)
+            INVALID_TRANSACTION_STATUS(1017)
             NO_INTER_CLIENTS_TRANSFERS(2000)
             CLIENT_CONFIGURATION_ERROR(2001)
             UNSUPPORTED_OPERATION(2002)
@@ -4842,6 +4907,15 @@ components:
         - BUY
         - MINT
         - TRADE
+    transactionAction:
+      type: object
+      required: 
+        - action
+      properties: 
+        action:
+          type: string
+          enum: 
+            - SETTLE_ACH
     transactionType:
       type: object
       required:
