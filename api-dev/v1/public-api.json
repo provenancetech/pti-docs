@@ -5814,11 +5814,29 @@
             "pattern" : "^[A-Za-z0-9\\-_]{2,1024}$",
             "type" : "string"
           },
-          "coutryOfIncorporation" : {
+          "countryOfIncorporation" : {
             "maxLength" : 2,
             "pattern" : "^([A-Za-z]{2})$",
             "type" : "string",
             "description" : "ISO 3166 alpha 1 country code, example US"
+          },
+          "businessDbaName" : {
+            "maxLength" : 500,
+            "type" : "string",
+            "description" : "Doing business as name"
+          },
+          "businessQuestionnaire" : {
+            "$ref" : "#/components/schemas/business_businessQuestionnaire"
+          },
+          "businessCategory" : {
+            "type" : "string",
+            "description" : "Category or field of work that the business belongs to.",
+            "enum" : [ "ACCOUNTING", "AEROSPACE", "AGRICULTURE", "ART", "AUTOMOTIVE", "CONSTRUCTION", "EDUCATION", "ENERGY", "ENGINEERING", "ENTERTAINMENT", "FARMING", "FASHION", "FINANCIAL_SERVICES", "GAMING", "INSURANCE", "MANUFACTURING", "MARKETING", "MEDICAL", "MUSIC", "OTHER", "REAL_ESTATE", "RETAIL", "ROYALTIES" ]
+          },
+          "website" : {
+            "maxLength" : 500,
+            "type" : "string",
+            "description" : "Business Website"
           }
         },
         "allOf" : [ {
@@ -8545,6 +8563,54 @@
           }
         },
         "additionalProperties" : false
+      },
+      "business_businessQuestionnaire" : {
+        "type" : "object",
+        "properties" : {
+          "businessDescription" : {
+            "maxLength" : 500,
+            "type" : "string",
+            "description" : "A description of the business."
+          },
+          "salesChannels" : {
+            "maxLength" : 500,
+            "type" : "string"
+          },
+          "monthlyVolumeUSD" : {
+            "type" : "number",
+            "description" : "Volume of monthly transactions in USD"
+          },
+          "annualVolumeUSD" : {
+            "type" : "number",
+            "description" : "Volume of yearly transactions in USD"
+          },
+          "legalAndDisciplinary" : {
+            "maxLength" : 1000,
+            "type" : "string"
+          },
+          "PEPs" : {
+            "maxLength" : 1000,
+            "type" : "string",
+            "description" : "Any politically exposed persons on staff"
+          },
+          "sanctionScreening" : {
+            "maxLength" : 255,
+            "type" : "string"
+          },
+          "customerIDVerification" : {
+            "maxLength" : 255,
+            "type" : "string"
+          },
+          "customerRiskRating" : {
+            "maxLength" : 255,
+            "type" : "string"
+          },
+          "fraudPrevention" : {
+            "maxLength" : 255,
+            "type" : "string"
+          }
+        },
+        "description" : "An optional list of questions to answer."
       },
       "transactionAssessStatusObject_transactionMonitoringResultDetail" : {
         "type" : "object",

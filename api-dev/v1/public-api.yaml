@@ -3430,11 +3430,83 @@ components:
           maxLength: 1024
           pattern: '^[A-Za-z0-9\-_]{2,1024}$'
           type: string
-        coutryOfIncorporation:
+        countryOfIncorporation:
           type: string
           maxLength: 2
           description: 'ISO 3166 alpha 1 country code, example US'
           pattern: '^([A-Za-z]{2})$'
+        businessDbaName:
+          type: string
+          maxLength: 500
+          description: Doing business as name
+        businessQuestionnaire:
+          type: object
+          description: An optional list of questions to answer.
+          additionalProperties: false
+          properties:
+            businessDescription:
+              type: string
+              description: A description of the business.
+              maxLength: 500
+            salesChannels:
+              type: string
+              maxLength: 500
+            monthlyVolumeUSD:
+              type: number
+              description: Volume of monthly transactions in USD
+            annualVolumeUSD:
+              type: number
+              description: Volume of yearly transactions in USD
+            legalAndDisciplinary:
+              type: string
+              maxLength: 1000
+            PEPs:
+              type: string
+              maxLength: 1000
+              description: Any politically exposed persons on staff
+            sanctionScreening:
+              type: string
+              maxLength: 255
+            customerIDVerification:
+              type: string
+              maxLength: 255
+            customerRiskRating:
+              type: string
+              maxLength: 255
+            fraudPrevention:
+              type: string
+              maxLength: 255
+        businessCategory:
+          type: string
+          description: Category or field of work that the business belongs to.
+          enum:
+            - ACCOUNTING
+            - AEROSPACE
+            - AGRICULTURE
+            - ART
+            - AUTOMOTIVE
+            - CONSTRUCTION
+            - EDUCATION
+            - ENERGY
+            - ENGINEERING
+            - ENTERTAINMENT
+            - FARMING
+            - FASHION
+            - FINANCIAL_SERVICES
+            - GAMING
+            - INSURANCE
+            - MANUFACTURING
+            - MARKETING
+            - MEDICAL
+            - MUSIC
+            - OTHER
+            - REAL_ESTATE
+            - RETAIL
+            - ROYALTIES
+        website: 
+          type: string
+          maxLength: 500
+          description: Business Website
     businessOwner:
       type: object
       required:
