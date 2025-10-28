@@ -4990,6 +4990,7 @@ components:
           type: string
           enum: 
             - SETTLE_ACH
+            - RETURN_ACH
     transactionType:
       type: object
       required:
@@ -5518,6 +5519,7 @@ components:
         - CHARGED_BACK_REVERSED
         - CANCELED
         - REFUNDED
+        - RETURNED
     actionStatus:
       type: object
       additionalProperties: false

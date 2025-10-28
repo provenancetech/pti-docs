@@ -7473,7 +7473,7 @@
         "properties" : {
           "action" : {
             "type" : "string",
-            "enum" : [ "SETTLE_ACH" ]
+            "enum" : [ "SETTLE_ACH", "RETURN_ACH" ]
           }
         }
       },
@@ -8011,7 +8011,7 @@
       "transactionStatus" : {
         "type" : "string",
         "additionalProperties" : false,
-        "enum" : [ "PENDING", "ERROR", "MANUAL_REVIEW", "REFUSED", "AWAITING_PAYMENT", "AUTHORIZED", "ACCEPTED", "BAD_REQUEST", "SETTLED", "CAPTURED", "CHARGED_BACK", "CHARGED_BACK_REVERSED", "CANCELED", "REFUNDED" ]
+        "enum" : [ "PENDING", "ERROR", "MANUAL_REVIEW", "REFUSED", "AWAITING_PAYMENT", "AUTHORIZED", "ACCEPTED", "BAD_REQUEST", "SETTLED", "CAPTURED", "CHARGED_BACK", "CHARGED_BACK_REVERSED", "CANCELED", "REFUNDED", "RETURNED" ]
       },
       "actionStatus" : {
         "type" : "object",
