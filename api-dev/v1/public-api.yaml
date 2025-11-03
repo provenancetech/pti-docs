@@ -4894,6 +4894,18 @@ components:
           type: object
           additionalProperties: true
           description: key/value map of extra meta data for this request (used by Client)
+        deviceInformation:
+          $ref: '#/components/schemas/deviceInformation'
+    deviceInformation:
+      type: object
+      properties: 
+        ip:
+          type: string
+          description: Ip address of the device doing the call
+          format: ipv4
+        userAgent:
+          type: string
+          description: Description of the device doing the call
     transferTransaction:
       type: object
       allOf:
