@@ -2648,6 +2648,9 @@ paths:
         deemed to be in a pending state. This feedback is not a final state and
         should be followed by antoher feedback such as `SETTLED` or `CANCELLED`
         |
+        
+        | `PENDING_SETTLEMENT` | A trade transaction is being processed by the processor 
+        and is awaiting settlement.
 
         | `SETTLED`  | The transaction was accepted and fully finalized by the
         processor. The transfer of value has occured. |
@@ -3914,6 +3917,7 @@ components:
             - REFUNDED
             - CHARGED_BACK
             - ERROR
+            - PENDING_SETTLEMENT
           type: string
         transactionId:
           type: string
@@ -5532,6 +5536,7 @@ components:
         - CANCELED
         - REFUNDED
         - RETURNED
+        - PENDING_SETTLEMENT
     actionStatus:
       type: object
       additionalProperties: false
