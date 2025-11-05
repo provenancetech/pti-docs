@@ -2731,13 +2731,12 @@ paths:
         required: true
     post:
       operationId: performAction
-      summary: Settle ACH Deposit (Sandbox Only)
+      summary: Sandbox ACH Actions
       tags:
         - Transactions
       description: >
-        This endpoint can be used to force the Settlement of an ACH deposit so there is no need to 
-        wait for the regular “next day” settlement of ACH Deposits. This endpoint is only functional in non-Production
-        environments.
+        This endpoint can be used to force the Settlement of an ACH deposit or to "simulate" an ACH Return. 
+        This endpoint is only functional in non-Production environments.
       requestBody:
         description: Information required to perform the action on a transaction.
         required: true

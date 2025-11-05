@@ -4600,8 +4600,8 @@
     "/transactions/{requestId}/actions" : {
       "post" : {
         "tags" : [ "Transactions" ],
-        "summary" : "Settle ACH Deposit (Sandbox Only)",
-        "description" : "This endpoint can be used to force the Settlement of an ACH deposit so there is no need to  wait for the regular “next day” settlement of ACH Deposits. This endpoint is only functional in non-Production environments.\n",
+        "summary" : "Sandbox ACH Actions",
+        "description" : "This endpoint can be used to force the Settlement of an ACH deposit or to \"simulate\" an ACH Return.  This endpoint is only functional in non-Production environments.\n",
         "operationId" : "performAction",
         "parameters" : [ {
           "name" : "x-pti-client-id",
