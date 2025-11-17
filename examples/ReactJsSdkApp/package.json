@@ -33,8 +33,7 @@
     "zustand": "^5.0.6"
   },
   "resolutions": {
-    "clean-css": "^5.3.3",
-    "postcss": "^8.5.3"
+    "clean-css": "^5.3.3"
   },
   "browserslist": {
     "production": [
