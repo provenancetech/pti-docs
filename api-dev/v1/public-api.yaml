@@ -2672,6 +2672,8 @@ paths:
 
         | `ERROR` | The processor returned an error, the transaction is assumed
         to be non existent from the processor standpoint |
+        
+        | `RETURNED` | The transaction could not be processed and will be returned to the originating bank.
       requestBody:
         description: Feedback to associate to the existing transaction
         required: true
@@ -3917,6 +3919,7 @@ components:
             - CHARGED_BACK
             - ERROR
             - PENDING_SETTLEMENT
+            - RETURNED
           type: string
         transactionId:
           type: string
@@ -5556,9 +5559,12 @@ components:
           maxLength: 40
     providerResponseCode:
       type: string
+      description: Deprecated, use responseCode instead
+      deprecated: true
       additionalProperties: false
       enum:
         - PTI_TECHNICAL_ERROR
+        - TECHNICAL_ERROR
         - PAYMENT_PROVIDER_TECHNICAL_ERROR
         - FRAUD_SUSPICION
         - BLOCKED_COUNTRY
@@ -5566,8 +5572,34 @@ components:
         - CVV_CHECK_FAILED
         - PAYMENT_INSTRUMENT_PROBLEM
         - PAYMENT_PROVIDER_DECLINED
+        - DECLINED
     providerResponseCategory:
       type: string
+      deprecated: true
+      description: Deprecated, use responseCategory instead
+      additionalProperties: false
+      enum:
+        - ERROR
+        - SOFT_DECLINE
+        - HARD_DECLINE
+    responseCode:
+      type: string
+      additionalProperties: false
+      enum:
+        - PTI_TECHNICAL_ERROR
+        - TECHNICAL_ERROR
+        - PAYMENT_PROVIDER_TECHNICAL_ERROR
+        - FRAUD_SUSPICION
+        - BLOCKED_COUNTRY
+        - AVS_CHECK_FAILED
+        - CVV_CHECK_FAILED
+        - PAYMENT_INSTRUMENT_PROBLEM
+        - PAYMENT_PROVIDER_DECLINED
+        - DECLINED
+    responseCategory:
+      type: string
+      deprecated: true
+      description: Deprecated, use responseCategory instead
       additionalProperties: false
       enum:
         - ERROR
@@ -5577,8 +5609,12 @@ components:
       type: object
       additionalProperties: false
       properties:
+        responseCode:
+          $ref: '#/components/schemas/responseCode'
         providerResponseCode:
           $ref: '#/components/schemas/providerResponseCode'
+        responseCategory:
+          $ref: '#/components/schemas/responseCategory'
         providerResponseCategory:
           $ref: '#/components/schemas/providerResponseCategory'
     transactionStatusObject:
@@ -5603,8 +5639,8 @@ components:
         meta:
           transactionId: 3121df47-7a05-4b42-9db3-d1ff8a29abf0
         paymentStatusDetail:
-          providerResponseCode: AVS_CHECK_FAILED
-          providerResponseCategory: SOFT_DECLINE
+          responseCode: AVS_CHECK_FAILED
+          responseCategory: SOFT_DECLINE
         transactionTotal:
           fee:
             amount: 0.01

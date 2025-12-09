@@ -4499,7 +4499,7 @@
       "post" : {
         "tags" : [ "Transactions" ],
         "summary" : "Update status on existing transaction",
-        "description" : "This endpoint allows adding feedback information to an existing transaction. Here are the possible feedback values with their meaning:\n\n| Feedback | Meaning |\n|----------|---------|\n| `ACCEPTED` | The transaction was accepted by the processor and is deemed to be in a pending state. This feedback is not a final state and should be followed by antoher feedback such as `SETTLED` or `CANCELLED` |\n| `PENDING_SETTLEMENT` | A trade transaction is being processed by the processor  and is awaiting settlement.\n| `SETTLED`  | The transaction was accepted and fully finalized by the processor. The transfer of value has occured. |\n| `CANCELLED`  | The transaction was accepted but cancelled prior to being settled |\n| `AWAITING_PAYMENT` | A deposit transaction is being processed and is in a state where it is waiting for the user to complete the payment by funding the target address provided or making a deposit using the specified payment method. |\n| `REJECTED` | The transaction was declined by the processor |\n| `REFUNDED` | An intentional, settled transaction was refunded |\n| `CHARGED_BACK` | A settled transaction was disputed and refunded |\n| `ERROR` | The processor returned an error, the transaction is assumed to be non existent from the processor standpoint |\n",
+        "description" : "This endpoint allows adding feedback information to an existing transaction. Here are the possible feedback values with their meaning:\n\n| Feedback | Meaning |\n|----------|---------|\n| `ACCEPTED` | The transaction was accepted by the processor and is deemed to be in a pending state. This feedback is not a final state and should be followed by antoher feedback such as `SETTLED` or `CANCELLED` |\n| `PENDING_SETTLEMENT` | A trade transaction is being processed by the processor  and is awaiting settlement.\n| `SETTLED`  | The transaction was accepted and fully finalized by the processor. The transfer of value has occured. |\n| `CANCELLED`  | The transaction was accepted but cancelled prior to being settled |\n| `AWAITING_PAYMENT` | A deposit transaction is being processed and is in a state where it is waiting for the user to complete the payment by funding the target address provided or making a deposit using the specified payment method. |\n| `REJECTED` | The transaction was declined by the processor |\n| `REFUNDED` | An intentional, settled transaction was refunded |\n| `CHARGED_BACK` | A settled transaction was disputed and refunded |\n| `ERROR` | The processor returned an error, the transaction is assumed to be non existent from the processor standpoint |\n| `RETURNED` | The transaction could not be processed and will be returned to the originating bank.\n",
         "operationId" : "provideFeedback",
         "parameters" : [ {
           "name" : "x-pti-client-id",
@@ -6150,7 +6150,7 @@
           },
           "feedback" : {
             "type" : "string",
-            "enum" : [ "SETTLED", "ACCEPTED", "CANCELLED", "REJECTED", "REFUNDED", "CHARGED_BACK", "ERROR", "PENDING_SETTLEMENT" ]
+            "enum" : [ "SETTLED", "ACCEPTED", "CANCELLED", "REJECTED", "REFUNDED", "CHARGED_BACK", "ERROR", "PENDING_SETTLEMENT", "RETURNED" ]
           },
           "transactionId" : {
             "maxLength" : 256,
@@ -8057,18 +8057,40 @@
       "providerResponseCode" : {
         "type" : "string",
         "additionalProperties" : false,
-        "enum" : [ "PTI_TECHNICAL_ERROR", "PAYMENT_PROVIDER_TECHNICAL_ERROR", "FRAUD_SUSPICION", "BLOCKED_COUNTRY", "AVS_CHECK_FAILED", "CVV_CHECK_FAILED", "PAYMENT_INSTRUMENT_PROBLEM", "PAYMENT_PROVIDER_DECLINED" ]
+        "description" : "Deprecated, use responseCode instead",
+        "deprecated" : true,
+        "enum" : [ "PTI_TECHNICAL_ERROR", "TECHNICAL_ERROR", "PAYMENT_PROVIDER_TECHNICAL_ERROR", "FRAUD_SUSPICION", "BLOCKED_COUNTRY", "AVS_CHECK_FAILED", "CVV_CHECK_FAILED", "PAYMENT_INSTRUMENT_PROBLEM", "PAYMENT_PROVIDER_DECLINED", "DECLINED" ]
       },
       "providerResponseCategory" : {
         "type" : "string",
         "additionalProperties" : false,
+        "description" : "Deprecated, use responseCategory instead",
+        "deprecated" : true,
+        "enum" : [ "ERROR", "SOFT_DECLINE", "HARD_DECLINE" ]
+      },
+      "responseCode" : {
+        "type" : "string",
+        "additionalProperties" : false,
+        "enum" : [ "PTI_TECHNICAL_ERROR", "TECHNICAL_ERROR", "PAYMENT_PROVIDER_TECHNICAL_ERROR", "FRAUD_SUSPICION", "BLOCKED_COUNTRY", "AVS_CHECK_FAILED", "CVV_CHECK_FAILED", "PAYMENT_INSTRUMENT_PROBLEM", "PAYMENT_PROVIDER_DECLINED", "DECLINED" ]
+      },
+      "responseCategory" : {
+        "type" : "string",
+        "additionalProperties" : false,
+        "description" : "Deprecated, use responseCategory instead",
+        "deprecated" : true,
         "enum" : [ "ERROR", "SOFT_DECLINE", "HARD_DECLINE" ]
       },
       "paymentStatusDetail" : {
         "type" : "object",
         "properties" : {
+          "responseCode" : {
+            "$ref" : "#/components/schemas/responseCode"
+          },
           "providerResponseCode" : {
             "$ref" : "#/components/schemas/providerResponseCode"
+          },
+          "responseCategory" : {
+            "$ref" : "#/components/schemas/responseCategory"
           },
           "providerResponseCategory" : {
             "$ref" : "#/components/schemas/providerResponseCategory"
@@ -8135,8 +8157,8 @@
             "transactionId" : "3121df47-7a05-4b42-9db3-d1ff8a29abf0"
           },
           "paymentStatusDetail" : {
-            "providerResponseCode" : "AVS_CHECK_FAILED",
-            "providerResponseCategory" : "SOFT_DECLINE"
+            "responseCode" : "AVS_CHECK_FAILED",
+            "responseCategory" : "SOFT_DECLINE"
           },
           "transactionTotal" : {
             "fee" : {
