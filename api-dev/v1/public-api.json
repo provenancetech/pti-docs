@@ -5722,6 +5722,12 @@
             "pattern" : "^[ -~]*$",
             "type" : "string",
             "description" : "Name of the bank of the account, Required for OUTGOING WIRE transactions, persisted as part of the Payment Information"
+          },
+          "plaidProcessorToken" : {
+            "maxLength" : 2048,
+            "pattern" : "^[ -~]*$",
+            "type" : "string",
+            "description" : "Plaid processor token, only field needed if provided"
           }
         },
         "allOf" : [ {

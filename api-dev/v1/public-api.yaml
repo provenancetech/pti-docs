@@ -3365,6 +3365,11 @@ components:
           maxLength: 1024
           description: 'Name of the bank of the account, Required for OUTGOING WIRE transactions, persisted as part of the Payment Information'
           pattern: '^[ -~]*$'
+        plaidProcessorToken:
+          type: string
+          maxLength: 2048
+          description: 'Plaid processor token, only field needed if provided'
+          pattern: '^[ -~]*$'
     bii:
       type: object
       required:
