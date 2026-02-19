@@ -7235,6 +7235,34 @@
         "type" : "string",
         "description" : "ISO 3166-2 state code, example US-CA"
       },
+      "travelRuleData" : {
+        "type" : "object",
+        "properties" : {
+          "beneficiaryName" : {
+            "maxLength" : 255,
+            "type" : "string",
+            "description" : "Name of the beneficiary receiving the funds",
+            "nullable" : true
+          },
+          "beneficiaryFinancialInstitution" : {
+            "maxLength" : 255,
+            "type" : "string",
+            "description" : "The beneficiary financial institution, e.g. Kraken.",
+            "nullable" : true
+          },
+          "beneficiaryNonCustodialWallet" : {
+            "maxLength" : 255,
+            "type" : "string",
+            "description" : "The beneficiary non custodial Wallet, e.g. Trust Wallet, Ledger Wallet, MyEthWallet, etc.",
+            "nullable" : true
+          },
+          "isSelf" : {
+            "type" : "boolean",
+            "description" : "Whether the sender claims the receiving wallet belongs to himself"
+          }
+        },
+        "description" : "Travel Rule information for crypto withdrawals."
+      },
       "cryptoPaymentInformation" : {
         "required" : [ "currency", "network", "type", "walletAddress" ],
         "type" : "object",
@@ -7270,6 +7298,9 @@
             "type" : "object",
             "additionalProperties" : true,
             "description" : "key/value map of extra meta data for this payment info, for example, it could be useful to add information to a transaction, like if a subtoken asset is involved"
+          },
+          "travelRuleData" : {
+            "$ref" : "#/components/schemas/travelRuleData"
           }
         },
         "allOf" : [ {

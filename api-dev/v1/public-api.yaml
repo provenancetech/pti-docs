@@ -4797,6 +4797,28 @@ components:
       maxLength: 5
       description: 'ISO 3166-2 state code, example US-CA'
       pattern: '^([A-Za-z]{2}-[A-Za-z0-9]{2})$'
+    travelRuleData:
+      type: object
+      description: Travel Rule information for crypto withdrawals.
+      properties:
+        beneficiaryName:
+          type: string
+          nullable: true
+          description: Name of the beneficiary receiving the funds
+          maxLength: 255
+        beneficiaryFinancialInstitution:
+          type: string
+          nullable: true
+          description: The beneficiary financial institution, e.g. Kraken.
+          maxLength: 255
+        beneficiaryNonCustodialWallet:
+          type: string
+          nullable: true
+          description: The beneficiary non custodial Wallet, e.g. Trust Wallet, Ledger Wallet, MyEthWallet, etc.
+          maxLength: 255
+        isSelf:
+          type: boolean
+          description: Whether the sender claims the receiving wallet belongs to himself
     cryptoPaymentInformation:
       type: object
       required:
@@ -4836,6 +4858,8 @@ components:
             key/value map of extra meta data for this payment info, for example,
             it could be useful to add information to a transaction, like if a
             subtoken asset is involved
+        travelRuleData:
+          $ref: '#/components/schemas/travelRuleData'
     cryptoPaymentMethodDestination:
       type: object
       description: 'The destination payment method of the Trade(wallet), if available'
