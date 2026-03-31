@@ -4,7 +4,7 @@ slug: "webhook-definitions"
 excerpt: "This section provides the details on the possible messages that you can receive on your webhook endpoint."
 hidden: false
 createdAt: "Fri Dec 13 2024 14:10:24 GMT+0000 (Coordinated Universal Time)"
-updatedAt: "Thu Dec 19 2024 20:26:49 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Tue Mar 31 2026 20:26:49 GMT+0000 (Coordinated Universal Time)"
 ---
 ## User Status Update
 
@@ -14,13 +14,16 @@ updatedAt: "Thu Dec 19 2024 20:26:49 GMT+0000 (Coordinated Universal Time)"
     "clientId":"CLIENT_ID",
     "userId":"USER_ID",
     "status":"ACTIVE | INACTIVE | BLOCKED",
-    "statusReason": "STATUS_REASON"
+    "statusReason": "STATUS_REASON",
+    "date": "DATE"
 }
 ```
 
 The `CLIENT_ID` value will be set to the Client ID provided to you during Onboarding
 
 The `USER_ID` corresponds to the user for which we are providing the status update.
+
+The `DATE` will come in the form of an ISO 8601-compliant date string.
 
 Here is the meaning of the possible statuses:
 
@@ -42,7 +45,9 @@ The `STATUS_REASON` value will provide more details on the reason why the status
     "userId":"USER_ID",
     "status":"ACCEPTED | REFUSED | UNDER_REVIEW | ERROR | PENDING | REQUESTED_MORE_INFORMATION",
     "tier": "KYC_TIER",
-    "refusalReason": "REFUSAL_REASON"
+    "refusalReason": "REFUSAL_REASON",
+    "meta": "METADATA",
+    "date": "DATE"
   
 }
 ```
@@ -65,12 +70,15 @@ transactions.
     "clientId":"CLIENT_ID",
     "userId":"USER_ID",
     "status":"ACCEPT | MANUAL_REVIEW | DENY | ERROR | PENDING",
-    "transactionDate":"TRANSACTION_DATE",
+    "date":"TRANSACTION_DATE",
     "amount":"TRANSACTION_AMOUNT",
+    "risk": "RISK_LEVEL",
+    "transactionGroupId": "TRANSACTION_GROUP_ID",
     "transactionType":"DEPOSIT | WITHDRAWAL | TRANSFER | MINT | BUY | SELL",
     "transactionMonitoringResultDetail":{
         "complianceProviderResponseCode" : "FRAUD_SUSPICION | TRANSACTION_VELOCITY_VIOLATION | BLOCKED_JURISDICTION | GEO_FENCING_VIOLATION | SANCTION_SCREENING"
-   }
+    },
+    "meta": "METADATA"
 }
 ```
 
@@ -84,7 +92,7 @@ compliance agent at PTI is analyzing the information provided and you should wai
 
 In the case of a `DENY` status, the `complianceProviderResponseCode` will contain more detail on the reason for denial.
 
-The `TRANSACTION_DATE` will come in the form of an ISO 8601-compliant date string. 
+The `DATE` will come in the form of an ISO 8601-compliant date string. 
 
 ## Payment processing update
 
@@ -102,13 +110,14 @@ The `TRANSACTION_DATE` will come in the form of an ISO 8601-compliant date strin
   "transactionType": "DEPOSIT",
   "paymentMethod": "CRYPTO | BANK_ACCOUNT | CREDIT_CARD | WALLET",
   "transactionGroupId": "TRANSACTION_GROUP_ID",
+  "billingEmail": "BILLING_EMAIL",
   "additionalInfos": {
     "CreditCardLast4Digits": "XXXX",
     "PaymentProviderTransactionId": "XXXX"
   },
   "paymentStatusDetail": {
-    "providerResponseCode": "PTI_TECHNICAL_ERROR | PAYMENT_PROVIDER_TECHNICAL_ERROR | FRAUD_SUSPICION | BLOCKED_COUNTRY | AVS_CHECK_FAILED | CVV_CHECK_FAILED | PAYMENT_INSTRUMENT_PROBLEM | PAYMENT_PROVIDER_DECLINED | SUSPENSE_TRANSACTION_RISK_EXCEEDED | SUSPENSE_KYC_LIMIT_EXCEEDED | SUSPENSE_OTHER",
-    "providerResponseCategory": "ERROR | SOFT_DECLINE | HARD_DECLINE | SUSPENSE"
+    "responseCode": "PTI_TECHNICAL_ERROR | PAYMENT_PROVIDER_TECHNICAL_ERROR | FRAUD_SUSPICION | BLOCKED_COUNTRY | AVS_CHECK_FAILED | CVV_CHECK_FAILED | PAYMENT_INSTRUMENT_PROBLEM | PAYMENT_PROVIDER_DECLINED | SUSPENSE_TRANSACTION_RISK_EXCEEDED | SUSPENSE_KYC_LIMIT_EXCEEDED | SUSPENSE_OTHER",
+    "responseCategory": "ERROR | SOFT_DECLINE | HARD_DECLINE | SUSPENSE"
   },
   "total": {
     "subTotal": {
@@ -123,7 +132,8 @@ The `TRANSACTION_DATE` will come in the form of an ISO 8601-compliant date strin
       "amount": 0,
       "currency": "CURRENCY"
     }
-  }
+  },
+  "scenarioId": "SCENARIO_ID"
 }
 ```
 
