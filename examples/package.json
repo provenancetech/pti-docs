@@ -11,7 +11,7 @@
     "js-yaml": "^4.1.0",
     "nth-check": "^2.1.1",
     "postcss": "^8.5.3",
-    "serialize-javascript": "^6.0.2"
+    "serialize-javascript": "^7.0.5"
   },
   "dependencies": {
     "eslint": "^9.26.0"
