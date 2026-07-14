@@ -1,6 +1,6 @@
 # REACT example application
 
-> Note, this has been tested with Node 16
+> Note, this has been tested with Node 24
 ## Frontend
 Use the project `ReactJsSdkApp`:
 

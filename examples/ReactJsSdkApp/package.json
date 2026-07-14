@@ -1,21 +1,12 @@
 {
-  "name": "create-react-app",
+  "name": "react-js-sdk-app",
   "version": "4.0.0",
   "private": true,
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "test": "craco test"
-  },
-  "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "7.21.11",
-    "lint-staged": "^16.1.2",
-    "prettier": "^3.6.2",
-    "stylelint": "^16.22.0",
-    "stylelint-config-standard": "^38.0.0"
+    "start": "webpack serve --config webpack.config.js --mode development",
+    "build": "webpack --config webpack.config.js --mode production"
   },
   "dependencies": {
-    "@craco/craco": "^7.1.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/base": "^5.0.0-beta.40",
@@ -26,14 +17,28 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-json-view": "^1.21.3",
-    "react-scripts": "^5.0.1",
-    "socket.io-client": "^4.8.1",
     "styled-components": "^6.1.19",
     "uuid": "^14.0.0",
     "zustand": "^5.0.6"
   },
-  "resolutions": {
-    "clean-css": "^5.3.3"
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.4",
+    "@babel/preset-react": "^7.24.7",
+    "babel-loader": "^9.2.1",
+    "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^7.1.2",
+    "dotenv": "^16.4.5",
+    "html-webpack-plugin": "^5.6.0",
+    "lint-staged": "^16.1.2",
+    "portfinder": "^1.0.32",
+    "prettier": "^3.6.2",
+    "style-loader": "^4.0.0",
+    "stylelint": "^16.22.0",
+    "stylelint-config-standard": "^38.0.0",
+    "webpack": "^5.94.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.1.0"
   },
   "browserslist": {
     "production": [
@@ -50,6 +55,5 @@
   "lint-staged": {
     "*.{css,scss}": "stylelint --fix",
     "*.{css,js,md,mdx,scss,ts,tsx}": "prettier --write"
-  },
-  "proxy": "http://localhost:5100"
+  }
 }
