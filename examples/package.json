@@ -3,5 +3,9 @@
   "workspaces": [
     "next-js-sdk-app",
     "ReactJsSdkApp"
-  ]
+  ],
+  "resolutions": {
+    "postcss": "^8.5.3",
+    "serialize-javascript": "^7.0.5"
+  }
 }
