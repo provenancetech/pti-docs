@@ -33,7 +33,7 @@ const App = () => {
   const [userId, setUserId] = useState(REACT_APP_USER_ID);
   const [requestId, setRequestId] = useState(uuidv4());
   const [amount, setAmount] = useState(`${getRandomInt(100)}.${getRandomInt(100)}`);
-  const [scenarioId, setScenarioId] = useState("");
+  const [operation, setOperation] = useState("");
   const [lang, setLang] = useState("en");
 
   const [createUserLoading, setCreateUserLoading] = useState(false);
@@ -43,7 +43,7 @@ const App = () => {
     transactionId: "0xbb0ec8b4ab6679a0e0486f44a867dcd913cd5acee368180ac72432784eba48e4",
     date: new Date().toISOString(),
   });
-  const props = { userId, requestId, amount, scenarioId, setUserId, transactionLogPayload, transactionFeedbackPayload };
+  const props = { userId, requestId, amount, operation: operation, setUserId, transactionLogPayload, transactionFeedbackPayload };
 
   useEffect(() => {
     setTransactionLogPayload(generateTransactionLogPayload(transactionType, paymentInformation, amount, userId));
@@ -129,10 +129,10 @@ const App = () => {
         </Stack>
         <TextField
           fullWidth={true}
-          id="scenarioId"
-          label="ScenarioId ( associated template must be present in backend )"
-          onChange={(e) => setScenarioId(e.target.value)}
-          value={scenarioId}
+          id="operation"
+          label="Operation"
+          onChange={(e) => setOperation(e.target.value)}
+          value={operation}
         />
       </Section>
         
@@ -144,7 +144,7 @@ const App = () => {
         <Button
           endIcon={<OpenInNewOutlinedIcon />}
           fullWidth={true}
-          onClick={() => openSimpleDialog(actionType.kyc, userId, requestId, amount, scenarioId, lang)}
+          onClick={() => openSimpleDialog(actionType.kyc, userId, requestId, amount, operation, lang)}
           variant="contained"
         >
           Open KYC Form
@@ -159,7 +159,7 @@ const App = () => {
         <Button
           endIcon={<OpenInNewOutlinedIcon />}
           fullWidth={true}
-          onClick={() => openSimpleDialog(actionType.kyb, userId, requestId, amount, scenarioId, lang)}
+          onClick={() => openSimpleDialog(actionType.kyb, userId, requestId, amount, operation, lang)}
           variant="contained"
         >
           Open KYB Form
@@ -174,7 +174,7 @@ const App = () => {
         <Button
           endIcon={<OpenInNewOutlinedIcon />}
           fullWidth={true}
-          onClick={() => openSimpleDialog(actionType.onboarding, userId, requestId, amount, scenarioId, lang)}
+          onClick={() => openSimpleDialog(actionType.onboarding, userId, requestId, amount, operation, lang)}
           variant="contained"
         >
           Open Onboarding Form
@@ -189,7 +189,7 @@ const App = () => {
         <Button
           endIcon={<OpenInNewOutlinedIcon />}
           fullWidth={true}
-          onClick={() => openSimpleDialog(actionType.addCC, userId, requestId, amount, scenarioId, lang)}
+          onClick={() => openSimpleDialog(actionType.addCC, userId, requestId, amount, operation, lang)}
           variant="contained"
         >
           Open Add Credit Card Form
@@ -197,7 +197,7 @@ const App = () => {
       <Button
           endIcon={<OpenInNewOutlinedIcon />}
           fullWidth={true}
-          onClick={() => openSimpleDialog(actionType.addBankAccount, userId, requestId, amount, scenarioId, lang)}
+          onClick={() => openSimpleDialog(actionType.addBankAccount, userId, requestId, amount, operation, lang)}
           variant="contained"
       >
           Open Add Bank Account Form
@@ -205,7 +205,7 @@ const App = () => {
       <Button
           endIcon={<OpenInNewOutlinedIcon />}
           fullWidth={true}
-          onClick={() => openSimpleDialog(actionType.addCryptoWallet, userId, requestId, amount, scenarioId, lang)}
+          onClick={() => openSimpleDialog(actionType.addCryptoWallet, userId, requestId, amount, operation, lang)}
           variant="contained"
       >
           Open Add Crypto Wallet Form

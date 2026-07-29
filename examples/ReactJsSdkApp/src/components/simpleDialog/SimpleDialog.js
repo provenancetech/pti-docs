@@ -40,14 +40,14 @@ const useSimpleDialogStore = create((set) => ({
   userId: "",
   requestId: "",
   amount: "",
-  scenarioId: "",
+  operation: "",
   lang: "",
   closeHandler: () => set({open: false}),
   setSdkInit: (value) => set({sdkInit: value}),
   setSdkLoading: (value) => set({sdkLoading: value}),
 }));
 
-export const openSimpleDialog = (type, userId, requestId, amount, scenarioId, lang) => {
+export const openSimpleDialog = (type, userId, requestId, amount, operation, lang) => {
   useSimpleDialogStore.setState({
     open: true,
     sdkInit: false,
@@ -56,7 +56,7 @@ export const openSimpleDialog = (type, userId, requestId, amount, scenarioId, la
     userId,
     requestId,
     amount,
-    scenarioId,
+    operation: operation,
     lang,
   });
 };
@@ -70,7 +70,7 @@ const SimpleDialog = () => {
     userId,
     requestId,
     amount,
-    scenarioId,
+    operation: operation,
     lang,
     closeHandler,
     setSdkInit,
@@ -97,11 +97,10 @@ const SimpleDialog = () => {
         usdValue: amount,
       };
 
-      if (scenarioId) {
-        // note that the template corresponding to this scenarioId must exist in the PTI backend
-        params.scenarioId = scenarioId;
+      if (operation) {
+        params.operation = operation;
         // update the context
-        PTI.updateContext(userId, scenarioId, ptiConfig.sessionId);
+        PTI.updateContext(userId, operation, ptiConfig.sessionId);
       }
 
       if (Object.values(actionType).includes(type)) params.type = type;
@@ -123,7 +122,7 @@ const SimpleDialog = () => {
           <FieldCopy label={"Client Id:"} value={ptiConfig.clientId} variant={"outlined"} style={{width: "340px"}}/>
           <FieldCopy label={"User Id:"} value={userId} variant={"outlined"} style={{width: "340px"}}/>
           <FieldCopy label={"Request Id:"} value={requestId} variant={"outlined"} style={{width: "340px"}}/>
-          <FieldCopy label={"Scenario Id:"} value={scenarioId} variant={"outlined"} style={{width: "200px"}}/>
+          <FieldCopy label={"Operation:"} value={operation} variant={"outlined"} style={{width: "200px"}}/>
         </DialogTitle>
         <CloseButton onClick={closeHandler}>
           <CloseOutlinedIcon/>
