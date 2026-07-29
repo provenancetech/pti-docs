@@ -163,6 +163,6 @@ The `REQUEST_ID` UUID should be unique. Trying to complete 2 transactions or KYC
 The value of `USER_ID` is also under your control. It corresponds to the value you passed in the `id` field in the body of the [create user](https://provenancetech.github.io/pti-docs/api/v1/#/default/post_users) API call.
 You must store the `this` value at user creation time to make sure you can associate your users with users in the PTI platform.
 
-The value of `lang` is to specify which language strings should be used in the form. Default is `en` (English)
+The value of `operation` will select the pathway under which KYC will be made. Passing an invalid `operation` value will result in an error.
 
-The value of `operation` will only be used in the case of a KYC
+The value of `lang` is to specify which language strings should be used in the form. Default is `en` (English)
