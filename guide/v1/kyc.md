@@ -5,10 +5,10 @@ A KYC flow will require a set of information about the user and return a status.
 KYCs are configurable with these two elements:
 
 * **Tier**: A KYC tier is a numerical value associated to a set of user information
-* **Scenario**: A scenario is defined by a name an array of price brackets that map to a KYC tier
+* **Operation**: An operation is defined by a name an array of price brackets that map to a KYC tier
 
-This implies that for a given amount and scenario, the required user information is determined via the mapped tier. The following tables illustrate the default configuration 
-for tiers and an example for scenario mappings.
+This implies that for a given amount and operation, the required user information is determined via the mapped tier. The following tables illustrate the default configuration 
+for tiers and an example for operation mappings.
 These can be configured by PTI to suit your specific needs
 
 ## Default Tier Configuration
@@ -24,22 +24,22 @@ These can be configured by PTI to suit your specific needs
 
 Tiers are cumulative. For example, the information required by tier 3 includes all the information required by tier 1 and 2.
 
-## Example Scenario Configuration
+## Example Operation Configuration
 
-This table illustrates how a scenario and an amount bracket maps to a KYC tier.
+This table illustrates how an operation and an amount bracket maps to a KYC tier.
 This is only an example, discuss with PTI to set up your desired configuration. 
 
-| Scenario        | 0$ - 100$                              | 100$ - 1000$ | 1000$ - 10K$ | 10K$ and up |
-|-----------------|----------------------------------------|--------------|--------------|-------------|
-| Crypto Purchase | 1                                      | 2            | 2            | 2           |  
-| Crypto Transfer | 1                                      | 1            | 1            | 1           |
-| Crypto Sell     | 3                                      | 3            | 4            | 5           |
+| Operation | 0$ - 100$                              | 100$ - 1000$ | 1000$ - 10K$ | 10K$ and up |
+|-----------|----------------------------------------|--------------|--------------|-------------|
+| BUY       | 1                                      | 2            | 2            | 2           |  
+| TRANSFER  | 1                                      | 1            | 1            | 1           |
+| SELL      | 3                                      | 3            | 4            | 5           |
 
-With the above configuration, a user who wishes to do a 150$ transaction associated to the Crypto Sell scenario 
+With the above configuration, a user who wishes to do a 150$ transaction associated to the `SELL` operation 
 would have to successfully have executed a KYC flow providing all the information required by KYC tier 3.
 
-Also note that the amount brackets represent cumulative amounts per scenario. For example, if a user does multiple transactions
-associated to the `Crypto Sell` scenario, it is the total of all these transactions that will be used to select the KYC tier for that scenario.
+Also note that the amount brackets represent cumulative amounts per operation. For example, if a user does multiple transactions
+associated to the `SELL` operation, it is the total of all these transactions that will be used to select the KYC tier for that operation.
 
 
 ## Performing KYC flows
@@ -47,21 +47,21 @@ associated to the `Crypto Sell` scenario, it is the total of all these transacti
 ### KYC using the SDK and Hosted Forms
 
 In order to simplify the collection of user information needed to perform the KYC checks, it is possible to display the KYC Hosted form. Here is a code
-example using the SDK form function to display the KYC form. Note that only the fields missing for the selected scenario and amount will be displayed in an iframe.
+example using the SDK form function to display the KYC form. Note that only the fields missing for the selected operation and amount will be displayed in an iframe.
 
 ```js
     PTI.form({
-        type: "KYC",
-        requestId: "REQUEST_ID",
-        userId: "USER_ID",
-        parentElement: document.getElementById("root"),
-        scenarioId: "Crypto Sell",
-        amount: 150
-    });
+    type: "KYC",
+    requestId: "REQUEST_ID",
+    userId: "USER_ID",
+    parentElement: document.getElementById("root"),
+    operation: "SELL",
+    amount: 150
+});
 ```
 
 In the above example, the KYC form displayed will collect all the missing information on the user identified by `USER_ID`. Again, assuming that this
-is the first transaction under the `Crypto Sell` scenario from our example configuration above, the form will collect all the missing fields in tier 3.
+is the first transaction under the `SELL` operation from our example configuration above, the form will collect all the missing fields in tier 3.
 
 Under the hood, all the user information will be collected, the single use token fetched and the call to the [initiate KYC endpoint](https://provenancetech.github.io/pti-docs/api/v1/#/default/post_users__userId__kyc) made.
 
@@ -74,20 +74,20 @@ Another way to perform KYC flows is to use the API directly.
 #### Checking if a KYC is needed
 
 Using the [is KYC needed endpoint](https://provenancetech.github.io/pti-docs/api/v1/#/default/get_users__userId__kyc_needed),
-it is possible to know if a KYC would be needed to perform a transaction with a given scenario and amount.
+it is possible to know if a KYC would be needed to perform a transaction with a given operation and amount.
 
 #### Initiate a KYC check
 
 Using the [initiate KYC endpoint](https://provenancetech.github.io/pti-docs/api/v1/#/default/post_users__userId__kyc), it is possible to start the KYC check.
-Note that all the user information needed for the selected scenario and amount must be either provided in the call or have been previously provided for the
+Note that all the user information needed for the selected operation and amount must be either provided in the call or have been previously provided for the
 selected user. The result of the KYC check will be returned asynchronously over your webhook. Please note that if a liveness check is required by the selected
 tier, the user will receive a notification on his device to complete it.
 
 ### KYC in the context of transactions
 
-When calling the transaction monitoring endpoint, passing in the scenario as well as the amount will result in the initiation of a KYC check using the
+When calling the transaction monitoring endpoint, passing in the operation as well as the amount will result in the initiation of a KYC check using the
 KYC tier mapped by the configuration. The following example shows a call to the transaction monitoring endpoint for a transaction of 150$ done with
-the `Crypto Purchase` scenario. Assuming that this is the first transaction of that kind for a user and that the scenario configuration was exactly as the example above, 
+the `Crypto Purchase` operation. Assuming that this is the first transaction of that kind for a user and that the operation configuration was exactly as the example above, 
 this would lead to a KYC check with a KYC tier of 2. A transaction request that fails a KYC cycle will **NOT** return an `ACCEPTED` status.
 
 ```js
@@ -100,7 +100,6 @@ const callTransactionLog = (accessToken) => {
             "x-pti-request-id": requestId,
             "x-pti-client-id": "${YOUR_CLIENT_ID}",
             'x-pti-token': accessToken,
-            'x-pti-scenario-id': "Crypto Purchase",
             'Date': date
         };
         const body = {

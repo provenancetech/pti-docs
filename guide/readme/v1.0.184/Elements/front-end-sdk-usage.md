@@ -53,14 +53,11 @@ Here is an example call to the updateContext function:
 
 ```js
 PTI.updateContext({
-  scenarioId: "SCENARIO_ID",
-  userId: "USER_ID",
-  sessionId: PTI.config.sessionId,
+    operation: "BUY",
+    userId: "USER_ID",
+    sessionId: PTI.config.sessionId,
 });
 ```
-
-The `SCENARIO_ID` value can be one of the scenarios you configured for your KYC flows or any value that makes sense in your situation.  
-This value is used to track the steps of the user journey withing your site.
 
 The `USER_ID` value should be set to the user ID you use with all the API endpoints
 
@@ -77,32 +74,34 @@ render the forms on your web application.
 #### Display the User Assessment element
 
 ```html
+
 <div id="kyc_form"></div>
 <script>
-  PTI.form({
-    type: "KYC",
-    requestId: "REQUEST_ID",
-    userId: "USER_ID",
-    scenarioId: "SCENARIO_ID",
-    parentElement: document.getElementById("kyc_form"),
-    lang: "en",
-  });
+    PTI.form({
+        type: "KYC",
+        requestId: "REQUEST_ID",
+        userId: "USER_ID",
+        operation: "BUY",
+        parentElement: document.getElementById("kyc_form"),
+        lang: "en",
+    });
 </script>
 ```
 
 #### Display the Onboarding element
 
 ```html
+
 <div id="onboarding_form"></div>
 <script>
-  PTI.form({
-    type: "ONBOARDING",
-    requestId: "REQUEST_ID",
-    userId: "USER_ID",
-    scenarioId: "SCENARIO_ID",
-    parentElement: document.getElementById("onboarding_form"),
-    lang: "en",
-  });
+    PTI.form({
+        type: "ONBOARDING",
+        requestId: "REQUEST_ID",
+        userId: "USER_ID",
+        operation: "SELL",
+        parentElement: document.getElementById("onboarding_form"),
+        lang: "en",
+    });
 </script>
 ```
 
@@ -163,8 +162,6 @@ The `REQUEST_ID` UUID should be unique. Trying to complete 2 transactions or KYC
 The value of `USER_ID` is also under your control. It corresponds to the value you passed in the `id` field in the body of the [create user](https://fiant.readme.io/reference/addauser) API call.  
 You must store the `this` value at user creation time to make sure you can associate your users with users in the platform.
 
-The value of `SCENARIO_ID` will select the scenario under which the transaction or User assessment will be made.  
-The scenario must have been configured previously as explained [here](https://dash.readme.com/project/fiant/v1.0.184/docs/user-assessment-2).  
-Passing an unconfigured `SCENARIO_ID` value will result in an error.
-
 The value of `lang` is to specify which language strings should be used in the form. Default is `en` (English)
+
+The value of `operation` will only be used in the case of a KYC
