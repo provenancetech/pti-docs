@@ -369,13 +369,15 @@ paths:
         - Users
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
-        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
+        - $ref: '#/components/parameters/scenarioIdHeaderParam'
         - $ref: '#/components/parameters/sessionIdHeaderParam'
         - $ref: '#/components/parameters/disableWebhookHeaderParam'
       requestBody:
         content:
           application/json:
             example:
+              operation: ONBOARDING
+              intendedTransactionUsdValue: 100.00
               id: ffffffff-2747-41c6-8748-559588fd3248
               type: PERSON
               name:
@@ -1412,7 +1414,7 @@ paths:
         - Transaction Assessment
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
-        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
+        - $ref: '#/components/parameters/scenarioIdHeaderParam'
         - $ref: '#/components/parameters/sessionIdHeaderParam'
         - $ref: '#/components/parameters/disableWebhookHeaderParam'
       requestBody:
@@ -1613,7 +1615,7 @@ paths:
         - Transaction Assessment
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
-        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
+        - $ref: '#/components/parameters/scenarioIdHeaderParam'
         - $ref: '#/components/parameters/sessionIdHeaderParam'
         - $ref: '#/components/parameters/disableWebhookHeaderParam'
       requestBody:
@@ -1857,7 +1859,7 @@ paths:
         are evaluated before the transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
-        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
+        - $ref: '#/components/parameters/scenarioIdHeaderParam'
         - $ref: '#/components/parameters/sessionIdHeaderParam'
         - $ref: '#/components/parameters/disableWebhookHeaderParam'
         - $ref: '#/components/parameters/providerNameHeaderParam'
@@ -2003,7 +2005,7 @@ paths:
         requirement are evaluated before the transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
-        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
+        - $ref: '#/components/parameters/scenarioIdHeaderParam'
         - $ref: '#/components/parameters/sessionIdHeaderParam'
         - $ref: '#/components/parameters/disableWebhookHeaderParam'
         - $ref: '#/components/parameters/providerNameHeaderParam'
@@ -2111,7 +2113,7 @@ paths:
         requirement are evaluated before the transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
-        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
+        - $ref: '#/components/parameters/scenarioIdHeaderParam'
         - $ref: '#/components/parameters/sessionIdHeaderParam'
         - $ref: '#/components/parameters/disableWebhookHeaderParam'
         - $ref: '#/components/parameters/providerNameHeaderParam'
@@ -2251,7 +2253,7 @@ paths:
         before the transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
-        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
+        - $ref: '#/components/parameters/scenarioIdHeaderParam'
         - $ref: '#/components/parameters/sessionIdHeaderParam'
         - $ref: '#/components/parameters/disableWebhookHeaderParam'
         - $ref: '#/components/parameters/providerNameHeaderParam'
@@ -2361,7 +2363,7 @@ paths:
         evaluated before the Transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
-        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
+        - $ref: '#/components/parameters/scenarioIdHeaderParam'
         - $ref: '#/components/parameters/sessionIdHeaderParam'
         - $ref: '#/components/parameters/disableWebhookHeaderParam'
         - $ref: '#/components/parameters/providerNameHeaderParam'
@@ -2467,7 +2469,7 @@ paths:
         before the transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
-        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
+        - $ref: '#/components/parameters/scenarioIdHeaderParam'
         - $ref: '#/components/parameters/sessionIdHeaderParam'
         - $ref: '#/components/parameters/disableWebhookHeaderParam'
         - $ref: '#/components/parameters/providerNameHeaderParam'
@@ -2861,7 +2863,7 @@ paths:
         requirement are evaluated before the Transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
-        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
+        - $ref: '#/components/parameters/scenarioIdHeaderParam'
         - $ref: '#/components/parameters/sessionIdHeaderParam'
         - $ref: '#/components/parameters/disableWebhookHeaderParam'
         - $ref: '#/components/parameters/providerNameHeaderParam'
@@ -2970,7 +2972,7 @@ paths:
         requirement are evaluated before the transaction is executed.
       parameters:
         - $ref: '#/components/parameters/requestIdHeaderParam'
-        - $ref: '#/components/parameters/mandatoryScenarioIdHeaderParam'
+        - $ref: '#/components/parameters/scenarioIdHeaderParam'
         - $ref: '#/components/parameters/sessionIdHeaderParam'
         - $ref: '#/components/parameters/disableWebhookHeaderParam'
         - $ref: '#/components/parameters/providerNameHeaderParam'
@@ -5385,14 +5387,34 @@ components:
           type: string
     kycRequest:
       oneOf:
-        - $ref: '#/components/schemas/person'
-        - $ref: '#/components/schemas/business'
+        - $ref: '#/components/schemas/personKycRequest'
+        - $ref: '#/components/schemas/businessKycRequest'
       discriminator:
         propertyName: type
         mapping:
-          PERSON: '#/components/schemas/person'
-          BUSINESS: '#/components/schemas/business'
+          PERSON: '#/components/schemas/personKycRequest'
+          BUSINESS: '#/components/schemas/businessKycRequest'
+          
+    personKycRequest:
+      allOf:
+        - $ref: '#/components/schemas/person'
+        - type: object
       properties:
+        operation:
+          type: string
+          description: When provided allows fine grain control over what data is collected when performing the kyc. Defaults to 'ONBOARDING' operation flow.
+          enum:
+            - BUSINESS_ONBOARDING
+            - BUY
+            - DEPOSIT
+            - MAX_TIER
+            - MINT
+            - ONBOARDING
+            - PAYMENT
+            - WITHDRAWAL
+            - SELL
+            - TRADE
+            - TRANSFER
         intendedTransactionUsdValue:
           type: number
           minimum: 0
@@ -5409,6 +5431,44 @@ components:
           additionalProperties: true
           type: object
           description: key/value map of extra meta data for this request (used by Client)
+    
+    businessKycRequest:
+      allOf:
+        - $ref: '#/components/schemas/business'
+        - type: object
+      properties:
+        operation:
+          type: string
+          description: When provided allows fine grain control over what data is collected when performing the kyc. Defaults to 'ONBOARDING' operation flow.
+          enum:
+            - BUSINESS_ONBOARDING
+            - BUY
+            - DEPOSIT
+            - MAX_TIER
+            - MINT
+            - ONBOARDING
+            - PAYMENT
+            - WITHDRAWAL
+            - SELL
+            - TRADE
+            - TRANSFER
+        intendedTransactionUsdValue:
+          type: number
+          minimum: 0
+          maximum: 999999
+          format: double
+          description: >-
+            The value of the transaction that the User is intending to perform
+            in USD
+        ptiMeta:
+          additionalProperties: true
+          type: object
+          description: key/value map of extra meta data for this request (used by PTI)
+        clientMeta:
+          additionalProperties: true
+          type: object
+          description: key/value map of extra meta data for this request (used by Client)
+    
     uuidLikeStr:
       type: string
       pattern: '^[a-z0-9_-]{3,64}$'
@@ -6083,17 +6143,16 @@ components:
           type: number
           format: double
   parameters:
-    mandatoryScenarioIdHeaderParam:
+    scenarioIdHeaderParam:
       name: x-pti-scenario-id
       description: >-
-        Represents a User action under which transaction amounts will
-        accumulated and will control the User Assessment requirements. The
-        values this header can take must be agreed upon and communicated to PTI.
-        Setting unknown values here will generate an error.
+        Deprecated header that represented a User action under which transaction amounts would
+        accumulate and controlled the User Assessment requirements. 
+        Values passed in will be ignored going forward.
       schema:
         $ref: '#/components/schemas/uuidLikeStr'
       in: header
-      required: true
+      required: false
     disableWebhookHeaderParam:
       name: x-pti-disable-webhook
       description: Set to true to disable webhook calls for this request.

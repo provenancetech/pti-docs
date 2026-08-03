@@ -594,8 +594,8 @@
         }, {
           "name" : "x-pti-scenario-id",
           "in" : "header",
-          "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
-          "required" : true,
+          "description" : "Deprecated header that represented a User action under which transaction amounts would accumulate and controlled the User Assessment requirements.  Values passed in will be ignored going forward.",
+          "required" : false,
           "style" : "simple",
           "explode" : false,
           "schema" : {
@@ -629,6 +629,8 @@
                 "$ref" : "#/components/schemas/kycRequest"
               },
               "example" : {
+                "operation" : "ONBOARDING",
+                "intendedTransactionUsdValue" : 100.0,
                 "id" : "ffffffff-2747-41c6-8748-559588fd3248",
                 "type" : "PERSON",
                 "name" : {
@@ -2359,8 +2361,8 @@
         }, {
           "name" : "x-pti-scenario-id",
           "in" : "header",
-          "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
-          "required" : true,
+          "description" : "Deprecated header that represented a User action under which transaction amounts would accumulate and controlled the User Assessment requirements.  Values passed in will be ignored going forward.",
+          "required" : false,
           "style" : "simple",
           "explode" : false,
           "schema" : {
@@ -2689,8 +2691,8 @@
         }, {
           "name" : "x-pti-scenario-id",
           "in" : "header",
-          "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
-          "required" : true,
+          "description" : "Deprecated header that represented a User action under which transaction amounts would accumulate and controlled the User Assessment requirements.  Values passed in will be ignored going forward.",
+          "required" : false,
           "style" : "simple",
           "explode" : false,
           "schema" : {
@@ -3070,8 +3072,8 @@
         }, {
           "name" : "x-pti-scenario-id",
           "in" : "header",
-          "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
-          "required" : true,
+          "description" : "Deprecated header that represented a User action under which transaction amounts would accumulate and controlled the User Assessment requirements.  Values passed in will be ignored going forward.",
+          "required" : false,
           "style" : "simple",
           "explode" : false,
           "schema" : {
@@ -3324,8 +3326,8 @@
         }, {
           "name" : "x-pti-scenario-id",
           "in" : "header",
-          "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
-          "required" : true,
+          "description" : "Deprecated header that represented a User action under which transaction amounts would accumulate and controlled the User Assessment requirements.  Values passed in will be ignored going forward.",
+          "required" : false,
           "style" : "simple",
           "explode" : false,
           "schema" : {
@@ -3531,8 +3533,8 @@
         }, {
           "name" : "x-pti-scenario-id",
           "in" : "header",
-          "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
-          "required" : true,
+          "description" : "Deprecated header that represented a User action under which transaction amounts would accumulate and controlled the User Assessment requirements.  Values passed in will be ignored going forward.",
+          "required" : false,
           "style" : "simple",
           "explode" : false,
           "schema" : {
@@ -3782,8 +3784,8 @@
         }, {
           "name" : "x-pti-scenario-id",
           "in" : "header",
-          "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
-          "required" : true,
+          "description" : "Deprecated header that represented a User action under which transaction amounts would accumulate and controlled the User Assessment requirements.  Values passed in will be ignored going forward.",
+          "required" : false,
           "style" : "simple",
           "explode" : false,
           "schema" : {
@@ -3991,8 +3993,8 @@
         }, {
           "name" : "x-pti-scenario-id",
           "in" : "header",
-          "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
-          "required" : true,
+          "description" : "Deprecated header that represented a User action under which transaction amounts would accumulate and controlled the User Assessment requirements.  Values passed in will be ignored going forward.",
+          "required" : false,
           "style" : "simple",
           "explode" : false,
           "schema" : {
@@ -4196,8 +4198,8 @@
         }, {
           "name" : "x-pti-scenario-id",
           "in" : "header",
-          "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
-          "required" : true,
+          "description" : "Deprecated header that represented a User action under which transaction amounts would accumulate and controlled the User Assessment requirements.  Values passed in will be ignored going forward.",
+          "required" : false,
           "style" : "simple",
           "explode" : false,
           "schema" : {
@@ -4849,8 +4851,8 @@
         }, {
           "name" : "x-pti-scenario-id",
           "in" : "header",
-          "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
-          "required" : true,
+          "description" : "Deprecated header that represented a User action under which transaction amounts would accumulate and controlled the User Assessment requirements.  Values passed in will be ignored going forward.",
+          "required" : false,
           "style" : "simple",
           "explode" : false,
           "schema" : {
@@ -5057,8 +5059,8 @@
         }, {
           "name" : "x-pti-scenario-id",
           "in" : "header",
-          "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
-          "required" : true,
+          "description" : "Deprecated header that represented a User action under which transaction amounts would accumulate and controlled the User Assessment requirements.  Values passed in will be ignored going forward.",
+          "required" : false,
           "style" : "simple",
           "explode" : false,
           "schema" : {
@@ -7907,7 +7909,26 @@
         }
       },
       "kycRequest" : {
+        "discriminator" : {
+          "propertyName" : "type",
+          "mapping" : {
+            "PERSON" : "#/components/schemas/personKycRequest",
+            "BUSINESS" : "#/components/schemas/businessKycRequest"
+          }
+        },
+        "oneOf" : [ {
+          "$ref" : "#/components/schemas/personKycRequest"
+        }, {
+          "$ref" : "#/components/schemas/businessKycRequest"
+        } ]
+      },
+      "personKycRequest" : {
         "properties" : {
+          "operation" : {
+            "type" : "string",
+            "description" : "When provided allows fine grain control over what data is collected when performing the kyc. Defaults to 'ONBOARDING' operation flow.",
+            "enum" : [ "BUSINESS_ONBOARDING", "BUY", "DEPOSIT", "MAX_TIER", "MINT", "ONBOARDING", "PAYMENT", "WITHDRAWAL", "SELL", "TRADE", "TRANSFER" ]
+          },
           "intendedTransactionUsdValue" : {
             "maximum" : 999999,
             "minimum" : 0,
@@ -7926,17 +7947,41 @@
             "description" : "key/value map of extra meta data for this request (used by Client)"
           }
         },
-        "discriminator" : {
-          "propertyName" : "type",
-          "mapping" : {
-            "PERSON" : "#/components/schemas/person",
-            "BUSINESS" : "#/components/schemas/business"
-          }
-        },
-        "oneOf" : [ {
+        "allOf" : [ {
           "$ref" : "#/components/schemas/person"
         }, {
+          "type" : "object"
+        } ]
+      },
+      "businessKycRequest" : {
+        "properties" : {
+          "operation" : {
+            "type" : "string",
+            "description" : "When provided allows fine grain control over what data is collected when performing the kyc. Defaults to 'ONBOARDING' operation flow.",
+            "enum" : [ "BUSINESS_ONBOARDING", "BUY", "DEPOSIT", "MAX_TIER", "MINT", "ONBOARDING", "PAYMENT", "WITHDRAWAL", "SELL", "TRADE", "TRANSFER" ]
+          },
+          "intendedTransactionUsdValue" : {
+            "maximum" : 999999,
+            "minimum" : 0,
+            "type" : "number",
+            "description" : "The value of the transaction that the User is intending to perform in USD",
+            "format" : "double"
+          },
+          "ptiMeta" : {
+            "type" : "object",
+            "additionalProperties" : true,
+            "description" : "key/value map of extra meta data for this request (used by PTI)"
+          },
+          "clientMeta" : {
+            "type" : "object",
+            "additionalProperties" : true,
+            "description" : "key/value map of extra meta data for this request (used by Client)"
+          }
+        },
+        "allOf" : [ {
           "$ref" : "#/components/schemas/business"
+        }, {
+          "type" : "object"
         } ]
       },
       "uuidLikeStr" : {
@@ -8712,11 +8757,11 @@
       }
     },
     "parameters" : {
-      "mandatoryScenarioIdHeaderParam" : {
+      "scenarioIdHeaderParam" : {
         "name" : "x-pti-scenario-id",
         "in" : "header",
-        "description" : "Represents a User action under which transaction amounts will accumulated and will control the User Assessment requirements. The values this header can take must be agreed upon and communicated to PTI. Setting unknown values here will generate an error.",
-        "required" : true,
+        "description" : "Deprecated header that represented a User action under which transaction amounts would accumulate and controlled the User Assessment requirements.  Values passed in will be ignored going forward.",
+        "required" : false,
         "style" : "simple",
         "explode" : false,
         "schema" : {
