@@ -4918,6 +4918,13 @@ components:
           minimum: 0
           maximum: 999999
           format: double
+        useInstantSettlement:
+          description: >-
+            Set to true to instantly settle an ACH pull deposit using the client's Instant Settlement Wallet.
+            The user's wallet is credited immediately at deposit creation, funded by a synchronous debit of
+            the Instant Settlement Wallet. Only applicable to ACH pull deposits.
+          type: boolean
+          default: false
         date:
           type: string
           description: ISO-8601

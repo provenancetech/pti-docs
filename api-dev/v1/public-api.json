@@ -7377,6 +7377,11 @@
             "type" : "number",
             "format" : "double"
           },
+          "useInstantSettlement" : {
+            "type" : "boolean",
+            "description" : "Set to true to instantly settle an ACH pull deposit using the client's Instant Settlement Wallet. The user's wallet is credited immediately at deposit creation, funded by a synchronous debit of the Instant Settlement Wallet. Only applicable to ACH pull deposits.",
+            "default" : false
+          },
           "date" : {
             "maxLength" : 40,
             "pattern" : "^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,9})?(?:Z|[+-][01]\\d:[0-5]\\d)",
