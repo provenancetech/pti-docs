@@ -4862,18 +4862,6 @@ components:
             subtoken asset is involved
         travelRuleData:
           $ref: '#/components/schemas/travelRuleData'
-    cryptoPaymentMethodDestination:
-      type: object
-      description: 'The destination payment method of the Trade(wallet), if available'
-      properties:
-        paymentInformation:
-          $ref: '#/components/schemas/cryptoPaymentInformation'
-    cryptoPaymentMethodSource:
-      type: object
-      description: 'The source payment method of the Trade(wallet), if available'
-      properties:
-        paymentInformation:
-          $ref: '#/components/schemas/cryptoPaymentInformation'
     cryptoPaymentMethod:
       type: object
       additionalProperties: true
@@ -5026,9 +5014,9 @@ components:
         - $ref: '#/components/schemas/transactionType'
       properties:
         destinationMethod:
-          $ref: '#/components/schemas/cryptoPaymentMethodDestination'
+          $ref: '#/components/schemas/walletPaymentMethod'
         sourceMethod:
-          $ref: '#/components/schemas/cryptoPaymentMethodSource'
+          $ref: '#/components/schemas/walletPaymentMethod'
     transactionTypeEnum:
       type: string
       enum:
