@@ -7309,24 +7309,6 @@
           "$ref" : "#/components/schemas/externalPaymentInformation"
         } ]
       },
-      "cryptoPaymentMethodDestination" : {
-        "type" : "object",
-        "properties" : {
-          "paymentInformation" : {
-            "$ref" : "#/components/schemas/cryptoPaymentInformation"
-          }
-        },
-        "description" : "The destination payment method of the Trade(wallet), if available"
-      },
-      "cryptoPaymentMethodSource" : {
-        "type" : "object",
-        "properties" : {
-          "paymentInformation" : {
-            "$ref" : "#/components/schemas/cryptoPaymentInformation"
-          }
-        },
-        "description" : "The source payment method of the Trade(wallet), if available"
-      },
       "cryptoPaymentMethod" : {
         "required" : [ "paymentMethodType" ],
         "type" : "object",
@@ -7513,10 +7495,10 @@
         "type" : "object",
         "properties" : {
           "destinationMethod" : {
-            "$ref" : "#/components/schemas/cryptoPaymentMethodDestination"
+            "$ref" : "#/components/schemas/walletPaymentMethod"
           },
           "sourceMethod" : {
-            "$ref" : "#/components/schemas/cryptoPaymentMethodSource"
+            "$ref" : "#/components/schemas/walletPaymentMethod"
           }
         },
         "description" : "The action of doing a token Trade. Source and destination Wallet are provided through the source and destination methods properties.",
