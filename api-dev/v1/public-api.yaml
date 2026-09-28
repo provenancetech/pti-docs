@@ -2784,7 +2784,107 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
-
+  '/stakes':
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+    post:
+      operationId: stakes
+      summary: Execute a Stake
+      tags:
+        - Transactions
+      description: >-
+        This endpoint is used to execute a Stake transaction.
+        The Transaction Assessment and User Information requirement are
+        evaluated before the Transaction is executed.
+      parameters:
+        - $ref: '#/components/parameters/requestIdHeaderParam'
+        - $ref: '#/components/parameters/scenarioIdHeaderParam'
+        - $ref: '#/components/parameters/sessionIdHeaderParam'
+        - $ref: '#/components/parameters/disableWebhookHeaderParam'
+        - $ref: '#/components/parameters/providerNameHeaderParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              initiator:
+                id: 7ece8274-871b-405b-9f25-f30f2128ad94
+                type: PERSON
+              sourceMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  type: WALLET
+                  id: MySOLWallet
+              date: 2024-12-13T18:46:40.666+00:00
+              amount: 0.5
+              usdValue: 113
+              type: STAKE
+            schema:
+              $ref: '#/components/schemas/executeStakeTransaction'
+      callbacks:
+        transactionUpdate:
+          '{$url}':
+            post:
+              summary: Endpoint that receives transaction status updates
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/transactionStatusObject'
+              responses:
+                '200':
+                  description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
+      responses:
+        '201':
+          description: Successfully initiated the transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/objectReference'
+        '400':
+          description: Invalid fields on Transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidRequestError'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '403':
+          description: Forbidden. Happens when the targeted User is not active.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '422':
+          description: >-
+            One of these 2 cases: More information about the User is needed in 
+            order to approve the transaction. There is no approved assessment 
+            for this User that enables him to perform the operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/oneOfAssessmentValidationError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
   # Marketplace
   /wallets:
     parameters:
@@ -4214,6 +4314,30 @@ components:
         amount: 200
         usdValue: 200
         type: WITHDRAWAL
+    executeStakeTransaction:
+      type: object
+      required:
+        - sourceMethod
+      description: >-
+        Execute a stake transaction. SourceMethod must be a Wallet on the platform.
+      allOf:
+        - $ref: '#/components/schemas/transactionType'
+      properties:
+        sourceMethod:
+          $ref: '#/components/schemas/walletPaymentMethodWrapper'
+      example:
+        initiator:
+          id: 36dbe68f-2747-41c6-8748-559588fd3248
+          type: PERSON
+        sourceMethod:
+          paymentMethodType: WALLET
+          paymentInformation:
+            type: WALLET
+            id: MySOLWallet
+        date: 2024-12-13T18:46:40.666+00:00
+        amount: 200
+        usdValue: 200
+        type: STAKE
     executeTradeTransaction:
       type: object
       required:
@@ -4657,6 +4781,7 @@ components:
         - $ref: '#/components/schemas/mintTransaction'
         - $ref: '#/components/schemas/tradeTransaction'
         - $ref: '#/components/schemas/paymentTransaction'
+        - $ref: '#/components/schemas/stakeTransaction'
       discriminator:
         propertyName: type
     oneOfUserSubTypes:
@@ -5005,6 +5130,15 @@ components:
           $ref: '#/components/schemas/oneOfUserSubTypes'
         destinationMethod:
           $ref: '#/components/schemas/cryptoPaymentMethod'
+    stakeTransaction:
+      type: object
+      description: >-
+        Stake transaction. SourceMethod must be a Wallet.
+      allOf:
+        - $ref: '#/components/schemas/transactionType'
+      properties:
+        sourceMethod:
+          $ref: '#/components/schemas/walletPaymentMethodWrapper'
     tradeTransaction:
       type: object
       description: >-
@@ -5028,6 +5162,7 @@ components:
         - BUY
         - MINT
         - TRADE
+        - STAKE
     transactionAction:
       type: object
       required: 

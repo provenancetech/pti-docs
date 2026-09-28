@@ -4697,6 +4697,204 @@
         }
       }
     },
+    "/stakes" : {
+      "post" : {
+        "tags" : [ "Transactions" ],
+        "summary" : "Execute a Stake",
+        "description" : "This endpoint is used to execute a Stake transaction. The Transaction Assessment and User Information requirement are evaluated before the Transaction is executed.",
+        "operationId" : "stakes",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-request-id",
+          "in" : "header",
+          "description" : "Unique identifier of the request. This ID must be provided and stored by the client of this API at the creation of a transaction. This ID is attached to all PTI internal operations as well as the webhook calls. This ID is required to post feedback about a transaction and get support from PTI for a problem on a transaction. Creating two transactions having the same requestId is not allowed.\n",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-scenario-id",
+          "in" : "header",
+          "description" : "Deprecated header that represented a User action under which transaction amounts would accumulate and controlled the User Assessment requirements.  Values passed in will be ignored going forward.",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-session-id",
+          "in" : "header",
+          "description" : "Session ID associated to a UI session for a specific User. Should match the value passed to the PTI SDK at initialization.",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "x-pti-disable-webhook",
+          "in" : "header",
+          "description" : "Set to true to disable webhook calls for this request.",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        }, {
+          "name" : "x-pti-provider-name",
+          "in" : "header",
+          "description" : "Used to specify which provider is responsible for handling the given operation. Ignored if the client configuration is not set for passive mode.\n",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/providerName"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/executeStakeTransaction"
+              },
+              "example" : {
+                "initiator" : {
+                  "id" : "7ece8274-871b-405b-9f25-f30f2128ad94",
+                  "type" : "PERSON"
+                },
+                "sourceMethod" : {
+                  "paymentMethodType" : "WALLET",
+                  "paymentInformation" : {
+                    "type" : "WALLET",
+                    "id" : "MySOLWallet"
+                  }
+                },
+                "date" : "2024-12-13T18:46:40.666+00:00",
+                "amount" : 0.5,
+                "usdValue" : 113,
+                "type" : "STAKE"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Successfully initiated the transaction",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/objectReference"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid fields on Transaction",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/invalidRequestError"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Forbidden. Happens when the targeted User is not active.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "422" : {
+            "description" : "One of these 2 cases: More information about the User is needed in  order to approve the transaction. There is no approved assessment  for this User that enables him to perform the operation.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/oneOfAssessmentValidationError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        },
+        "callbacks" : {
+          "transactionUpdate" : {
+            "{$url}" : {
+              "post" : {
+                "summary" : "Endpoint that receives transaction status updates",
+                "requestBody" : {
+                  "content" : {
+                    "application/json" : {
+                      "schema" : {
+                        "$ref" : "#/components/schemas/transactionStatusObject"
+                      }
+                    }
+                  },
+                  "required" : true
+                },
+                "responses" : {
+                  "200" : {
+                    "description" : "Your server returns this code if it accepts the callback"
+                  },
+                  "422" : {
+                    "description" : "Your server returns an error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/wallets" : {
       "get" : {
         "tags" : [ "Marketplace" ],
@@ -6497,6 +6695,36 @@
           "$ref" : "#/components/schemas/transactionType"
         } ]
       },
+      "executeStakeTransaction" : {
+        "required" : [ "sourceMethod" ],
+        "type" : "object",
+        "properties" : {
+          "sourceMethod" : {
+            "$ref" : "#/components/schemas/walletPaymentMethodWrapper"
+          }
+        },
+        "description" : "Execute a stake transaction. SourceMethod must be a Wallet on the platform.",
+        "example" : {
+          "initiator" : {
+            "id" : "36dbe68f-2747-41c6-8748-559588fd3248",
+            "type" : "PERSON"
+          },
+          "sourceMethod" : {
+            "paymentMethodType" : "WALLET",
+            "paymentInformation" : {
+              "type" : "WALLET",
+              "id" : "MySOLWallet"
+            }
+          },
+          "date" : "2024-12-13T18:46:40.666+00:00",
+          "amount" : 200,
+          "usdValue" : 200,
+          "type" : "STAKE"
+        },
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/transactionType"
+        } ]
+      },
       "executeTradeTransaction" : {
         "required" : [ "destinationMethod", "sourceMethod" ],
         "type" : "object",
@@ -7057,6 +7285,8 @@
           "$ref" : "#/components/schemas/tradeTransaction"
         }, {
           "$ref" : "#/components/schemas/paymentTransaction"
+        }, {
+          "$ref" : "#/components/schemas/stakeTransaction"
         } ]
       },
       "oneOfUserSubTypes" : {
@@ -7491,6 +7721,18 @@
           "$ref" : "#/components/schemas/transactionType"
         } ]
       },
+      "stakeTransaction" : {
+        "type" : "object",
+        "properties" : {
+          "sourceMethod" : {
+            "$ref" : "#/components/schemas/walletPaymentMethodWrapper"
+          }
+        },
+        "description" : "Stake transaction. SourceMethod must be a Wallet.",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/transactionType"
+        } ]
+      },
       "tradeTransaction" : {
         "type" : "object",
         "properties" : {
@@ -7508,7 +7750,7 @@
       },
       "transactionTypeEnum" : {
         "type" : "string",
-        "enum" : [ "DEPOSIT", "WITHDRAWAL", "PAYMENT", "TRANSFER", "SELL", "BUY", "MINT", "TRADE" ]
+        "enum" : [ "DEPOSIT", "WITHDRAWAL", "PAYMENT", "TRANSFER", "SELL", "BUY", "MINT", "TRADE", "STAKE" ]
       },
       "transactionAction" : {
         "required" : [ "action" ],
