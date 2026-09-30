@@ -4895,6 +4895,82 @@
         }
       }
     },
+    "/stakes/{requestId}" : {
+      "delete" : {
+        "tags" : [ "Transactions" ],
+        "summary" : "Cancel a Stake",
+        "description" : "This endpoint is used to attempt to cancel an initiated Stake Transaction. \nIf the call is successful, it means we were able to cancel the Stake Transaction.\n",
+        "operationId" : "cancelStake",
+        "parameters" : [ {
+          "name" : "x-pti-client-id",
+          "in" : "header",
+          "description" : "Client ID provided to you during onboarding.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        }, {
+          "name" : "requestId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/uuidLikeStr"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "NO CONTENT"
+          },
+          "400" : {
+            "description" : "Invalid fields on Transaction",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/invalidRequestError"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "unauthorized",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Transaction or User not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests"
+          },
+          "default" : {
+            "description" : "unexpected error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unmanagedError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/wallets" : {
       "get" : {
         "tags" : [ "Marketplace" ],
