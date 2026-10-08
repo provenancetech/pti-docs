@@ -8415,7 +8415,8 @@
       "transactionStatus" : {
         "type" : "string",
         "additionalProperties" : false,
-        "enum" : [ "PENDING", "ERROR", "MANUAL_REVIEW", "REFUSED", "AWAITING_PAYMENT", "AUTHORIZED", "ACCEPTED", "BAD_REQUEST", "SETTLED", "CAPTURED", "CHARGED_BACK", "CHARGED_BACK_REVERSED", "CANCELED", "REFUNDED", "RETURNED", "PENDING_SETTLEMENT" ]
+        "description" : "Status of a transaction request. PROCESSED means the request was aggregated and executed by platform processing (e.g. a staking batch position created through Fireblocks); a stake request in PROCESSED can no longer be canceled. PROCESSED is only ever produced by the platform — clients cannot set it.",
+        "enum" : [ "PENDING", "ERROR", "MANUAL_REVIEW", "REFUSED", "AWAITING_PAYMENT", "AUTHORIZED", "ACCEPTED", "BAD_REQUEST", "SETTLED", "CAPTURED", "CHARGED_BACK", "CHARGED_BACK_REVERSED", "CANCELED", "REFUNDED", "RETURNED", "PENDING_SETTLEMENT", "PROCESSED" ]
       },
       "actionStatus" : {
         "type" : "object",
