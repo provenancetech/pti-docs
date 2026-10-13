@@ -5789,6 +5789,11 @@ components:
     transactionStatus:
       type: string
       additionalProperties: false
+      description: >-
+        Status of a transaction request. PROCESSED means the request was aggregated
+        and executed by platform processing (e.g. a staking batch position created
+        through Fireblocks); a stake request in PROCESSED can no longer be canceled.
+        PROCESSED is only ever produced by the platform — clients cannot set it.
       enum:
         - PENDING
         - ERROR
@@ -5806,6 +5811,7 @@ components:
         - REFUNDED
         - RETURNED
         - PENDING_SETTLEMENT
+        - PROCESSED
     actionStatus:
       type: object
       additionalProperties: false
