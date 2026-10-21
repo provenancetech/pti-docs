@@ -14,6 +14,7 @@ The config should follow this format:
 interface ClientConfig extends Entity {
   acceptedCc: string[];
   clientId: string;
+  ccPaymentRail: "CHECKOUT" | "BASIS_THEORY";
   feeRate: number;
   exceptionLists: ExceptionLists;
   styleConfig: StyleConfig;
@@ -23,6 +24,10 @@ interface ClientConfig extends Entity {
 
 - `acceptedCc` is a list of allowed credit card providers. You can restrict usage of certain credit card providers 
 by allowing a subset of the default value `["amex", "dinersclub", "discover", "jcb", "mastercard", "visa"]`
+- `ccPaymentRail` selects the card-processing rail of the add-credit-card form: `"CHECKOUT"` (default) captures
+the card inside Checkout-hosted input frames and saves it as a reusable Checkout instrument, while
+`"BASIS_THEORY"` keeps the previous Basis-Theory-based capture. A per-rail override is instant: change the
+value in the admin config editor, no deployment needed.
 - `clientId` is your assigned client id
 - `feeRate` is the desired fee rate when processing payments. This should be the decimal value of the
 added fee, for instance `0.03` for a 3% fee.
