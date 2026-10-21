@@ -4670,6 +4670,11 @@ components:
           minimum: 0
           maximum: 999999
           format: double
+        stakedBalanceBefore:
+          type: number
+          minimum: 0
+          maximum: 999999
+          format: double
         createDateTime:
           type: string
           pattern: >-
@@ -4684,6 +4689,7 @@ components:
         operationTarget:
           type: string
           enum:
+            - STAKED_BALANCE
             - LOCKED_BALANCE
             - PENDING_BALANCE
             - TOTAL_BALANCE
@@ -5449,6 +5455,11 @@ components:
           maximum: 999999
           format: double
         pendingBalance:
+          type: number
+          minimum: 0
+          maximum: 999999
+          format: double
+        stakedBalance:
           type: number
           minimum: 0
           maximum: 999999
