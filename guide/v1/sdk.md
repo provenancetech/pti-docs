@@ -155,6 +155,10 @@ There are various forms available:
 - `FIAT_FUNDING` will display the Payment form
 - `ONBOARDING` will display the Onboarding form
 - `ADD_CC` will display the "Add a credit card" form
+  - The card is captured inside Checkout-hosted input frames (CC rail, default) and saved as a reusable Checkout
+  payment method; clients wishing to use the previous Basis-Theory-based capture can pass `ccPaymentRail: "BASIS_THEORY"`
+  in their client configuration. Note that a user account needs at least one email address on file for the Checkout
+  rail; the form will display an explanatory message otherwise.
 
 The value of `REQUEST_ID` is under your control. You should provide a UUID that you will store on your side to be able to correlate to a specific
 transaction or KYC check. If you ever have to report a problem to PTI, you must provide the `REQUEST_ID` associated to it to allow PTI to investigate.
