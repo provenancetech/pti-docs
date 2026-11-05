@@ -67,6 +67,26 @@ Under the hood, all the user information will be collected, the single use token
 
 Please note that the amount passed in the above example must be in USD.
 
+#### Providing your own KYC token
+
+By default, the SDK fetches the single use token for the KYC flow from the `generateTokenPath` configured in `PTI.init`.
+If your backend already generates the KYC token, you can pass it directly to the form using the optional `kycToken` parameter.
+The SDK will then use it as-is to display the KYC iframe instead of requesting a new one.
+
+```js
+PTI.form({
+    type: "KYC",
+    requestId: "REQUEST_ID",
+    userId: "USER_ID",
+    parentElement: document.getElementById("root"),
+    operation: "SELL",
+    amount: 150,
+    kycToken: "YOUR_GENERATED_KYC_TOKEN"
+});
+```
+
+The `kycToken` parameter is only supported for the `KYC` form type.
+
 ### KYC via API calls
 
 Another way to perform KYC flows is to use the API directly.
