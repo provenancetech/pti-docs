@@ -13,4 +13,4 @@ The api reference is deployed [here](https://provenancetech.github.io/pti-docs/a
 
 ## Contributing
 
-If you feel that some documentation is missing or unclear, do not hesitate to open a PR with your improvements.
+If you feel that some documentation is missing or unclear, do not hesitate to open a PR with your improvements. 
