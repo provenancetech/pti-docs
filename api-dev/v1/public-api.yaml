@@ -608,22 +608,15 @@ paths:
                 maxItems: 100
                 items:
                   $ref: '#/components/schemas/currencyAsset'
-                example: [
-                  {
-                    "currency": "BTC",
-                    "networks": [ "BITCOIN" ],
-                    "type": "CRYPTO"
-                  },
-                  {
-                    "currency": "USDC",
-                    "networks": [ "ETHEREUM", "POLYGON", "SOLANA" ],
-                    "type": "CRYPTO"
-                  },
-                  {
-                    "currency": "USD",
-                    "type": "FIAT"
-                  }
-                ]
+                example:
+                  - currency: BTC
+                    networks: [ BITCOIN ]
+                    type: CRYPTO
+                  - currency: USDC
+                    networks: [ ETHEREUM, POLYGON, SOLANA ]
+                    type: CRYPTO
+                  - currency: USD
+                    type: FIAT
 
         '401':
           description: unauthorized
@@ -2930,6 +2923,107 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
+  '/stakes/unstake':
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+    post:
+      operationId: unstake
+      summary: Execute an Unstake
+      tags:
+        - Transactions
+      description: >-
+        This endpoint is used to execute an Unstake transaction to free up staked currency.
+        The Transaction Assessment and User Information requirement are
+        evaluated before the Transaction is executed.
+      parameters:
+        - $ref: '#/components/parameters/requestIdHeaderParam'
+        - $ref: '#/components/parameters/scenarioIdHeaderParam'
+        - $ref: '#/components/parameters/sessionIdHeaderParam'
+        - $ref: '#/components/parameters/disableWebhookHeaderParam'
+        - $ref: '#/components/parameters/providerNameHeaderParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              initiator:
+                id: 7ece8274-871b-405b-9f25-f30f2128ad94
+                type: PERSON
+              sourceMethod:
+                paymentMethodType: WALLET
+                paymentInformation:
+                  type: WALLET
+                  id: MySOLWallet
+              date: 2024-12-13T18:46:40.666+00:00
+              amount: 0.5
+              usdValue: 113
+              type: UNSTAKE
+            schema:
+              $ref: '#/components/schemas/executeUnstakeTransaction'
+      callbacks:
+        transactionUpdate:
+          '{$url}':
+            post:
+              summary: Endpoint that receives transaction status updates
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/transactionStatusObject'
+              responses:
+                '200':
+                  description: Your server returns this code if it accepts the callback
+                '422':
+                  description: Your server returns an error
+      responses:
+        '201':
+          description: Successfully initiated the transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/objectReference'
+        '400':
+          description: Invalid fields on Transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidRequestError'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '403':
+          description: Forbidden. Happens when the targeted User is not active.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '422':
+          description: >-
+            One of these 2 cases: More information about the User is needed in 
+            order to approve the transaction. There is no approved assessment 
+            for this User that enables him to perform the operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/oneOfAssessmentValidationError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
   # Marketplace
   /wallets:
     parameters:
@@ -4143,20 +4237,16 @@ components:
             id: MyUSDWallet
         amount: 200
         date: '2024-06-03T08:30:00.000Z'
-        transactionTotal: {
-          subtotal: {
-            amount: 200,
+        transactionTotal:
+          subtotal:
+            amount: 200
             currency: USD
-          },
-          fee: {
-            amount: 0,
+          fee:
+            amount: 0
             currency: USD
-          },
-          total: {
-            amount: 200,
+          total:
+            amount: 200
             currency: USD
-          }
-        }
         usdValue: 200
         type: DEPOSIT
     executeTransferTransaction:
@@ -4249,20 +4339,16 @@ components:
           type: PERSON
         amount: 200
         date: '2024-06-03T08:30:00.000Z'
-        transactionTotal: {
-          subtotal: {
-            amount: 200,
+        transactionTotal:
+          subtotal:
+            amount: 200
             currency: USD
-          },
-          fee: {
-            amount: 0,
+          fee:
+            amount: 0
             currency: USD
-          },
-          total: {
-            amount: 200,
+          total:
+            amount: 200
             currency: USD
-          }
-        }
         usdValue: 200
         type: BUY
         feeRecipients:
@@ -4383,6 +4469,30 @@ components:
         amount: 200
         usdValue: 200
         type: STAKE
+    executeUnstakeTransaction:
+      type: object
+      required:
+        - sourceMethod
+      description: >-
+        Execute an unstake transaction. SourceMethod must be a Wallet on the platform.
+      allOf:
+        - $ref: '#/components/schemas/transactionType'
+      properties:
+        sourceMethod:
+          $ref: '#/components/schemas/walletPaymentMethodWrapper'
+      example:
+        initiator:
+          id: 36dbe68f-2747-41c6-8748-559588fd3248
+          type: PERSON
+        sourceMethod:
+          paymentMethodType: WALLET
+          paymentInformation:
+            type: WALLET
+            id: MySOLWallet
+        date: 2024-12-13T18:46:40.666+00:00
+        amount: 200
+        usdValue: 200
+        type: UNSTAKE
     executeTradeTransaction:
       type: object
       required:
@@ -4731,20 +4841,18 @@ components:
           BANK_ACCOUNT: '#/components/schemas/bankAccountPaymentInformation'
           ENCRYPTED_CREDIT_CARD: '#/components/schemas/encryptedCreditCardPaymentInformation'
           CRYPTO: '#/components/schemas/cryptoPaymentInformation'
-      example: {
-        "id": "36dbe68f-2747-41c6-8748-559588fd3248",
-        "type": "ENCRYPTED_CREDIT_CARD",
-        "creditCardLast4": "1234",
-        "creditCardBin": "123456",
-        "creditCardReference": "reference",
-        "creditCardAddress": {
-          "streetAddress": "123 main st",
-          "city": "New York",
-          "stateCode": "US-NY",
-          "country": "US",
-          "postalCode": "10005"
-        },
-      }
+      example:
+        id: 36dbe68f-2747-41c6-8748-559588fd3248
+        type: ENCRYPTED_CREDIT_CARD
+        creditCardLast4: '1234'
+        creditCardBin: '123456'
+        creditCardReference: reference
+        creditCardAddress:
+          streetAddress: 123 main st
+          city: New York
+          stateCode: US-NY
+          country: US
+          postalCode: '10005'
     oneOfFiatPaymentInformation:
       oneOf:
         - $ref: '#/components/schemas/encryptedCreditCardPaymentInformation'
@@ -4833,6 +4941,7 @@ components:
         - $ref: '#/components/schemas/tradeTransaction'
         - $ref: '#/components/schemas/paymentTransaction'
         - $ref: '#/components/schemas/stakeTransaction'
+        - $ref: '#/components/schemas/unstakeTransaction'
       discriminator:
         propertyName: type
     oneOfUserSubTypes:
@@ -5202,6 +5311,15 @@ components:
           $ref: '#/components/schemas/walletPaymentMethod'
         sourceMethod:
           $ref: '#/components/schemas/walletPaymentMethod'
+    unstakeTransaction:
+      type: object
+      description: >-
+        Unstake transaction. SourceMethod must be a Wallet.
+      allOf:
+        - $ref: '#/components/schemas/transactionType'
+      properties:
+        sourceMethod:
+          $ref: '#/components/schemas/walletPaymentMethodWrapper'
     transactionTypeEnum:
       type: string
       enum:
@@ -5214,6 +5332,7 @@ components:
         - MINT
         - TRADE
         - STAKE
+        - UNSTAKE
     transactionAction:
       type: object
       required: 
