@@ -194,6 +194,14 @@ const App = () => {
         >
           Open Add Credit Card Form
         </Button>
+        <Button
+          endIcon={<OpenInNewOutlinedIcon />}
+          fullWidth={true}
+          onClick={() => openSimpleDialog(actionType.addCCV2, userId, requestId, amount, operation, lang)}
+          variant="contained"
+        >
+          Open Add Credit Card V2 Form
+        </Button>
       <Button
           endIcon={<OpenInNewOutlinedIcon />}
           fullWidth={true}
