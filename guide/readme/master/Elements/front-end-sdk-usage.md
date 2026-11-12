@@ -122,6 +122,19 @@ render the forms on your web application.
 ```
 
 ```html
+<div id="add_cc_form"></div>
+<script>
+  PTI.form({
+    type: "ADD_CC_V2",
+    requestId: "REQUEST_ID",
+    userId: "USER_ID",
+    parentElement: document.getElementById("add_cc_form"),
+    lang: "en",
+  });
+</script>
+```
+
+```html
 <div id="add_crypto_form"></div>
 <script>
   PTI.form({
@@ -155,6 +168,11 @@ There are various forms available:
 - `ADD_CRYPTO_WALLET` will display the add crypto wallet form
 - `ONBOARDING` will display the Onboarding form
 - `ADD_CC` will display the "Add a credit card" form
+- `ADD_CC_V2` will display the streamlined "Add a credit card" element: only the cardholder name, the card fields
+  and the "Add" button, without the stepper, the title, the "Use as default payment method" checkbox, the border and
+  the footer. It takes the same parameters as `ADD_CC`, with two differences:
+  - The card is not set as the default payment method.
+  - Nothing is displayed once the card is added: listen to the [End of Flow Events](./configuration#end-of-flow-events) to update your own UI.
 
 The value of `REQUEST_ID` is under your control. You should provide a UUID that you will store on your side to be able to correlate to a specific  
 transaction or KYC check. If you ever have to report a problem to Fiant(PTI), you must provide the `REQUEST_ID` associated to it to allow Fiant to investigate.  

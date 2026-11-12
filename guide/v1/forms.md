@@ -104,11 +104,13 @@ These messages are js objects containing a message's event name, followed by the
 - Assessment: `UserAssessmentCompleted`
 - Business assessment: `BusinessAssessmentCompleted`
 - User onboarding: `UserOnboardingCompleted`
-- Add credit card: `AddCreditCardCompleted`, `AddPaymentMethodCompleted`
+- Add credit card (`ADD_CC` and `ADD_CC_V2`): `AddCreditCardCompleted`, `AddPaymentMethodCompleted`
 - Add bank account: `AddBankAccountCompleted`, `AddPaymentMethodCompleted`
 - Add crypto wallet: `AddCryptoWalletCompleted`, `AddPaymentMethodCompleted`
 
 Upon receiving these messages, consider implementing actions such as removing the iframe or displaying a spinner to provide a seamless user experience.
+
+The `ADD_CC_V2` form does not display any confirmation once the card is added: these messages are the only signal that the flow is completed.
 
 Implementation Example:
 ```typescript
