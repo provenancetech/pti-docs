@@ -3024,6 +3024,51 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/unmanagedError'
+  '/stakes/unstake/{requestId}':
+    parameters:
+      - $ref: '#/components/parameters/clientIdHeaderParam'
+      - name: requestId
+        schema:
+          $ref: '#/components/schemas/uuidLikeStr'
+        in: path
+        required: true
+    delete:
+      operationId: cancelUnstake
+      summary: Cancel an unstake request
+      description: |
+        This endpoint is used to attempt to cancel an initiated Unstake Transaction. 
+        If the call is successful, it means we were able to cancel the Unstake Transaction.
+      tags:
+        - Transactions
+      responses:
+        '204':
+          description: NO CONTENT
+        '400':
+          description: Invalid fields on Transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invalidRequestError'
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '404':
+          description: Transaction or User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
+        '429':
+          description: Too many requests
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/unmanagedError'
   # Marketplace
   /wallets:
     parameters:
