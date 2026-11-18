@@ -51,7 +51,7 @@ In order to simplify a secure integration to the PTI platform, hosted forms are 
 
 The web sdk is a publicly available Javascript library provided to simplify the integration of the Hosted Forms in the client UI.
 It also enables the tracking of user devices and UI interactions to improve the detection of malicious behaviour.
-The [SDK page](./sdk.md) contains guidance on how to leverage the PTI SDK.
+The [SDK page](./sdk.md) contains guidance on how to leverage the Fiant SDK.
 
 ### REST API
 

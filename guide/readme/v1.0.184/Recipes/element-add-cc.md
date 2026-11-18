@@ -4,7 +4,7 @@
 ```html
 <div id="add_cc_form"></div>
 <script>
-  PTI.form({
+  Fiant.form({
     type: "ADD_CC",
     requestId: "REQUEST_ID",
     userId: "USER_ID",

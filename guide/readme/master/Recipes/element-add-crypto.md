@@ -4,7 +4,7 @@
 ```html
 <div id="add_crypto_form"></div>
 <script>
-  PTI.form({
+  Fiant.form({
     type: "ADD_CRYPTO_WALLET",
     requestId: "REQUEST_ID",
     userId: "USER_ID",

@@ -84,7 +84,7 @@ const SimpleDialog = () => {
     const timeoutId = setTimeout(() => {
       const element = iframeContainerRef.current;
       if (!element) return;
-      console.log("Initialise PTI Iframe SDK");
+      console.log("Initialise Fiant Iframe SDK");
       setSdkInit(true);
 
       const params = {
@@ -100,11 +100,11 @@ const SimpleDialog = () => {
       if (operation) {
         params.operation = operation;
         // update the context
-        PTI.updateContext(userId, operation, ptiConfig.sessionId);
+        Fiant.updateContext(userId, operation, fiantConfig.sessionId);
       }
 
       if (Object.values(actionType).includes(type)) params.type = type;
-      PTI.form(params)
+      Fiant.form(params)
         .then(() => setSdkLoading(false))
         .catch(() => showErrorSnackAlert(`Error while loading the ${convertConstToStr(type)} form`));
     }, 0);
@@ -119,7 +119,7 @@ const SimpleDialog = () => {
           <Box>
             {convertConstToStr(type)} - {`${amount}$`}
           </Box>
-          <FieldCopy label={"Client Id:"} value={ptiConfig.clientId} variant={"outlined"} style={{width: "340px"}}/>
+          <FieldCopy label={"Client Id:"} value={fiantConfig.clientId} variant={"outlined"} style={{width: "340px"}}/>
           <FieldCopy label={"User Id:"} value={userId} variant={"outlined"} style={{width: "340px"}}/>
           <FieldCopy label={"Request Id:"} value={requestId} variant={"outlined"} style={{width: "340px"}}/>
           <FieldCopy label={"Operation:"} value={operation} variant={"outlined"} style={{width: "200px"}}/>

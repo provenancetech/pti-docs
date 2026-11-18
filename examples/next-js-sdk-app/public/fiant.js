@@ -1,6 +1,6 @@
-window.ptiAsyncInit = function() {
-    console.log("Initializing PTI Global Config");
-    PTI.init({
+window.fiantAsyncInit = function() {
+    console.log("Initializing Fiant Global Config");
+    Fiant.init({
         clientId: "3450582c-1955-11eb-adc1-0242ac120002",
         generateTokenPath: "/api/generateToken"
     });
@@ -14,7 +14,7 @@ function uuidv4() {
 }
 
 function showPaymentForm(rootId) {
-    PTI.form({
+    Fiant.form({
         type: "FIAT_FUNDING",
         requestId: uuidv4(),
         userId: 'cf48a16e-4500-43eb-803c-6902737ddba6',

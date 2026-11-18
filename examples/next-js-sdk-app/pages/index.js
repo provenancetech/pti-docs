@@ -6,7 +6,7 @@ export default function Home() {
       <Head>
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
-        <script async defer src="/pti.js"></script>
+        <script async defer src="/fiant.js"></script>
         <script
           async
           defer
@@ -14,7 +14,7 @@ export default function Home() {
         ></script>
       </Head>
 
-      <h1 className="title">Welcome to PTI Javascript SDK Example</h1>
+      <h1 className="title">Welcome to Fiant Javascript SDK Example</h1>
 
       <a href={"#"} onClick={() => showPaymentForm("form")}>
         Start Payment

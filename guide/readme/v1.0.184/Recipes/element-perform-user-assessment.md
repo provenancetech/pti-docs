@@ -6,7 +6,7 @@
 
 <div id="kyc_form"></div>
 <script>
-    PTI.form({
+    Fiant.form({
         type: "KYC",
         requestId: "REQUEST_ID",
         userId: "USER_ID",

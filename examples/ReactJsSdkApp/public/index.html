@@ -16,13 +16,13 @@
     <div id="root"></div>
     <script async defer src="<%= REACT_APP_JS_SDK_URL %>"></script>
     <script>
-      ptiConfig = {
-        clientId: "<%= REACT_APP_CLIENT_ID %>", //Use the clientId provided by the PTI team
+      fiantConfig = {
+        clientId: "<%= REACT_APP_CLIENT_ID %>", //Use the clientId provided by the Fiant team
         generateTokenPath: "/generateToken", //Path to the endpoint on your backend to generate token
-        ptiFormsUrl: "<%= REACT_APP_FORMS_URL %>" //URL to the forms endpoint, typically https://forms.dev.fiant.io
+        fiantFormsUrl: "<%= REACT_APP_FORMS_URL %>" //URL to the forms endpoint, typically https://forms.dev.fiant.io
       };
-      window.ptiAsyncInit = function() {
-        PTI.init(ptiConfig);
+      window.fiantAsyncInit = function() {
+        Fiant.init(fiantConfig);
       }
 
       window.addEventListener('error', (event) => {
