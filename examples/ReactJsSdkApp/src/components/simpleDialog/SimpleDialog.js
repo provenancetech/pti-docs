@@ -84,7 +84,7 @@ const SimpleDialog = () => {
     const timeoutId = setTimeout(() => {
       const element = iframeContainerRef.current;
       if (!element) return;
-      console.log("Initialise PTI Iframe SDK");
+      console.log("Initialise Fiant Iframe SDK");
       setSdkInit(true);
 
       const params = {
@@ -100,11 +100,11 @@ const SimpleDialog = () => {
       if (operation) {
         params.operation = operation;
         // update the context
-        PTI.updateContext(userId, operation, ptiConfig.sessionId);
+        Fiant.updateContext(userId, operation, ptiConfig.sessionId);
       }
 
       if (Object.values(actionType).includes(type)) params.type = type;
-      PTI.form(params)
+      Fiant.form(params)
         .then(() => setSdkLoading(false))
         .catch(() => showErrorSnackAlert(`Error while loading the ${convertConstToStr(type)} form`));
     }, 0);

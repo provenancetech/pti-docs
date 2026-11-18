@@ -50,7 +50,7 @@ In order to simplify the collection of user information needed to perform the KY
 example using the SDK form function to display the KYC form. Note that only the fields missing for the selected operation and amount will be displayed in an iframe.
 
 ```js
-    PTI.form({
+    Fiant.form({
     type: "KYC",
     requestId: "REQUEST_ID",
     userId: "USER_ID",
@@ -69,12 +69,12 @@ Please note that the amount passed in the above example must be in USD.
 
 #### Providing your own KYC token
 
-By default, the SDK fetches the single use token for the KYC flow from the `generateTokenPath` configured in `PTI.init`.
+By default, the SDK fetches the single use token for the KYC flow from the `generateTokenPath` configured in `Fiant.init`.
 If your backend already generates the KYC token, you can pass it directly to the form using the optional `kycToken` parameter.
 The SDK will then use it as-is to display the KYC iframe instead of requesting a new one.
 
 ```js
-PTI.form({
+Fiant.form({
     type: "KYC",
     requestId: "REQUEST_ID",
     userId: "USER_ID",
