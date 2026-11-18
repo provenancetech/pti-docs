@@ -5691,8 +5691,8 @@ components:
             - PASSPORT_BACK
             - ID_CARD
             - ID_CARD_BACK
-            - DRIVER_LICENCE
-            - DRIVER_LICENCE_BACK
+            - DRIVER_LICENSE
+            - DRIVER_LICENSE_BACK
             - RESIDENCE_PERMIT
             - RESIDENCE_PERMIT_BACK
             - SELFIE
