@@ -100,7 +100,7 @@ const SimpleDialog = () => {
       if (operation) {
         params.operation = operation;
         // update the context
-        Fiant.updateContext(userId, operation, ptiConfig.sessionId);
+        Fiant.updateContext(userId, operation, fiantConfig.sessionId);
       }
 
       if (Object.values(actionType).includes(type)) params.type = type;
@@ -119,7 +119,7 @@ const SimpleDialog = () => {
           <Box>
             {convertConstToStr(type)} - {`${amount}$`}
           </Box>
-          <FieldCopy label={"Client Id:"} value={ptiConfig.clientId} variant={"outlined"} style={{width: "340px"}}/>
+          <FieldCopy label={"Client Id:"} value={fiantConfig.clientId} variant={"outlined"} style={{width: "340px"}}/>
           <FieldCopy label={"User Id:"} value={userId} variant={"outlined"} style={{width: "340px"}}/>
           <FieldCopy label={"Request Id:"} value={requestId} variant={"outlined"} style={{width: "340px"}}/>
           <FieldCopy label={"Operation:"} value={operation} variant={"outlined"} style={{width: "200px"}}/>

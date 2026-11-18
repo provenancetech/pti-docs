@@ -57,7 +57,7 @@ const App = () => {
           <TuneOutlinedIcon />
           Settings
         </Header>
-        <TextField disabled fullWidth={true} id="clientId" label="ClientId" value={ptiConfig.clientId} />
+        <TextField disabled fullWidth={true} id="clientId" label="ClientId" value={fiantConfig.clientId} />
         <Stack direction="row" spacing={2}>
           <TextField
             fullWidth={true}

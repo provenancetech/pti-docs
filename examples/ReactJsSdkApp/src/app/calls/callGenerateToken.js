@@ -1,8 +1,8 @@
 const callGenerateToken = async (payload) => {
-  const url = ptiConfig.generateTokenPath;
+  const url = fiantConfig.generateTokenPath;
   const headers = { "Content-type": "application/json" };
   const body = {
-    "x-pti-client-id": ptiConfig.clientId,
+    "x-pti-client-id": fiantConfig.clientId,
     "x-pti-token-payload": payload,
   };
   const options = { method: "POST", body: JSON.stringify(body) };

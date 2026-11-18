@@ -17,9 +17,9 @@ export const convertCamelCaseToText = (value) => {
 export const getHeaders = ({ accessToken, requestId }) => ({
   "Content-type": "application/json",
   Date: new Date().toISOString(),
-  "x-pti-client-id": ptiConfig.clientId,
+  "x-pti-client-id": fiantConfig.clientId,
   "x-pti-request-id": requestId,
-  "x-pti-session-id": ptiConfig.sessionId,
+  "x-pti-session-id": fiantConfig.sessionId,
   "x-pti-token": accessToken,
 });
 
