@@ -528,15 +528,19 @@ paths:
     post:
       operationId: uploadDocument
       summary: >-
-        Upload a User’s Document (Passport, License, etc)
+        Upload a User’s Document
       description: |
-        Allows uploading a document for a specific User, such as a passport, driver’s 
-        license, or other identification. The request can include metadata about the 
-        document and any associated ID information.
-        
-        Uploaded documents are used for KYC verification, compliance checks, and 
-        record-keeping purposes. The file must be sent as binary data and cannot 
-        exceed 5 MB in size.
+        Allows uploading a founding document for a specific User. The request can
+        include metadata about the document.
+
+        Uploaded documents are used for compliance checks and record-keeping purposes.
+        The file must be sent as binary data and cannot exceed 5 MB in size.
+
+        Only founding documents (`FOUNDING_DOCUMENT`) can be uploaded through this
+        endpoint. Any other document type, including ID documents (passport, ID card,
+        driver’s license, residence permit) and selfies, is rejected with a `400` error.
+        ID documents and selfies are collected during the User’s KYC identity
+        verification.
       tags:
         - Users
       requestBody:
@@ -558,7 +562,7 @@ paths:
         '201':
           description: Successfully uploaded the document
         '400':
-          description: Missing required fields on document
+          description: Missing required fields on document, or document type not allowed on this endpoint
           content:
             application/json:
               schema:
@@ -5672,9 +5676,9 @@ components:
       type: object
       additionalProperties: false
       example:
-        documentType: PASSPORT
-        contentType: image/jpeg
-        originalFileName: passport.jpg
+        documentType: FOUNDING_DOCUMENT
+        contentType: application/pdf
+        originalFileName: founding-document.pdf
         fileSize: 123456
         tags:
           documentCountry: US
@@ -5687,15 +5691,6 @@ components:
         documentType:
           type: string
           enum:
-            - PASSPORT
-            - PASSPORT_BACK
-            - ID_CARD
-            - ID_CARD_BACK
-            - DRIVER_LICENSE
-            - DRIVER_LICENSE_BACK
-            - RESIDENCE_PERMIT
-            - RESIDENCE_PERMIT_BACK
-            - SELFIE
             - FOUNDING_DOCUMENT
         contentType:
           type: string
